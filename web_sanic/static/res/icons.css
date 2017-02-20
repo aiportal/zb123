@@ -1,0 +1,71 @@
+.icon-beijing:before { content: "京"; }
+.icon-tianjin:before { content: '津'; }
+.icon-shanghai:before { content: '沪' }
+.icon-chongqing:before { content: '渝' }
+.icon-neimenggu:before { content: '蒙' }
+.icon-xinjiang:before { content: '新' }
+.icon-xizang:before { content: '藏' }
+.icon-ningxia:before { content: '宁' }
+.icon-guangxi:before { content: '桂' }
+.icon-heilongjiang:before { content: '黑' }
+.icon-jilin:before { content: '吉' }
+.icon-liaoning:before { content: '辽' }
+.icon-shanxi:before { content: '晋' }
+.icon-hebei:before { content: '冀' }
+.icon-qinghai:before { content: '青' }
+.icon-shandong:before { content: '鲁' }
+.icon-henan:before { content: '豫' }
+.icon-jiangsu:before { content: '苏' }
+.icon-anhui:before { content: '皖' }
+.icon-zhejiang:before { content: '浙' }
+.icon-fujian:before { content: '闽' }
+.icon-jiangxi:before { content: '赣' }
+.icon-hunan:before { content: '湘' }
+.icon-hubei:before { content: '鄂' }
+.icon-guangdong:before { content: '粤' }
+.icon-hainan:before { content: '琼' }
+.icon-gansu:before { content: '甘' }
+.icon-shaanxi:before { content: '陕' }
+.icon-guizhou:before { content: '黔' }
+.icon-yunnan:before { content: '滇' }
+.icon-sichuan:before { content: '川' }
+
+.icon-xianggang:before { content: '港' }
+.icon-aomen:before { content: '澳' }
+.icon-taiwan:before { content: '台' }
+
+/*
+1、北京（京）
+2、天津（津）
+3、上海（沪）
+4、重庆（渝）
+5、内蒙古自治区（蒙）
+6、维吾尔自治区（新）
+7、西藏自治区（藏）
+8、宁夏回族自治区（宁）
+9、广西壮族自治区（桂）
+10、香港特别行政区（港）
+11、澳门特别行政区（澳）
+12、黑龙江省（黑）
+13、吉林省（吉）
+14、辽宁省（辽）
+15、山西省（晋）
+16、河北省（冀）
+17、青海省（青）
+18、山东省（鲁）
+19、河南省（豫）
+20、江苏省（苏）
+21、安徽省（皖）
+22、浙江省（浙）
+23、福建省（闽）
+24、江西省（赣）
+25、湖南省（湘）
+26、湖北省（鄂）
+27、广东省（粤）
+28、海南省（琼）
+29、甘肃省（甘）
+30、陕西省（陕）
+31、贵州省（黔）
+32、云南省（滇)
+33、四川省（川)
+*/
