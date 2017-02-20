@@ -9,6 +9,8 @@ from datetime import datetime, date
 
 class WxServiceApi(HTTPMethodView):
     """ 微信服务后台 """
+    # TODO: 使用request.headers['host']代替硬编码，需要修改微信消息分发机制
+    web_host = 'zb123.ultragis.com'
     wx_app = wx_zb123
     wx_svc = svc_zb123
 
@@ -42,8 +44,8 @@ class WxServiceApi(HTTPMethodView):
                 'item': [{
                     'Title': '招标信息',
                     'Description': '欢迎订阅招标123，招标信息一网打尽。',
-                    'PicUrl': 'http://zb.ultragis.com/img/handshake_600_275.png',
-                    'Url': 'http://zb.ultragis.com/help.html'
+                    'PicUrl': 'http://{0}/img/handshake_600_275.png'.format(self.web_host),
+                    'Url': 'http://{0}/help.html'.format(self.web_host)
                 }]
             }
         }
@@ -71,31 +73,22 @@ class WxServiceApi(HTTPMethodView):
 
 
 class WxPublishApi(HTTPMethodView):
-    """ 招标信息发布 """
     def __init__(self):
-        self.author = '招标123'
-        self.welcome_url = 'zb.ultragis.com/welcome'
-        self.cover_image = 'B3VHJYoCxJUobp6S3huJ8USM524lDTDizaWMYhgMCSo'
-        self.preview_users = ['o3cwBvzJe_vrBtOc2P3AUBS1wbEM', 'o3cwBv-nFc2bwfPjJL4O--34PbX8']
         self.wx_app = wx_zb123
         self.sources = {x.key: x.value for x in SysConfig.get_items('source')}
 
     def get(self, request: Request):
         day = date.today()
         if 'day' in request.args:
-            day = datetime.strptime(request.args['day'], '%Y%m%d').date()
-        archive = self.totals_archive(day)
-        media_id = self.wx_app.add_news(archive)
+            day = datetime.strptime(request.args.get('day'), '%Y%m%d').date()
 
-        preview = request.url.strip('/').endswith('preview')
-        if preview:
-            for openid in self.preview_users:
-                self.wx_app.preview_news(media_id=media_id, openid=openid)
-        else:
-            self.wx_app.publish_news(media_id=media_id)
+        content = self.totals_content(day)
+        for oid in self.wx_app.admin:
+            self.wx_app.preview_text(content, oid)
+
         return json({'success': True})
 
-    def totals_archive(self, day):
+    def totals_content(self, day: date):
         # 统计各省信息数量
         records = (GatherInfo.select(GatherInfo.source, fn.Count(GatherInfo.uuid).alias('count'))
                    .where(GatherInfo.day == str(day))
@@ -103,44 +96,40 @@ class WxPublishApi(HTTPMethodView):
         totals = {x.source: x.count for x in records}
 
         # 标题
-        title = '{0:%Y-%m-%d} 招标信息'.format(day)
+        amount = sum([v for _, v in totals.items()])
+        headers = ['{0:%Y年%m月%d日}'.format(day), '各省共发布 {} 条招标信息'.format(amount), '']
 
         # 正文
         items = []
         for source in sorted(self.sources.keys()):
             alias = self.sources.get(source)
             total = totals.get(source, 0)
-            items.append('<p><b>{0}：</b>&nbsp;<span>{1}</span>条招标信息</p>'.format(alias, total))
-        content = ''.join(items)
-        content += '<br/><p><strong style="color:rgb(255,79,121);">↓↓↓</strong>&nbsp;请点击“阅读原文”了解详细信息</p>'
+            items.append('{0}：{1} 条招标信息'.format(alias, total))
+        footers = ['', '↓↓↓ 点击【招标信息】了解详情']
 
-        # 摘要
-        amount = sum([v for _, v in totals.items()])
-        digest = '今日共发布 {0} 条招标信息'.format(amount)
-
-        return self.wx_app.article(title=title, content=content, digest=digest, url=self.welcome_url,
-                                   author=self.author, image_id=self.cover_image)
+        return '\n'.join(headers + items + footers)
 
 
 class WxMenuApi(HTTPMethodView):
     """ 初始化公众号菜单 """
     wx_app = wx_zb123
 
-    def get(self):
+    def get(self, request: Request):
         url_menu_create = 'https://api.weixin.qq.com/cgi-bin/menu/create'
+        host = request.headers['host']
         data = {
             "button": [{
                 "type": "view",
                 "name": "招标信息",
-                "url": "http://zb.ultragis.com/welcome"
+                "url": "http://{0}/welcome".format(host)
             }, {
                 "type": "view",
                 "name": "推荐关注",
-                "url": "http://zb.ultragis.com/zb123.html"
+                "url": "http://{0}/zb123.html".format(host)
             }, {
                 "type": "view",
                 "name": "意见反馈",
-                "url": "http://zb.ultragis.com/suggest.html"
+                "url": "http://{0}/suggest.html".format(host)
             }]
         }
         self.wx_app.post(url_menu_create, data)

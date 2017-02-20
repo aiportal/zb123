@@ -3,7 +3,7 @@ from peewee_async import Manager, PooledMySQLDatabase
 from datetime import datetime
 
 
-db_fetch = PooledMySQLDatabase(host='www.ultragis.com', database='fetch', user='root', passwd='lq1990', charset='utf8')
+db_fetch = PooledMySQLDatabase(host='127.0.0.1', database='fetch', user='root', passwd='lq1990', charset='utf8')
 fetch = Manager(db_fetch)
 
 
@@ -31,7 +31,7 @@ class GatherInfo(FetchModel):
     tels = peewee.CharField(null=True, help_text='联系电话')
     extends = peewee.TextField(null=True, help_text='扩展信息(json格式)')
     time = peewee.DateTimeField(default=datetime.now, help_text='时间戳')
-GatherInfo.create_table(True)
+# GatherInfo.create_table(True)
 
 
 class ContentInfo(FetchModel):
@@ -48,7 +48,7 @@ class ContentInfo(FetchModel):
     contents = peewee.TextField(null=True, help_text='招标详情(正文)')
     attachments = peewee.TextField(null=True, help_text='附件信息')
     time = peewee.DateTimeField(default=datetime.now, help_text='时间戳')
-ContentInfo.create_table(True)
+# ContentInfo.create_table(True)
 
 
 # 异常信息表
@@ -63,4 +63,4 @@ class EventLog(FetchModel):
     info = peewee.TextField(null=True, help_text='信息描述')
     data = peewee.TextField(null=True, help_text='附加信息')
     time = peewee.DateTimeField(default=datetime.now, help_text='时间戳')
-EventLog.create_table(True)
+# EventLog.create_table(True)

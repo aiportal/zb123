@@ -17,9 +17,9 @@ class DayTitlesApi(HTTPMethodView):
 
         # 请求参数
         day = datetime.strptime(request.args.get('day', str(date.today())), '%Y-%m-%d').date()
-        page = int(request.get('page', '1'))
-        size = min(int(request.get('size', 20)), 50)
-        use_rule = request.get('rule') == 'true'
+        page = int(request.args.get('page', '1'))
+        size = min(int(request.args.get('size', 20)), 50)
+        use_rule = request.args.get('rule') == 'true'
 
         # 只提供最近30天的信息
         min_day = date.today() - timedelta(30)
@@ -46,13 +46,13 @@ class DayTitlesApi(HTTPMethodView):
                 query = query.where(GatherInfo.source << rule.sources)
             # 分类搜索
             if rule.subjects:
-                exp = None
+                exp = False
                 for subject in rule.subjects:
                     exp = exp | GatherInfo.subject.startswith(subject)
                 query = query.where(exp)
             # 关键词搜索
             if rule.keys:
-                exp = None
+                exp = False
                 for key in rule.keys:
                     exp = exp | GatherInfo.title.contains(key)
                 query = query.where(exp)

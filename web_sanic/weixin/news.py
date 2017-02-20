@@ -89,3 +89,28 @@ class WxNewsManager(WxAppCore):
            }
         }
         return self.post(url_preview, data).get('msg_id')
+
+    def preview_text(self, content: str, openid: str):
+        url_preview = 'https://api.weixin.qq.com/cgi-bin/message/mass/preview'
+        data = {
+            "touser": openid,
+            "text": {
+               "content": content
+            },
+            "msgtype": "text"
+        }
+        return self.post(url_preview, data).get('msg_id')
+
+    def publish_text(self, content: str):
+        url_publish = 'https://api.weixin.qq.com/cgi-bin/message/mass/sendall'
+        data = {
+            "filter": {
+                "is_to_all": True,
+                # "tag_id":2
+            },
+            "text": {
+                "content": content
+            },
+            "msgtype": "text"
+        }
+        return self.post(url_publish, data).get('msg_id')
