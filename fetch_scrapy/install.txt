@@ -1,0 +1,23 @@
+
+# pip3
+apt-get install python3-pip
+
+# scrapy
+sudo apt-get install build-essential
+sudo apt-get install python3-dev
+sudo apt-get install libxml2-de;
+sudo apt-get install libxslt1-dev
+sudo apt-get install libssl-dev
+apt-get install -y libffi-dev
+pip3 install Twisted
+pip3 install w3lib
+pip3 install lxm
+
+pip3 install scrapy
+
+# peewee
+# https://pypi.python.org/pypi/PyMySQL3
+pip3 install peewee
+
+apt-get install wget
+wget https://pypi.python.org/packages/82/c4/55b23360d9d7195ef5e2e5266b9953f562c1a3c5ce1e4f71df6c72587a0e/PyMySQL3-0.5.tar.gz
