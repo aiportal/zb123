@@ -13,6 +13,6 @@ class TelephonePipeline(object):
         obj = dict(item)
 
         CompanyInfo(**obj).save()
-        JobIndex.hash_add(obj['uuid'])
+        JobIndex.url_add(obj['url'])
 
         return item

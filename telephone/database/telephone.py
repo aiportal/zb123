@@ -42,14 +42,6 @@ class JobIndex(BaseModel):
         return str(uuid.uuid3(uuid.NAMESPACE_URL, url)).replace('-', '')
 
     @staticmethod
-    def hash_exists(uuid: str):
-        return JobIndex.select().where(JobIndex.uuid == uuid).exists()
-
-    @staticmethod
-    def hash_add(uuid: str):
-        return JobIndex.insert(uuid=uuid)
-
-    @staticmethod
     def url_exists(url):
         url_hash = JobIndex.url_hash(url)
         return JobIndex.select().where(JobIndex.uuid == url_hash).exists()
@@ -57,7 +49,7 @@ class JobIndex(BaseModel):
     @staticmethod
     def url_add(url, state=0):
         url_hash = JobIndex.url_hash(url)
-        JobIndex.get_or_create(uuid=url_hash, state=state)
+        return JobIndex.insert(uuid=url_hash, state=state).execute()
 
 
 if not CompanyInfo.table_exists():
