@@ -108,6 +108,9 @@ class MinglujiSpider(scrapy.Spider):
             meta = {'area': area, 'amount': amount, 'usr': usr, 'pwd': pwd, 'full': full}
             yield scrapy.Request(url, meta=meta, callback=self.auto_login)
 
+    def parse(self, response):
+        pass
+
     # 自动登录
     def auto_login(self, response):
         meta = response.meta
@@ -124,6 +127,8 @@ class MinglujiSpider(scrapy.Spider):
             for industry in self.industry_list:
                 url = 'https://gongshang.mingluji.com/{0}/{1}'.format(meta['area'], industry)
                 meta['industry'] = industry
+                if JobIndex.url_exists(url):
+                    continue
                 yield scrapy.Request(url, meta=meta, callback=self.parse_index)
 
     # 解析索引页
@@ -135,10 +140,10 @@ class MinglujiSpider(scrapy.Spider):
         link_count = 0
         links = link_extractor.extract_links(response)
         for link in links:
-            url_hash = JobIndex.url_hash(link.url)
-            if JobIndex.hash_exists(url_hash):
+            if JobIndex.url_exists(link.url):
                 continue
             link_count += 1
+            url_hash = JobIndex.url_hash(link.url)
             yield scrapy.Request(link.url, meta=dict(meta, uuid=url_hash), callback=self.parse_item)
 
         # 翻页
@@ -158,7 +163,7 @@ class MinglujiSpider(scrapy.Spider):
                 meta['page_count'] = int(page_num_regex.search(pages[0].url).group(1))
 
         # 如果没有新链接，此索引页不再访问
-        if not has_link:
+        if not has_link and not JobIndex.url_exists(response.url):
             JobIndex.url_add(response.url, state=1)
 
         # 下一页链接
