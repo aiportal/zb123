@@ -1,85 +1,84 @@
 from sanic.views import HTTPMethodView
 from sanic.request import Request
+from sanic.exceptions import ServerError
 from .core import json_response
-from database import GatherInfo, ContentInfo, FilterRule, AnnualFee
+from database import fetch, zb123, FilterRule
 from datetime import datetime, date, timedelta
 import json
 import re
 
 
 class DayTitlesApi(HTTPMethodView):
+
     """ 招标信息列表 """
-    def get(self, request: Request):
+    async def get(self, request: Request):
 
         # 用户ID
         uid = request.cookies.get('uid')
         assert uid
 
         # 请求参数
-        day = datetime.strptime(request.args.get('day', str(date.today())), '%Y-%m-%d').date()
+        day = request.args.get('day') and datetime.strptime(request.args.get('day'), '%Y-%m-%d').date() or date.today()
         page = int(request.args.get('page', '1'))
         size = min(int(request.args.get('size', 20)), 50)
-        use_rule = request.args.get('rule') == 'true'
+        use_filter = request.args.get('filter') == 'true'
 
-        # 只提供最近30天的信息
-        min_day = date.today() - timedelta(30)
-        if day < min_day:
-            day = date.today()
+        # 只提供30天内的信息，超出范围时直接返回
+        if day < (date.today() - timedelta(10)) or date.today() < day:
+            return json_response({'params': {'day': str(day), 'filter': use_filter}, 'items': []})
 
         # 非VIP用户不显示最近三天的记录
-        pre_items = []
-        if not AnnualFee.is_vip(uid):
-            if (date.today() - day).days < 3:
-                day = date.today() - timedelta(3)
-                pre_items = [{'day': str(date.today()-timedelta(x)), 'vip': True, 'title': '开通VIP服务可以查看'}
-                             for x in range(0, 3)]
+        is_vip = (await zb123.get_orders(uid)) and True or False
+        if is_vip:
+            query_day = day
+            tip_items = []
+        else:
+            query_day = min(day, date.today() - timedelta(3))
+            tip_days = [day - timedelta(x) for x in range(0, (day - query_day).days)]
+            tip_items = [{'day': str(x), 'vip': True, 'title': '开通VIP会员可查看近三天信息'} for x in tip_days]
 
-        columns = [GatherInfo.uuid, GatherInfo.day, GatherInfo.source, GatherInfo.subject, GatherInfo.title]
-        query = GatherInfo.select(*columns)\
-            .where(GatherInfo.day == day)\
-            .order_by(-GatherInfo.day, +GatherInfo.source, +GatherInfo.subject, -GatherInfo.title)
+        # 是否应用筛选规则
+        rule = await zb123.get_rule(uid) or FilterRule()
+        if use_filter:
+            records = await fetch.query_filtered_gathers(
+                query_day, page, size, sources=rule.sources, subjects=rule.subjects, keys=rule.keys)
+        else:
+            records = await fetch.query_sorted_gathers(
+                query_day, page, size, sources=rule.sources, subjects=rule.subjects, keys=rule.keys)
 
-        if use_rule:    # 使用自定义规则进行筛选
-            rule = FilterRule.get_rule(uid) or FilterRule()
-            # 来源筛选
-            if rule.sources:
-                query = query.where(GatherInfo.source << rule.sources)
-            # 分类搜索
-            if rule.subjects:
-                exp = False
-                for subject in rule.subjects:
-                    exp = exp | GatherInfo.subject.startswith(subject)
-                query = query.where(exp)
-            # 关键词搜索
-            if rule.keys:
-                exp = False
-                for key in rule.keys:
-                    exp = exp | GatherInfo.title.contains(key)
-                query = query.where(exp)
+        # 返回查询结果
 
-        records = [x for x in query.paginate(page, size)]
         result = {
-            # 当前请求的参数
-            'params': {'day': request.args.get('day'), 'page': page, 'size': size},
-            # 查询结果
-            'items': pre_items + [
-                {'uuid': x.uuid, 'day': str(x.day), 'source': x.source, 'subject': x.subject, 'title': x.title}
-                for x in records
-            ]
+            'params': {'day': str(day), 'page': page, 'size': size, 'filter': use_filter},    # 当前请求的参数
+            'items':
+                (len(records) > 0) and
+                tip_items + [
+                    {'uuid': x.uuid, 'day': str(x.day), 'source': x.source, 'subject': x.subject, 'title': x.title}
+                    for x in records] or
+                tip_items + [{'day': str(query_day), 'title': '当日无符合筛选条件的信息'}],
+            'next':
+                (len(records) == size) and
+                {'day': str(query_day), 'page': page + 1, 'size': size, 'filter': use_filter} or
+                {'day': str(query_day - timedelta(1)), 'page': 1, 'size': size, 'filter': use_filter}
         }
-
-        # 下次请求的参数（下一页或前一天）
-        if len(records) == size:
-            result['next'] = {'day': str(day), 'page': page + 1, 'size': size}
-        elif min_day < day:
-            result['next'] = {'day': str(day - timedelta(1)), 'page': 1, 'size': size}
-
         return json_response(result)
+
+    async def query_sorted_gathers(self):
+        pass
+        # select value, (116-x)*(116-x)+(40-y)*(40-y) as distance
+        # from (
+        # select *, info->'$.x' as x, info->'$.y' as y from sys_config
+        # where subject = 'source'
+        # ) T
+        # order by distance
 
 
 class ContentApi(HTTPMethodView):
-    def get(self, request, uuid):
-        rec = (ContentInfo.select().where(ContentInfo.uuid == uuid)).get()
+    async def get(self, request: Request, uuid: str):
+        rec = await fetch.get_content(uuid)
+        assert rec
+        if not rec:
+            raise ServerError('Content not found: ' + uuid)
 
         # contents 字体加粗
         contents = json.loads(rec.contents or '[]')
@@ -92,8 +91,6 @@ class ContentApi(HTTPMethodView):
             contents[i] = ln
             # ￥6,790.00元    未能识别
 
-        # uid = request.cookies.get('uid')
-        # self.record_access(request, uuid)
         return json_response({
             'uuid': uuid,
             'source': rec.source,

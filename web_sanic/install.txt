@@ -1,0 +1,51 @@
+# python install
+
+apt-get update
+apt-get install python3-pip -y
+pip3 install virtualenv
+
+mkdir /env
+cd /env
+virtualenv sanic
+echo "function env(){ source /env/\$1/bin/activate; }" >> ~/.bashrc
+
+
+# sanic install
+
+source /env/sanic/bin/activate
+pip install sanic peewee peewee-async aiomysql requests qrcode Pillow xmltodict
+
+
+# web start
+
+
+
+
+
+
+
+
+# docker install
+
+apt-get install docker.io
+docker pull ubuntu:16.10
+
+docker run -dit --name=python35 ubuntu16.10
+docker attach python35
+
+# docker save
+
+docker commit python35 python35:sanic
+docker save -o docker_python35.tar python35:sanic
+
+# mysql
+docker run -dit --name=r_mysql --restart=always -p 3306:3306 docker_mysql
+
+# scrapy
+docker run -dit --name=r_scrapy --net=host -v /prj:/prj docker_scrapy \
+python3 -O /prj/zb123/v2/fetch/main.py
+
+
+# pyweb
+docker run -dit --name=r_sanic --net=host --restart=always -v /prj:/prj ubuntu:sanic \
+python3 /prj/zb123/v2/web/main.py

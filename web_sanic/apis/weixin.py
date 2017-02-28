@@ -1,15 +1,14 @@
 from sanic.views import HTTPMethodView
 from sanic.request import Request
 from sanic.response import text, json
-from peewee import fn
-from database import UserInfo, GatherInfo, SysConfig
+from database import fetch, zb123, UserInfo
 from weixin import wx_zb123, svc_zb123
 from datetime import datetime, date
 
 
 class WxServiceApi(HTTPMethodView):
     """ 微信服务后台 """
-    # TODO: 使用request.headers['host']代替硬编码，需要修改微信消息分发机制
+    # TODO: 使用request.headers['host']代替硬编码，从而支持多网址。（需要修改微信消息分发机制）
     web_host = 'zb123.ultragis.com'
     wx_app = wx_zb123
     wx_svc = svc_zb123
@@ -45,7 +44,7 @@ class WxServiceApi(HTTPMethodView):
                     'Title': '招标信息',
                     'Description': '欢迎订阅招标123，招标信息一网打尽。',
                     'PicUrl': 'http://{0}/img/handshake_600_275.png'.format(self.web_host),
-                    'Url': 'http://{0}/help.html'.format(self.web_host)
+                    'Url': 'http://{0}/static/help.html'.format(self.web_host)
                 }]
             }
         }
@@ -75,25 +74,24 @@ class WxServiceApi(HTTPMethodView):
 class WxPublishApi(HTTPMethodView):
     def __init__(self):
         self.wx_app = wx_zb123
-        self.sources = {x.key: x.value for x in SysConfig.get_items('source')}
+        self.sources = []
 
-    def get(self, request: Request):
+    async def get(self, request: Request):
+        if not self.sources:
+            self.sources = {x.key: x.value for x in await zb123.get_config_items('source')}
         day = date.today()
         if 'day' in request.args:
             day = datetime.strptime(request.args.get('day'), '%Y%m%d').date()
 
-        content = self.totals_content(day)
+        content = await self.totals_content(day)
         for oid in self.wx_app.admin:
             self.wx_app.preview_text(content, oid)
 
         return json({'success': True})
 
-    def totals_content(self, day: date):
+    async def totals_content(self, day: date):
         # 统计各省信息数量
-        records = (GatherInfo.select(GatherInfo.source, fn.Count(GatherInfo.uuid).alias('count'))
-                   .where(GatherInfo.day == str(day))
-                   .group_by(GatherInfo.source))
-        totals = {x.source: x.count for x in records}
+        totals = await fetch.query_day_totals(day)
 
         # 标题
         amount = sum([v for _, v in totals.items()])
@@ -125,11 +123,11 @@ class WxMenuApi(HTTPMethodView):
             }, {
                 "type": "view",
                 "name": "推荐关注",
-                "url": "http://{0}/zb123.html".format(host)
+                "url": "http://{0}/static/zb123.html".format(host)
             }, {
                 "type": "view",
                 "name": "意见反馈",
-                "url": "http://{0}/suggest.html".format(host)
+                "url": "http://{0}/static/suggest.html".format(host)
             }]
         }
         self.wx_app.post(url_menu_create, data)

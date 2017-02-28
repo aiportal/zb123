@@ -2,19 +2,18 @@ from sanic.views import HTTPMethodView
 from sanic.request import Request
 from sanic.response import redirect, json
 from weixin import wx_zb123, wx_bayesian
-from database import UserInfo
+from database import zb123, UserInfo
 from datetime import datetime
 import time
-import sys
 
 
 class WelcomeApi(HTTPMethodView):
     """ 网页入口 """
     url_auth = '/wx/auth'
-    url_main = '/main.html'
-    url_subscribe = '/zb123.html'
+    url_main = '/static/main.html'
+    url_subscribe = '/static/zb123.html'
 
-    def get(self, request: Request):
+    async def get(self, request: Request):
         # 检查Cookie
         uid = request.cookies.get('uid')
         if not uid:
@@ -28,7 +27,7 @@ class WelcomeApi(HTTPMethodView):
             return redirect(self.url_auth)
 
         # 检查是否关注了订阅号
-        user = UserInfo.get_user(uid)
+        user = await zb123.get_user(uid)
         if user and user.zb123:
             return redirect(self.url_main)
         else:
@@ -38,35 +37,36 @@ class WelcomeApi(HTTPMethodView):
 class WxAuthApi(HTTPMethodView):
     """ 微信认证 """
     def __init__(self):
-        self.auth_expires = 24*3600      # 认证过期时间（秒）
-        self.wx_app = wx_bayesian        # 使用微信服务号进行认证
+        self.auth_expires = 30*24*3600      # 认证过期时间（秒）
+        self.wx_app = wx_bayesian           # 使用微信服务号进行认证
 
-    def get(self, request: Request):
+    async def get(self, request: Request):
         """ 微信认证 """
         code = request.args.get('code')
         if not code:
             # 非回调，转向微信认证网址
-            url_callback = 'http://{0}{1}'.format(request.headers['host'], request.url)
-            url = self.wx_app.oauth_url(url_callback, state='zb123')
+            host = request.headers['host']
+            url_callback = 'http://{0}{1}'.format(host, request.url)
+            url = self.wx_app.oauth_url(url_callback, state=host)
             return redirect(url)
         else:
             # 微信回调，认证成功
             uid = self.request_unionid(code)
-            user = UserInfo.get_user(uid)
+            host = request.args.get('state')
 
-            # 转回入口网址（_external用于支持nginx）
-            resp = redirect('/welcome')
+            # 转回入口网址
+            if host:
+                url = 'http://{0}{1}'.format(host, '/welcome')
+            else:
+                url = '/welcome'
+            resp = redirect(url)
 
             # 设置 cookie，帮助 welcome 判断转向
             resp.cookies['uid'] = uid
             resp.cookies['uid']['expires'] = time.time() + self.auth_expires
-            if user and user.zb123:
-                resp.cookies['oid_a'] = user.zb123
-                resp.cookies['oid_a']['expires'] = time.time() + self.auth_expires
-
             return resp
 
-    def request_unionid(self, code: str) -> str:
+    async def request_unionid(self, code: str) -> str:
         """ 获取用户的 unionid """
         # 用 code 换取服务号的 openid
         openid = self.wx_app.oauth_openid(code)
@@ -75,7 +75,7 @@ class WxAuthApi(HTTPMethodView):
         uid = self.wx_app.user_info(openid).get('unionid')
 
         # 获取用户信息
-        user = UserInfo.get_user(uid)
+        user = await zb123.get_user(uid)
         if user and user.zb123:
             return uid
         else:
@@ -111,6 +111,7 @@ class WxAccountsApi(HTTPMethodView):
         errors = []
         for i in range(0, len(keys), 100):
             users = wx_app.user_batch(keys[i:i+100])
+            users = sorted(users, key=lambda x: x['subscribe_time'])
             for user in users:
                 try:
                     cls.account_add(user)

@@ -1,29 +1,22 @@
 import peewee
 from peewee_async import Manager, PooledMySQLDatabase
+from .core import JSONField
 from datetime import datetime, date
+from typing import List
+import hashlib
 import json
 
 
-db_zb123 = PooledMySQLDatabase(host='127.0.0.1', database='zb123', user='root', passwd='lq1990', charset='utf8')
-zb123 = Manager(db_zb123)
+db_zb123 = PooledMySQLDatabase(host='127.0.0.1', database='zb123', user='root', password='lq1990', charset='utf8mb4')
 
 
-class JSONField(peewee.CharField):
-    """ JSON字段 """
-    def db_value(self, value: dict):
-        return value and json.dumps(value, ensure_ascii=False) or None
-
-    def python_value(self, value) -> dict:
-        return json.loads(value or '{}') or None
-
-
-class Zb123Model(peewee.Model):
+class BaseModel(peewee.Model):
     class Meta:
         database = db_zb123
 
 
 # 用户信息
-class UserInfo(Zb123Model):
+class UserInfo(BaseModel):
     class Meta:
         db_table = 'user'
     uid = peewee.CharField(primary_key=True, max_length=50, help_text='union_id')
@@ -36,17 +29,10 @@ class UserInfo(Zb123Model):
     zb123 = peewee.CharField(max_length=50, index=True, null=True, help_text='订阅号openid')
     bayesian = peewee.CharField(max_length=50, index=True, null=True, help_text='服务号openid')
     company = peewee.CharField(max_length=50, index=True, null=True, help_text='企业号openid')
-
-    @staticmethod
-    def get_user(uid: str):
-        try:
-            return UserInfo.get(uid=uid)
-        except:
-            return None
 UserInfo.create_table(True)
 
 
-class FilterRule(Zb123Model):
+class FilterRule(BaseModel):
     class Meta:
         db_table = 'rule'
     id = peewee.PrimaryKeyField()
@@ -60,16 +46,11 @@ class FilterRule(Zb123Model):
     sources = property(lambda self: (self.filter or {}).get('sources', []))     # 信息来源列表
     subjects = property(lambda self: (self.filter or {}).get('subjects', []))   # 信息分类列表
     keys = property(lambda self: (self.filter or {}).get('keys', []))           # 关键词列表
-    suggest = property(lambda self: (self.filter or {}).get('suggest', []))     # 关键词选项
-
-    @staticmethod
-    def get_rule(uid: str):
-        query = FilterRule.select().where(FilterRule.uid == uid).where(FilterRule.active == True)
-        return query[0] if len(query) > 0 else None
+    suggests = property(lambda self: (self.filter or {}).get('suggests', []))     # 关键词选项
 FilterRule.create_table(True)
 
 
-class AnnualFee(Zb123Model):
+class AnnualFee(BaseModel):
     """ 年费信息 """
     class Meta:
         db_table = 'fee'
@@ -83,23 +64,10 @@ class AnnualFee(Zb123Model):
     order_no = peewee.CharField(max_length=50)                  # zb123订单号
     order_id = peewee.CharField(max_length=50, index=True)      # 微信订单号
     time = peewee.DateTimeField(default=datetime.now, help_text='时间戳')
-
-    @staticmethod
-    def get_orders(uid: str):
-        """ VIP用户订单列表 """
-        query = AnnualFee.select().where(AnnualFee.uid == uid).order_by(-AnnualFee.start)
-        return [x for x in query]
-
-    @staticmethod
-    def is_vip(uid: str) -> bool:
-        """ 是否VIP用户"""
-        query = AnnualFee.select().where(AnnualFee.uid == uid).order_by(-AnnualFee.start).limit(1)
-        fee = query[0] if len(query) > 0 else None
-        return fee and date.today() <= fee.end or False
 AnnualFee.create_table(True)
 
 
-class SuggestInfo(Zb123Model):
+class SuggestInfo(BaseModel):
     """ 意见反馈 """
     class Meta:
         db_table = 'suggest'
@@ -112,7 +80,7 @@ class SuggestInfo(Zb123Model):
 SuggestInfo.create_table(True)
 
 
-class RuntimeEvent(Zb123Model):
+class RuntimeEvent(BaseModel):
     """ 异常信息 """
     class Meta:
         db_table = 'event_log'
@@ -120,30 +88,22 @@ class RuntimeEvent(Zb123Model):
     level = peewee.CharField(max_length=50, help_text='错误类型')
     info = peewee.CharField(max_length=2000, help_text='错误信息')
     time = peewee.DateTimeField(default=datetime.now, help_text='时间戳')
-
-    @staticmethod
-    async def log_event(level: str, info: str):
-        zb123.create(RuntimeEvent, level=level, info=info)
 RuntimeEvent.create_table(True)
 
 
-class AccessLog(Zb123Model):
+class AccessLog(BaseModel):
     """ 页面访问日志 """
     class Meta:
         db_table = 'access_log'
     id = peewee.PrimaryKeyField()
     uid = peewee.CharField(max_length=50, help_text='用户ID')
     url = peewee.CharField(max_length=255, help_text='网址')
-    info = peewee.CharField(max_length=2000, null=True, help_text='附加信息')
+    info = JSONField(max_length=2000, null=True, help_text='附加信息')
     time = peewee.DateTimeField(default=datetime.now, help_text='时间戳')
-
-    @staticmethod
-    async def log_access(uid: str, url: str, info: dict):
-        await zb123.create(AccessLog, uid=uid, url=url, info=json.dumps(info, ensure_ascii=False))
 AccessLog.create_table(True)
 
 
-class SysConfig(Zb123Model):
+class SysConfig(BaseModel):
     class Meta:
         db_table = 'sys_config'
         indexes = ((('subject', 'key'), True),)
@@ -151,7 +111,7 @@ class SysConfig(Zb123Model):
     subject = peewee.CharField(max_length=50, help_text='分类')
     key = peewee.CharField(max_length=50, help_text='键')
     value = peewee.CharField(max_length=255, null=True, help_text='值')
-    info = peewee.CharField(max_length=255, null=True, help_text='说明')
+    info = peewee.CharField(max_length=2000, null=True, help_text='说明')
 
     @staticmethod
     def get_items(subject):
@@ -171,3 +131,69 @@ class SysConfig(Zb123Model):
             rec.value = str(value)
             rec.save()
 SysConfig.create_table(True)
+
+
+class AsyncManager(Manager):
+    """ 异步调用接口 """
+    database = db_zb123
+
+    async def get_user(self, uid: str) -> UserInfo:
+        """ 获取用户信息 """
+        query = UserInfo.select().where(UserInfo.uid == uid)
+        result = await self.execute(query)
+        return result[0] if len(result) > 0 else None
+
+    async def get_rule(self, uid: str) -> FilterRule:
+        """ 用户的筛选规则 """
+        query = FilterRule.select().where(FilterRule.uid == uid).where(FilterRule.active == True)\
+            .order_by(-FilterRule.time).limit(1)
+        result = await self.execute(query)
+        return result[0] if len(result) > 0 else None
+
+    async def set_rule(self, uid: str, rule: dict):
+        """ 保存筛选规则 """
+        # 保存新记录的同时，保留旧记录，用MD5避免重复保存相同的内容
+        info = json.dumps(rule, ensure_ascii=False, sort_keys=True)
+        md5 = hashlib.md5(info.encode()).hexdigest().upper()
+        async with self.atomic():
+            update = FilterRule.update(active=False).where(FilterRule.uid == uid)
+            await self.execute(update)
+            rec, is_new = await self.get_or_create(FilterRule, uid=uid, uuid=md5,
+                                                   defaults={'filter': rule, 'active': True})
+            if not is_new:
+                rec.active = True,
+                rec.time = datetime.now()
+                await self.update(rec)
+
+    async def get_orders(self, uid: str) -> List[AnnualFee]:
+        """ VIP用户订单列表 """
+        query = AnnualFee.select().where(AnnualFee.uid == uid).order_by(-AnnualFee.start).limit(10)
+        result = await self.execute(query)
+        return [x for x in result]
+
+    async def get_config_items(self, subject: str) -> List[SysConfig]:
+        query = SysConfig.select().where(SysConfig.subject == subject).order_by(+SysConfig.id)
+        result = await self.execute(query)
+        return [x for x in result]
+
+    async def get_config(self, subject: str, key: str) -> SysConfig:
+        query = SysConfig.select().where(SysConfig.subject == subject).where(SysConfig.key == key)
+        result = await self.execute(query)
+        return result[0] if len(result) > 0 else None
+
+    async def set_config(self, subject: str, key: str, value: str, info: dict):
+        rec, is_new = await self.get_or_create(SysConfig, subject=subject, key=key,
+                                               defaults={'value': value, info: info})
+        if not is_new:
+            rec.value = value
+            rec.info = info
+            self.update(rec)
+
+    async def log_access(self, uid: str, url: str, info: dict):
+        await self.create(AccessLog, uid=uid, url=url, info=info)
+
+    async def log_event(self, level: str, info: dict):
+        await self.create(RuntimeEvent, level=level, info=info)
+
+    async def add_suggest(self, uid: str, content: str):
+        await self.create(SuggestInfo, uid=uid, content=content)
