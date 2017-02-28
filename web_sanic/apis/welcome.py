@@ -13,7 +13,7 @@ class WelcomeApi(HTTPMethodView):
     url_main = '/static/main.html'
     url_subscribe = '/static/zb123.html'
 
-    async def get(self, request: Request):
+    def get(self, request: Request):
         # 检查Cookie
         uid = request.cookies.get('uid')
         if not uid:
@@ -27,7 +27,7 @@ class WelcomeApi(HTTPMethodView):
             return redirect(self.url_auth)
 
         # 检查是否关注了订阅号
-        user = await zb123.get_user(uid)
+        user = UserInfo.get_user(uid)
         if user and user.zb123:
             return redirect(self.url_main)
         else:
@@ -40,7 +40,7 @@ class WxAuthApi(HTTPMethodView):
         self.auth_expires = 30*24*3600      # 认证过期时间（秒）
         self.wx_app = wx_bayesian           # 使用微信服务号进行认证
 
-    async def get(self, request: Request):
+    def get(self, request: Request):
         """ 微信认证 """
         code = request.args.get('code')
         if not code:
@@ -66,7 +66,7 @@ class WxAuthApi(HTTPMethodView):
             resp.cookies['uid']['expires'] = time.time() + self.auth_expires
             return resp
 
-    async def request_unionid(self, code: str) -> str:
+    def request_unionid(self, code: str) -> str:
         """ 获取用户的 unionid """
         # 用 code 换取服务号的 openid
         openid = self.wx_app.oauth_openid(code)
@@ -75,7 +75,7 @@ class WxAuthApi(HTTPMethodView):
         uid = self.wx_app.user_info(openid).get('unionid')
 
         # 获取用户信息
-        user = await zb123.get_user(uid)
+        user = UserInfo.get_user(uid)
         if user and user.zb123:
             return uid
         else:

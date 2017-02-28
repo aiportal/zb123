@@ -45,7 +45,6 @@ docker run -dit --name=r_mysql --restart=always -p 3306:3306 docker_mysql
 docker run -dit --name=r_scrapy --net=host -v /prj:/prj docker_scrapy \
 python3 -O /prj/zb123/v2/fetch/main.py
 
+# sanic
+docker run -dit --name=r_sanic --net=host --restart=always -v /prj:/prj zb123:v3 ~/sanic.sh
 
-# pyweb
-docker run -dit --name=r_sanic --net=host --restart=always -v /prj:/prj ubuntu:sanic \
-python3 /prj/zb123/v2/web/main.py

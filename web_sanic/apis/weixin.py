@@ -1,7 +1,8 @@
 from sanic.views import HTTPMethodView
 from sanic.request import Request
 from sanic.response import text, json
-from database import fetch, zb123, UserInfo
+from database import GatherInfo, UserInfo, SysConfig
+from peewee import fn
 from weixin import wx_zb123, svc_zb123
 from datetime import datetime, date
 
@@ -74,24 +75,27 @@ class WxServiceApi(HTTPMethodView):
 class WxPublishApi(HTTPMethodView):
     def __init__(self):
         self.wx_app = wx_zb123
-        self.sources = []
+        self.sources = {x.key: x.value for x in SysConfig.get_items('source')}
 
-    async def get(self, request: Request):
-        if not self.sources:
-            self.sources = {x.key: x.value for x in await zb123.get_config_items('source')}
-        day = date.today()
-        if 'day' in request.args:
-            day = datetime.strptime(request.args.get('day'), '%Y%m%d').date()
+    def get(self, request: Request):
+        """ 全网发布或预览 """
+        day = request.args.get('day') and datetime.strptime(request.args.get('day'), '%Y%m%d').date() or date.today()
 
-        content = await self.totals_content(day)
-        for oid in self.wx_app.admin:
-            self.wx_app.preview_text(content, oid)
+        # 组织发布内容
+        content = self.totals_content(day)
+
+        # 发布或预览
+        if request.url.endswith('/publish'):
+            self.wx_app.publish_text(content)
+        else:
+            for oid in self.wx_app.admin:
+                self.wx_app.preview_text(content, oid)
 
         return json({'success': True})
 
-    async def totals_content(self, day: date):
+    def totals_content(self, day: date):
         # 统计各省信息数量
-        totals = await fetch.query_day_totals(day)
+        totals = self.query_day_totals(day)
 
         # 标题
         amount = sum([v for _, v in totals.items()])
@@ -106,6 +110,13 @@ class WxPublishApi(HTTPMethodView):
         footers = ['', '↓↓↓ 点击【招标信息】了解详情']
 
         return '\n'.join(headers + items + footers)
+
+    @staticmethod
+    def query_day_totals(day: date) -> dict:
+        query = GatherInfo.select(GatherInfo.source, fn.Count(GatherInfo.uuid).alias('count'))\
+            .where(GatherInfo.day == str(day))\
+            .group_by(GatherInfo.source)
+        return {x.source: x.count for x in query}
 
 
 class WxMenuApi(HTTPMethodView):

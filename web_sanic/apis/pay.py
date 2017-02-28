@@ -3,7 +3,7 @@ from sanic.request import Request
 from sanic.response import HTTPResponse
 from sanic.exceptions import ServerError
 from .core import xml_response
-from database import zb123, AnnualFee
+from database import AnnualFee
 from weixin import wx_bayesian
 from datetime import datetime, date
 import uuid, requests, qrcode, io, hashlib, xmltodict
@@ -36,7 +36,10 @@ class WxPayApi(HTTPMethodView):
         img = qrcode.make(order_url, border=2)
         bs = io.BytesIO()
         img.save(bs, 'png')
-        return HTTPResponse(content_type='image/png', body_bytes=bs.getvalue())
+
+        resp = HTTPResponse(content_type='image/png', body_bytes=bs.getvalue())
+        resp.headers['max-age'] = 3600      # 客户端缓存一小时
+        return resp
 
     def make_order_url(self, fee: int, title: str, url: str, uid: str) -> str:
         """ 生成订单网址 """
@@ -73,7 +76,7 @@ class WxPayApi(HTTPMethodView):
         except Exception as ex:
             raise ServerError('pay order exception: ' + str(ex))
 
-    async def post(self, request: Request):
+    def post(self, request: Request):
         """ 微信支付回调 """
         xml = request.body.decode()
         data = xmltodict.parse(xml)['xml']
@@ -86,7 +89,7 @@ class WxPayApi(HTTPMethodView):
 
         # 记录订单信息
         uid = data['attach']
-        orders = await zb123.get_orders(uid)
+        orders = AnnualFee.get_orders(uid)
         if not any(x.order_id == data['transaction_id'] for x in orders):
             start = orders[0].end if len(orders) > 0 else date.today()
             end = start.replace(start.year + 1)

@@ -29,6 +29,11 @@ class UserInfo(BaseModel):
     zb123 = peewee.CharField(max_length=50, index=True, null=True, help_text='订阅号openid')
     bayesian = peewee.CharField(max_length=50, index=True, null=True, help_text='服务号openid')
     company = peewee.CharField(max_length=50, index=True, null=True, help_text='企业号openid')
+
+    @staticmethod
+    def get_user(uid: str):
+        query = UserInfo.select().where(UserInfo.uid == uid)
+        return query[0] if len(query) > 0 else None
 UserInfo.create_table(True)
 
 
@@ -47,6 +52,12 @@ class FilterRule(BaseModel):
     subjects = property(lambda self: (self.filter or {}).get('subjects', []))   # 信息分类列表
     keys = property(lambda self: (self.filter or {}).get('keys', []))           # 关键词列表
     suggests = property(lambda self: (self.filter or {}).get('suggests', []))     # 关键词选项
+
+    @staticmethod
+    def get_rule(uid: str):
+        query = FilterRule.select().where(FilterRule.uid == uid).where(FilterRule.active == True)\
+            .order_by(-FilterRule.time).limit(1)
+        return query[0] if len(query) > 0 else None
 FilterRule.create_table(True)
 
 
@@ -64,6 +75,11 @@ class AnnualFee(BaseModel):
     order_no = peewee.CharField(max_length=50)                  # zb123订单号
     order_id = peewee.CharField(max_length=50, index=True)      # 微信订单号
     time = peewee.DateTimeField(default=datetime.now, help_text='时间戳')
+
+    @staticmethod
+    def get_orders(uid: str):
+        query = AnnualFee.select().where(AnnualFee.uid == uid).order_by(-AnnualFee.start).limit(10)
+        return [x for x in query]
 AnnualFee.create_table(True)
 
 
@@ -88,6 +104,10 @@ class RuntimeEvent(BaseModel):
     level = peewee.CharField(max_length=50, help_text='错误类型')
     info = peewee.CharField(max_length=2000, help_text='错误信息')
     time = peewee.DateTimeField(default=datetime.now, help_text='时间戳')
+
+    @staticmethod
+    def log_event(level: str, info: dict):
+        RuntimeEvent.create(level=level, info=info)
 RuntimeEvent.create_table(True)
 
 
@@ -100,6 +120,10 @@ class AccessLog(BaseModel):
     url = peewee.CharField(max_length=255, help_text='网址')
     info = JSONField(max_length=2000, null=True, help_text='附加信息')
     time = peewee.DateTimeField(default=datetime.now, help_text='时间戳')
+
+    @staticmethod
+    def log_access(uid: str, url: str, info: dict):
+        AccessLog.create(uid=uid, url=url, info=info)
 AccessLog.create_table(True)
 
 
@@ -131,6 +155,11 @@ class SysConfig(BaseModel):
             rec.value = str(value)
             rec.save()
 SysConfig.create_table(True)
+
+if SysConfig.select().count() < 3:
+    from .zb123_data import sys_config_data
+    for item in sys_config_data:
+        SysConfig.create(id=item[0], subject=item[1], key=item[2], value=item[3], info=item[4])
 
 
 class AsyncManager(Manager):
@@ -194,6 +223,3 @@ class AsyncManager(Manager):
 
     async def log_event(self, level: str, info: dict):
         await self.create(RuntimeEvent, level=level, info=info)
-
-    async def add_suggest(self, uid: str, content: str):
-        await self.create(SuggestInfo, uid=uid, content=content)

@@ -31,7 +31,7 @@
         #rule .button_sp_area { padding: 5px 5px 0 5px; }
         #rule .button_sp_area .weui-btn { margin: 0 5px 0 0; line-height: 2.1; padding: 0 0.8em; }
         /*#rule button { margin: 15px; } */
-        .weui-tabbar { z-index: 10; }
+        /*.weui-tabbar { z-index: 10; }*/
         /*.popup-bottom, .popup-bottom weui-popup__overlay { z-index: 600; } */
         /*.weui-actionsheet__action { position: relative; width:100%; bottom: 0px; } */
     </style>
@@ -109,7 +109,7 @@
             </template>
             <template v-else>
                 <div class="weui-loadmore weui-loadmore_line">
-                    <span class="weui-loadmore__tips">开通VIP服务查看更多信息</span>
+                    <a href="javascript:;" class="weui-loadmore__tips" style="color:#00E" @click="view='user'">开通VIP服务查看更多信息</a>
                 </div>
             </template>
         </template>
@@ -175,7 +175,7 @@
                 <p v-html="x"></p>
             </section>
             <section v-show="archive.url != ''" >
-                <a href="javascript:;" @click="original(archive.url, archive.source)">查看原始信息</a>
+                <a href="javascript:;" @click="original(archive.url, archive.source)">查看原文</a>
             </section>
             <section>
                 <a href="javascript:;" class="weui-btn weui-btn_primary close-popup">关闭</a>

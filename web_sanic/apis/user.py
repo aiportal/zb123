@@ -1,8 +1,9 @@
 from sanic.views import HTTPMethodView
 from sanic.request import Request
 from .core import json_response
-from database import zb123, SysConfig, FilterRule
+from database import SysConfig, UserInfo, FilterRule, AnnualFee, SuggestInfo
 from datetime import datetime, date, timedelta
+import json, hashlib
 
 
 class UserInfoApi(HTTPMethodView):
@@ -17,7 +18,7 @@ class UserInfoApi(HTTPMethodView):
         # 关键词建议列表
         self.suggests = SysConfig.get_items('suggest')
 
-    async def get(self, request: Request):
+    def get(self, request: Request):
         """ 获取界面初始化信息 """
 
         # 用户ID
@@ -25,7 +26,7 @@ class UserInfoApi(HTTPMethodView):
         assert uid
 
         # 筛选规则
-        rule = (await zb123.get_rule(uid)) or FilterRule()
+        rule = self.load_user_rule(uid)
 
         # 信息来源
         sources = [{'value': x.key, 'text': x.value, 'select': x.key in rule.sources} for x in self.sources]
@@ -37,7 +38,7 @@ class UserInfoApi(HTTPMethodView):
         keys = [{'text': x, 'select': x in rule.keys} for x in rule.suggests]
 
         # 会员信息
-        orders = await zb123.get_orders(uid)    # 付费信息列表
+        orders = AnnualFee.get_orders(uid)    # 付费信息列表
         if not orders:
             user = {'vip': False, 'pays': None, 'end': None}
         else:
@@ -59,45 +60,62 @@ class UserInfoApi(HTTPMethodView):
             'days': days,
         })
 
-    async def get_user_rule(self, uid: str) -> FilterRule:
+    def load_user_rule(self, uid: str) -> FilterRule:
         """ 获取用户的筛选规则 """
-        rule = await zb123.get_rule(uid)
+        rule = FilterRule.get_rule(uid)
+        if rule:
+            return rule
 
         # 如果没有设置，自动生成默认规则
-        if not rule:
-            user = await zb123.get_user(uid)
-            province = user.info.get('province', '').lower()
-            rule = {
-                'sources': [x for x in self.sources if x.key == province],
-                'subjects': [x for x in self.subjects if x.value != '0'],
-                'keys': [],
-                'suggests': [x for x in self.suggests if '*' in x.value or province in x.value]
-            }
-            await zb123.set_rule(uid, rule)
-            return rule
+        user = UserInfo.get_user(uid)
+        province = user.info.get('province', '').lower()
+        rule = {
+            'sources': [x.key for x in self.sources if x.key == province],
+            'subjects': [x.key for x in self.subjects if x.value != '0'],
+            'keys': [],
+            'suggests': [x.key for x in self.suggests if '*' in x.value or province in x.value]
+        }
+        UserRuleApi.save_user_rule(uid, rule)
+        return rule
 
 
 class UserRuleApi(HTTPMethodView):
     def __init__(self):
         super().__init__()
 
-    async def post(self, request: Request):
+    def post(self, request: Request):
         """ 保存筛选规则 """
         uid = request.cookies.get('uid')
         assert uid
 
         # 保存筛选规则
-        await zb123.set_rule(uid, request.json)
+        self.save_user_rule(uid, request.json)
 
         return json_response({'success': True})
+
+    @staticmethod
+    def save_user_rule(uid: str, rule: dict):
+        """ 保存用户的筛选规则 """
+        assert 'sources' in rule and 'subjects' in rule and 'keys' in rule and 'suggests' in rule
+
+        # 保存新记录的同时，保留旧记录，用MD5避免重复保存相同的内容
+        info = json.dumps(rule, ensure_ascii=False, sort_keys=True)
+        md5 = hashlib.md5(info.encode()).hexdigest().upper()
+
+        FilterRule.update(active=False).where(FilterRule.uid == uid).execute()
+        rec, is_new = FilterRule.get_or_create(uid=uid, uuid=md5, defaults={'filter': rule, 'active': True})
+        if not is_new:
+            rec.active = True,
+            rec.time = datetime.now()
+            rec.save()
 
 
 class SuggestApi(HTTPMethodView):
     """ 意见反馈 """
-    async def post(self, request: Request):
+    def post(self, request: Request):
         uid = request.cookies.get('uid')
         data = request.json
-        await zb123.add_suggest(uid=uid, content=data['content'])
+        SuggestInfo.create(uid=uid, content=data['content'])
         self.notice_admin(data)
         return json_response({'success': True})
 
