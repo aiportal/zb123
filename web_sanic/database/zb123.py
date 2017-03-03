@@ -6,8 +6,8 @@ from typing import List
 import hashlib
 import json
 
-
-db_zb123 = PooledMySQLDatabase(host='127.0.0.1', database='zb123', user='root', password='lq1990', charset='utf8mb4')
+host = __debug__ and 'data.ultragis.com' or '127.0.0.1'
+db_zb123 = PooledMySQLDatabase(host=host, database='zb123', user='root', password='Bayesian@2018', charset='utf8mb4')
 
 
 class BaseModel(peewee.Model):
@@ -178,45 +178,6 @@ class AsyncManager(Manager):
             .order_by(-FilterRule.time).limit(1)
         result = await self.execute(query)
         return result[0] if len(result) > 0 else None
-
-    async def set_rule(self, uid: str, rule: dict):
-        """ 保存筛选规则 """
-        # 保存新记录的同时，保留旧记录，用MD5避免重复保存相同的内容
-        info = json.dumps(rule, ensure_ascii=False, sort_keys=True)
-        md5 = hashlib.md5(info.encode()).hexdigest().upper()
-        async with self.atomic():
-            update = FilterRule.update(active=False).where(FilterRule.uid == uid)
-            await self.execute(update)
-            rec, is_new = await self.get_or_create(FilterRule, uid=uid, uuid=md5,
-                                                   defaults={'filter': rule, 'active': True})
-            if not is_new:
-                rec.active = True,
-                rec.time = datetime.now()
-                await self.update(rec)
-
-    async def get_orders(self, uid: str) -> List[AnnualFee]:
-        """ VIP用户订单列表 """
-        query = AnnualFee.select().where(AnnualFee.uid == uid).order_by(-AnnualFee.start).limit(10)
-        result = await self.execute(query)
-        return [x for x in result]
-
-    async def get_config_items(self, subject: str) -> List[SysConfig]:
-        query = SysConfig.select().where(SysConfig.subject == subject).order_by(+SysConfig.id)
-        result = await self.execute(query)
-        return [x for x in result]
-
-    async def get_config(self, subject: str, key: str) -> SysConfig:
-        query = SysConfig.select().where(SysConfig.subject == subject).where(SysConfig.key == key)
-        result = await self.execute(query)
-        return result[0] if len(result) > 0 else None
-
-    async def set_config(self, subject: str, key: str, value: str, info: dict):
-        rec, is_new = await self.get_or_create(SysConfig, subject=subject, key=key,
-                                               defaults={'value': value, info: info})
-        if not is_new:
-            rec.value = value
-            rec.info = info
-            self.update(rec)
 
     async def log_access(self, uid: str, url: str, info: dict):
         await self.create(AccessLog, uid=uid, url=url, info=info)

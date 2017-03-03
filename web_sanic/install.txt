@@ -10,13 +10,32 @@ virtualenv sanic
 echo "function env(){ source /env/\$1/bin/activate; }" >> ~/.bashrc
 
 
-# sanic install
-
+# sanic
 source /env/sanic/bin/activate
 pip install sanic peewee peewee-async aiomysql requests qrcode Pillow xmltodict
 
 
-# web start
+# scrapy
+apt-get install libssl-dev
+source /env/scrapy/bin/activate
+pip install scrapy peewee pymysql
+
+
+# mysql
+apt-get install mysql-server
+vi /etc/mysql/mysql.conf.d/mysqld.cnf
+# bind-address              = 127.0.0.1
+
+service mysql stop
+usermod -d /var/lib/mysql/ mysql
+service mysql start
+
+mysql -u root -p
+mysql> GRANT ALL PRIVILEGES ON *.* TO root@'%' IDENTIFIED BY 'password' WITH GRANT OPTION;
+mysql> FLUSH PRIVILEGES;
+mysql> quit
+servcie mysql restart
+
 
 
 
@@ -38,13 +57,18 @@ docker attach python35
 docker commit python35 python35:sanic
 docker save -o docker_python35.tar python35:sanic
 
-# mysql
-docker run -dit --name=r_mysql --restart=always -p 3306:3306 docker_mysql
 
-# scrapy
-docker run -dit --name=r_scrapy --net=host -v /prj:/prj docker_scrapy \
-python3 -O /prj/zb123/v2/fetch/main.py
+# zb123
+docker run -dit --name=zb123 --net=host -v /prj:/prj zb123:3.3.1
+
+# mysql
+docker run -dit --name=r_mysql --restart=always -p 3306:3306 zb123:3.3.1
+docker exec r_mysql service mysql start
 
 # sanic
-docker run -dit --name=r_sanic --net=host --restart=always -v /prj:/prj zb123:v3 ~/sanic.sh
+docker run -dit --name=r_sanic --net=host --restart=always -v /prj:/prj zb123:3.3.1 ~/sanic.sh
+
+# fetch
+docker run -dit --name=r_fetch --net=host -v /prj:/prj zb123:3.3.1 ~/fetch.sh
+
 

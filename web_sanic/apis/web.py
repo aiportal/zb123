@@ -124,7 +124,7 @@ class DayTitlesApi(HTTPMethodView):
         query = query.limit(size).offset((page - 1) * size)
         return [x for x in query]
 
-    def query_sorted_gathers_new(self):
+    def query_order_gathers(self):
         pass
         # select value, (116-x)*(116-x)+(40-y)*(40-y) as distance
         # from (
@@ -132,6 +132,16 @@ class DayTitlesApi(HTTPMethodView):
         # where subject = 'source'
         # ) T
         # order by distance
+
+    @staticmethod
+    def get_user_center():
+        """ 获取用户中心点 """
+
+        # 个人信息中有省份的，使用省份中心点
+        # Rule中有来源设置的，使用多个来源的平均中心
+        # 以上都没有的，返回北京的中心点。
+        # fn.find_in_set
+        pass
 
 
 class ContentApi(HTTPMethodView):
