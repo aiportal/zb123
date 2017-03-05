@@ -173,6 +173,10 @@ class WxAccountsApi(MethodView):
             nickname = user['nickname']
             del user['nickname']
 
+        # 修改特殊省份
+        if user.get('province') == 'Inner Mongolia':
+            user['province'] = 'neimenggu'
+
         # 插入记录
         rec, is_new = UserInfo.get_or_create(uid=user['unionid'], defaults={
             'subscribe': str(datetime.fromtimestamp(user['subscribe_time']).date()),
