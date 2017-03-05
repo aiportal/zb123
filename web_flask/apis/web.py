@@ -22,11 +22,11 @@ class DayTitlesApi(HTTPMethodView):
         day = request.args.get('day') and datetime.strptime(request.args.get('day'), '%Y-%m-%d').date() or date.today()
         page = int(request.args.get('page', '1'))
         size = min(int(request.args.get('size', 20)), 50)
-        use_filter = request.args.get('filter') == 'true'
+        do_filter = request.args.get('filter') == 'true'
 
         # 只提供30天内的信息，超出范围时直接返回
         if day < (date.today() - timedelta(30)) or date.today() < day:
-            return json_response({'params': {'day': str(day), 'filter': use_filter}, 'items': []})
+            return json_response({'params': {'day': str(day), 'filter': do_filter}, 'items': []})
 
         # 非VIP用户不显示最近三天的记录
         is_vip = (AnnualFee.get_orders(uid)) and True or False
@@ -39,31 +39,38 @@ class DayTitlesApi(HTTPMethodView):
             tip_items = [{'day': str(x), 'vip': True, 'title': '开通VIP会员可查看近三天信息'} for x in tip_days]
 
         # 是否应用筛选规则
-        rule = FilterRule.get_rule(uid) or FilterRule()
-        if use_filter:
-            records = self.query_filtered_gathers(query_day, page, size,
-                                                  sources=rule.sources, subjects=rule.subjects, keys=rule.keys)
+        if do_filter:
+            records = self.query_filtered_gathers(uid, query_day, page, size)
         else:
-            records = self.query_rule_ordered_gathers(uid, query_day, page, size)
+            records = self.query_ordered_gathers(uid, query_day, page, size)
+
+        # 要返回的项目列表
+        if len(records) == 0:
+            items = tip_items + [{'day': str(query_day), 'title': '当日无符合筛选条件的信息'}]
+        else:
+            # 每天开始时的日期分隔行
+            day_item = (page == 1) and [{'title': str(query_day)}] or []
+            items = tip_items + day_item + [
+                {'uuid': x.uuid, 'day': str(x.day), 'source': x.source, 'subject': x.subject, 'title': x.title}
+                for x in records]
+
+        # 下一页的请求参数
+        if len(records) == size:
+            next_params = {'day': str(query_day), 'page': page + 1, 'size': size, 'filter': do_filter}
+        else:
+            next_params = {'day': str(query_day - timedelta(1)), 'page': 1, 'size': size, 'filter': do_filter}
 
         # 返回查询结果
         result = {
-            'params': {'day': str(day), 'page': page, 'size': size, 'filter': use_filter},    # 当前请求的参数
-            'items':
-                (len(records) > 0) and
-                tip_items + [
-                    {'uuid': x.uuid, 'day': str(x.day), 'source': x.source, 'subject': x.subject, 'title': x.title}
-                    for x in records] or
-                tip_items + [{'day': str(query_day), 'title': '当日无符合筛选条件的信息'}],
-            'next':
-                (len(records) == size) and
-                {'day': str(query_day), 'page': page + 1, 'size': size, 'filter': use_filter} or
-                {'day': str(query_day - timedelta(1)), 'page': 1, 'size': size, 'filter': use_filter}
+            'params': {'day': str(day), 'page': page, 'size': size, 'filter': do_filter},    # 当前请求的参数
+            'items': items,
+            'next': next_params
         }
+
         return json_response(result)
 
     @staticmethod
-    def query_filtered_gathers(day: date, page: int=1, size: int=20, sources=(), subjects=(), keys=()):
+    def _query_filtered_gathers(day: date, page: int=1, size: int=20, sources=(), subjects=(), keys=()):
         """ 查询信息列表：只显示符合条件的记录 """
         assert size < 100
 
@@ -90,7 +97,7 @@ class DayTitlesApi(HTTPMethodView):
         return [x for x in query]
 
     @staticmethod
-    def query_sorted_gathers(day: date, page: int=1, size: int=20, sources=(), subjects=(), keys=()):
+    def _query_sorted_gathers(day: date, page: int=1, size: int=20, sources=(), subjects=(), keys=()):
         """ 查询信息列表：按条件排序"""
         # sql example:
         # select uuid, source, subject, title,
@@ -123,7 +130,7 @@ class DayTitlesApi(HTTPMethodView):
         query = query.limit(size).offset((page - 1) * size)
         return [x for x in query]
 
-    def query_rule_filtered_gathers(self, uid: str, day: date, page: int=1, size: int=20):
+    def query_filtered_gathers(self, uid: str, day: date, page: int=1, size: int=20):
         """ 查询招标信息，按筛选条件进行筛选 """
         assert size < 100
 
@@ -148,17 +155,14 @@ class DayTitlesApi(HTTPMethodView):
             query = query.where(exp)
 
         # 招标来源顺序
-        # source_order = ','.join(self.get_sources_by_distance(uid))
-        # distance = Func('find_in_set', GatherInfo.source, source_order)
-        # col_source_order = fn.IF
-        # if rule.sources:
-        #     col_source_order = fn.IF(GatherInfo.source << rule.sources, distance, 10000 + distance)
+        source_ordered = ','.join(self.get_sources_by_distance(uid))
+        distance = Func('find_in_set', GatherInfo.source, source_ordered)
 
-        query = query.order_by(+GatherInfo.source, +GatherInfo.subject, -GatherInfo.title)
-        query = query.limit(size).offset((page - 1) * size)
+        query = query.order_by(distance, GatherInfo.subject, GatherInfo.title)
+        query = query.paginate(page, size)
         return [x for x in query]
 
-    def query_rule_ordered_gathers(self, uid: str, day: date, page: int=1, size: int=20):
+    def query_ordered_gathers(self, uid: str, day: date, page: int=1, size: int=20):
         """ 查询招标信息，按筛选条件和省份距离排序 """
         assert size < 100
 
@@ -172,11 +176,12 @@ class DayTitlesApi(HTTPMethodView):
         rule = FilterRule.get_rule(uid) or FilterRule()
 
         # 招标来源匹配度
-        source_order = ','.join(self.get_sources_by_distance(uid))
-        distance = Func('find_in_set', GatherInfo.source, source_order)
-        col_source_match = fn.IF(True, 0, 0)
-        if rule.sources:
-            col_source_match += fn.IF(GatherInfo.source << rule.sources, distance, 10000 + distance)
+        source_ordered = ','.join(self.get_sources_by_distance(uid))
+        distance = Func('find_in_set', GatherInfo.source, source_ordered)
+        order_col_source = fn.IF(GatherInfo.source << rule.sources, distance, 10000 + distance)
+        # col_source_match = fn.IF(True, 0, 0)
+        # if rule.sources:
+        #     col_source_match += fn.IF(GatherInfo.source << rule.sources, distance, 10000 + distance)
 
         # 招标类型匹配度
         col_subject_match = fn.IF(True, 0, 0)
@@ -190,9 +195,9 @@ class DayTitlesApi(HTTPMethodView):
 
         # 查询
         query = GatherInfo.select().where(GatherInfo.day == day).order_by(
-            col_source_match, col_subject_match, col_key_match
+            order_col_source, col_subject_match, col_key_match
         )
-        query = query.limit(size).offset((page - 1) * size)
+        query = query.paginate(page, size)
         return [x for x in query]
 
     def get_sources_by_distance(self, uid: str):

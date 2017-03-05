@@ -76,7 +76,7 @@
                             <span class="weui-cell__ft"></span>
                         </a>
                     </template>
-                    <template v-else>
+                    <template v-else-if="x.day">
                         <a class="weui-cell weui-cell_access empty_tip" href="javascript:;">
                             <div class="weui-cell__bd weui-cell_primary">
                                 <div class="weui-media-box weui-media-box_text">
@@ -85,6 +85,17 @@
                                       <li class="weui-media-box__info__meta">
                                           {{ params.filter ? '当日没有符合您筛选条件的信息' : '当日无招标信息' }}
                                       </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </a>
+                    </template>
+                    <template v-else>
+                        <a class="weui-cell weui-cell_access" href="javascript:;">
+                            <div class="weui-cell__bd weui-cell_primary">
+                                <div class="weui-media-box weui-media-box_text">
+                                    <ul class="weui-media-box__info">
+                                      <li class="weui-media-box__info__meta">{{ x.title }}</li>
                                     </ul>
                                 </div>
                             </div>
@@ -191,6 +202,10 @@
         props: {id: String, archive: Object, vip: Boolean},
         methods: {
             original: function (url, source) {  // 查看原始信息
+                if (!this.vip) {
+                    $.alert('开通VIP服务后，可查看原文内容。');
+                    return;
+                }
                 window.location.href = url;
             }
         },
