@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <link href="http://cdn.bootcss.com/weui/0.4.3/style/weui.min.css" rel="stylesheet">
+    <!-- jquery-weui -->
+    <script src="http://cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
+    <link href="http://cdn.bootcss.com/jquery-weui/0.8.2/css/jquery-weui.min.css" rel="stylesheet">
+    <script src="http://cdn.bootcss.com/jquery-weui/0.8.2/js/jquery-weui.min.js"></script>
+    <!-- vue -->
+    <script src="http://cdn.bootcss.com/vue/2.1.4/vue.min.js"></script>
+    <script src="http://cdn.bootcss.com/vue-resource/1.0.3/vue-resource.min.js"></script>
+    <title>招标123</title>
+</head>
+<body>
+<div id="app">
+    <div class="weui_msg">
+        <div class="weui_text_area">
+            <h2 class="weui_msg_title">意见反馈</h2>
+            <p class="weui_msg_desc">我们非常珍视您的意见或建议，这将有助于我们提供更加优质的服务，为您带来更多的方便和快捷。</p>
+        </div>
+    </div>
+    <div class="weui_cells_title">您的反馈意见</div>
+    <div class="weui_cells weui_cells_form">
+        <div class="weui_cell">
+            <div class="weui_cell_bd weui_cell_primary">
+              <textarea v-model="content" class="weui_textarea" placeholder="请输入您的意见或建议" rows="6"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="weui-msg">
+        <div class="weui_opr_area">
+            <p class="weui_btn_area">
+              <a class="weui_btn weui_btn_primary" @click="suggest_save">确定</a>
+              <a class="weui_btn weui_btn_default" @click="suggest_cancel">取消</a>
+            </p>
+        </div>
+    </div>
+</div>
+<script>
+    vm_app = new Vue({
+        el: '#app',
+        data: {
+            content: ''
+        },
+        computed: {
+            is_valid: function () {
+                var str = this.content;
+                return str && str.length > 0;
+            }
+        },
+        methods: {
+            suggest_save: function(){
+                var vm = this;
+                var data = {
+                    'content': vm.content
+                };
+                if (!vm.is_valid) {
+                    $.toptip('请输入反馈内容', 'error');
+                    return;
+                }
+                vm.$http.post('/api/v3/suggest', data).then(function(){
+                    $.toast('感謝您的反馈');
+                    setTimeout(function () {
+                        window.location.href = '/welcome';
+                    }, 1000);
+                });
+            },
+            suggest_cancel: function(){
+                window.location.href = '/welcome';
+            }
+        }
+    });
+</script>
+</body>
+</html>

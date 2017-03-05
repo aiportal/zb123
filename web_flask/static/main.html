@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <!-- jquery-weui -->
+    <link href="//cdn.bootcss.com/weui/1.1.1/style/weui.min.css" rel="stylesheet">
+    <link href="//cdn.bootcss.com/jquery-weui/1.0.0/css/jquery-weui.min.css" rel="stylesheet">
+    <!-- icons -->
+    <link href="http://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="res/icons.css" rel="stylesheet">
+    <!-- custom -->
+    <title>招标123</title>
+    <style>
+        html, body { height: 100%; background-color: #fbf9fe; }
+        .weui-tabbar .fa { font-size: 24px; color: #10AEFF; }
+        #list .weui-cells { margin-top: 0px; }
+        #list .weui-cell { padding: 12px 5px 5px 5px;}
+        #list .vip_tip, #list .empty_tip { padding-top: 10px; padding-bottom: 10px; }
+        #list .vip_tip li { color: #00E; }
+        #list .weui-media-box { padding: 0 0 0 3px; }
+        #list .weui-media-box__info { margin-top: 5px; }
+        #list .weui-cell__ft { padding-right: 8px; }
+        #list .fa {
+            font-size: 22px; color: #fff; background-color: #09BB07;
+            font-weight: bold; margin-right: 3px; padding: 3px;
+        }
+        #list .weui-loadmore { margin-top: 5px; margin-bottom: 60px; }
+        #list .weui-loadmore_line { margin-top: 20px; margin-bottom: 50px; }
+        #rule .weui-panel__hd { padding-bottom: 3px; }
+        #rule .button_sp_area { padding: 5px 5px 0 5px; }
+        #rule .button_sp_area .weui-btn { margin: 0 5px 0 0; line-height: 2.1; padding: 0 0.8em; }
+        /*#rule button { margin: 15px; } */
+        /*.weui-tabbar { z-index: 10; }*/
+        /*.popup-bottom, .popup-bottom weui-popup__overlay { z-index: 600; } */
+        /*.weui-actionsheet__action { position: relative; width:100%; bottom: 0px; } */
+    </style>
+</head>
+<body>
+
+<div class="weui-tab" id="app">
+  <div class="weui-tab__bd">
+    <div id="list" class="weui-tab__bd-item weui-tab__bd-item--active">
+      <!-- list -->
+      <template>
+        <div class="weui-panel">
+            <div class="weui-panel__bd">
+              <div class="weui-media-box weui-media-box_small-appmsg">
+                <div class="weui-cells" v-for="x of items">
+                    <template v-if="x.uuid">
+                        <a class="weui-cell weui-cell_access" :class="{'weui-btn_primary': x.uuid==archive.uuid}"
+                           href="javascript:;" @click="view_content(x)">
+                            <div class="weui-cell__hd"><i :class="['fa', 'icon-' + x.source]"></i></div>
+                            <div class="weui-cell__bd weui-cell_primary">
+                                <div class="weui-media-box weui-media-box_text">
+                                <p v-html="highlight(x.title)"></p>
+                                <ul class="weui-media-box__info">
+                                  <li class="weui-media-box__info__meta">{{ x.subject }}</li>
+                                  <li class="weui-media-box__info__meta" style="float: right;">{{ x.day }}</li>
+                                </ul>
+                                </div>
+                            </div>
+                            <span class="weui-cell__ft"></span>
+                        </a>
+                    </template>
+                    <template v-else-if="x.vip">
+                        <a class="weui-cell weui-cell_access vip_tip" href="javascript:;" @click="view='user'">
+                            <div class="weui-cell__bd weui-cell_primary">
+                                <div class="weui-media-box weui-media-box_text">
+                                    <ul class="weui-media-box__info">
+                                      <li class="weui-media-box__info__meta">{{ x.day }}</li>
+                                      <li class="weui-media-box__info__meta">开通VIP会员可查看近三天的信息</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <span class="weui-cell__ft"></span>
+                        </a>
+                    </template>
+                    <template v-else>
+                        <a class="weui-cell weui-cell_access empty_tip" href="javascript:;">
+                            <div class="weui-cell__bd weui-cell_primary">
+                                <div class="weui-media-box weui-media-box_text">
+                                    <ul class="weui-media-box__info">
+                                      <li class="weui-media-box__info__meta">{{ x.day }}</li>
+                                      <li class="weui-media-box__info__meta">
+                                          {{ params.filter ? '当日没有符合您筛选条件的信息' : '当日无招标信息' }}
+                                      </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </a>
+                    </template>
+                </div>
+              </div>
+            </div>
+        </div>
+        <!-- footer -->
+        <template v-if="next">
+            <div class="weui-loadmore">
+              <i class="weui-loading"></i>
+              <span class="weui-loadmore__tips">正在加载</span>
+            </div>
+        </template>
+        <template v-else-if="items.length > 0">
+            <template v-if="is_vip">
+                <div class="weui-loadmore weui-loadmore_line">
+                    <span class="weui-loadmore__tips">没有更多了</span>
+                </div>
+            </template>
+            <template v-else>
+                <div class="weui-loadmore weui-loadmore_line">
+                    <a href="javascript:;" class="weui-loadmore__tips" style="color:#00E" @click="view='user'">开通VIP服务查看更多信息</a>
+                </div>
+            </template>
+        </template>
+      </template>
+    </div>
+    <div id="rule" class="weui-tab__bd-item">
+        <rule-tab id="rule-page" :sources="rule.sources" :subjects="rule.subjects" :keys="rule.keys"
+                  @submit="rule_submit" @cancel="view='list'"></rule-tab>
+    </div>
+    <div id="user" class="weui-tab__bd-item">
+        <user-tab id="user-page" :vip="is_vip" :end="user.end" :pays="user.pays" @submit="init()" @cancel="view='list'"></user-tab>
+    </div>
+  </div>
+  <div class="weui-tabbar">
+    <a id="btn_all" href="javascript:;" class="weui-tabbar__item" @click="view_all">
+      <div class="weui-tabbar__icon">
+        <i class="fa fa-university"></i>
+      </div>
+      <p class="weui-tabbar__label">全国信息</p>
+    </a>
+    <a id="btn_rule" href="javascript:;" class="weui-tabbar__item weui-bar__item--on" @click="view='rule'">
+      <div class="weui-tabbar__icon">
+        <i class="fa fa-check-square-o"></i>
+      </div>
+      <p class="weui-tabbar__label">筛选定制</p>
+    </a>
+    <a id="btn_days" href="javascript:;" class="weui-tabbar__item">
+      <div class="weui-tabbar__icon">
+        <i class="fa fa-calendar"></i>
+      </div>
+      <p class="weui-tabbar__label">发布日期</p>
+    </a>
+    <a id="btn_user" href="javascript:;" class="weui-tabbar__item" @click="view='user'">
+      <div class="weui-tabbar__icon">
+        <i class="fa fa-user"></i>
+      </div>
+      <p class="weui-tabbar__label">会员信息</p>
+    </a>
+  </div>
+    <!-- content popup -->
+    <content-pop id="content_popup" :archive="archive" :vip="is_vip"></content-pop>
+    <!-- date popup -->
+    <days-pop id="date-popup" menu="#btn_days" :days="days" @submit="day_submit" ></days-pop>
+</div>
+</div>
+
+<!-- vue -->
+<script src="//cdn.bootcss.com/vue/2.1.10/vue.min.js"></script>
+<script src="//cdn.bootcss.com/vue-resource/1.2.0/vue-resource.min.js"></script>
+
+<!-- jquery-weui -->
+<script src="//cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/jquery-weui/1.0.0/js/jquery-weui.min.js"></script>
+
+<!-------------------------------------------- VUE COMPONENTS --------------------------------------------------------->
+<template id="content-pop">
+    <div :id="id" class="weui-popup__container">
+      <div class="weui-popup__overlay"></div>
+      <div class="weui-popup__modal">
+        <article class="weui-article" >
+            <h1><b>{{ archive.title }}</b></h1>
+            <section v-for="x in archive.contents">
+                <p v-html="x"></p>
+            </section>
+            <section v-show="archive.url != ''" >
+                <a href="javascript:;" @click="original(archive.url, archive.source)">查看原文</a>
+            </section>
+            <section>
+                <a href="javascript:;" class="weui-btn weui-btn_primary close-popup">关闭</a>
+            </section>
+        </article>
+        <div class="weui-btn-area"></div>
+      </div>
+    </div>
+</template>
+<script>
+    Vue.component('content-pop', {
+        template: '#content-pop',
+        props: {id: String, archive: Object, vip: Boolean},
+        methods: {
+            original: function (url, source) {  // 查看原始信息
+                window.location.href = url;
+            }
+        },
+        updated: function(){
+            var vm = this;
+            setTimeout(function(){
+                var selector = '#' + vm.id + ' > div.weui-popup__modal';
+                $(selector).scrollTop(0);
+            }, 0);
+        }
+    });
+</script>
+
+<template id="days-pop">
+    <input :id='id' type="text" style="display: none;"/>
+</template>
+<script>
+    Vue.component('days-pop', {
+        template: '#days-pop',
+        props: {id: String, menu: String, days: Array, day: String},
+        watch: {
+            days: function(val){
+                var vm = this;
+                //if (!val || val.length < 1) return;
+                $(vm.$el).picker({
+                    title: "请选择发布日期",
+                    toolbarCloseText: "确定",
+                    cols: [{
+                      textAlign: 'center',
+                      values: val
+                    }],
+                    onClose: function(){
+                        setTimeout(function () {
+                            vm.day = $(vm.$el).val();
+                            vm.$emit('submit', vm);
+                        }, 0);
+                    }
+                });
+            }
+        },
+        mounted: function () {
+            var vm = this;
+            $(vm.menu).on('click', function(){
+                setTimeout(function(){
+                    $(vm.$el).picker('open');
+                });
+            });
+        }
+    });
+</script>
+
+<template id="rule-tab">
+    <div class="weui-panel weui-panel_access">
+      <div class="weui-panel__hd">信息来源</div>
+      <div class="weui-panel__bd button_sp_area">
+        <template v-for="x of sources">
+            <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_default"
+               :class="{'weui-btn_primary': x.select}" @click="select(x)" >{{ x.text }}</a>
+        </template>
+      </div>
+      <div class="weui-panel__hd">搜索词</div>
+      <div class="weui-panel__bd button_sp_area">
+        <template v-for="x of keys">
+            <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_default"
+               :class="{'weui-btn_primary': x.select}" @click="select(x)" >{{ x.text }}</a>
+        </template>
+      </div>
+        <!-- search bar -->
+        <div class="weui-search-bar">
+          <form class="weui-search-bar__form" @submit.prevent="add_key">
+            <div class="weui-search-bar__box">
+              <i class="weui-icon-search"></i>
+              <input type="search" class="weui-search-bar__input" id="searchInput" required
+                     placeholder="请输入要搜索的词" v-model="key">
+              <a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
+            </div>
+            <label class="weui-search-bar__label" id="searchText">
+              <i class="weui-icon-search"></i><span>添加搜索词</span>
+            </label>
+          </form>
+          <a href="javascript:" class="weui-search-bar__cancel-btn" @click="add_key">添加</a>
+        </div>
+        <!-- buttons -->
+        <div class="weui-panel__bd">
+            <p class="weui-btn-area" style="margin-bottom: 65px;">
+              <a href="javascript:;" class="weui-btn weui-btn_primary" @click="submit">保存</a>
+              <a href="javascript:;" class="weui-btn weui-btn_default" @click="cancel">取消</a>
+            </p>
+        </div>
+    </div>
+</template>
+<script>
+    Vue.component('rule-tab', {
+        template: '#rule-tab',
+        props: {id: String, sources: Array, subjects: Array, keys: Array, key: String},
+        methods: {
+            select: function(item){ item.select = !item.select; },
+            add_key: function () {
+                var vm = this;
+                var key = vm.key;
+                if (!key || key.length < 1) return;
+                vm.keys = $.grep(vm.keys, function(v) { return v.text != key; });
+                vm.keys.splice(0, 0, {text: key, select: true});
+            },
+            submit: function(){ this.$emit('submit', this); },
+            cancel: function(){ this.$emit('cancel', this); }
+        }
+    });
+</script>
+
+<template id="user-tab">
+    <div class="weui-msg" v-if="vip">
+      <div class="weui-msg__text-area">
+        <h2 class="weui-msg__title">会员信息</h2>
+        <p class="weui-msg__desc">            </p>
+      </div>
+        <div class="weui-form-preview" v-for="x of pays">
+          <div class="weui-form-preview__hd">
+            <label class="weui-form-preview__label">付款金额</label>
+            <em class="weui-form-preview__value">¥{{ x.fee }}.00</em>
+          </div>
+          <div class="weui-form-preview__bd">
+            <div class="weui-form-preview__item">
+              <label class="weui-form-preview__label">支付日期</label>
+              <span class="weui-form-preview__value">{{ x.day }}</span>
+            </div>
+            <div class="weui-form-preview__item">
+              <label class="weui-form-preview__label">到期时间</label>
+              <span class="weui-form-preview__value">{{ x.end }}</span>
+            </div>
+            <div class="weui-form-preview__item">
+              <label class="weui-form-preview__label">订单编号</label>
+              <span class="weui-form-preview__value">{{ x.order }}</span>
+            </div>
+          </div>
+        </div>
+      <div class="weui-msg__extra-area" style="margin-bottom: 60px;">
+        <div class="weui-footer">
+            <p class="weui-footer__links"><a href="javascript:;" class="weui-footer__link">服务提供商</a></p>
+            <p class="weui-footer__text">天津贝叶斯科技有限公司</p>
+        </div>
+      </div>
+    </div>
+    <div class="weui-msg" v-else>
+      <div class="weui-msg__text-area">
+        <h2 class="weui-msg__title">开通VIP服务</h2>
+        <p class="weui-msg__desc">VIP用户年费300元/年</p>
+        <p class="weui-msg__desc">&nbsp;</p>
+        <p class="weui-msg__desc"></p>
+        <p class="weui-msg__desc" style="color: #000;">请长按扫描二维码完成支付</p>
+        <p class="weui-msg__desc"><img src="/wx/pay" style="width:50%; margin-top: 10px;" /></p>
+      </div>
+      <div class="weui-msg__opr-area">
+        <p class="weui-btn-area">
+          <a href="javascript:;" class="weui-btn weui-btn_primary" @click="submit">完成</a>
+        </p>
+      </div>
+      <div class="weui-msg__extra-area" style="margin-bottom: 60px;">
+        <div class="weui-footer">
+            <p class="weui-footer__links"><a href="javascript:;" class="weui-footer__link">服务提供商</a></p>
+            <p class="weui-footer__text">天津贝叶斯科技有限公司</p>
+        </div>
+      </div>
+    </div>
+</template>
+<script>
+    Vue.component('user-tab', {
+        template: '#user-tab',
+        props: {id: String, vip: Boolean, end: String, pays: Array},
+        methods: {
+            submit: function(){ this.$emit('submit', this); },
+            cancel: function(){ this.$emit('cancel', this); },
+        }
+    });
+</script>
+
+<!------------------------------------------END VUE COMPONENTS -------------------------------------------------------->
+
+<script>
+    vm_app = new Vue({
+        el: '#app',
+        data: {
+            view: 'list',
+            days: [],
+            rule: {sources:[], keys:[]},                        // 筛选规则
+            user: {vip: false, end: '', pays:[]},               // 用户信息(是否vip, 到期时间, 支付记录)
+            params: {day: '', filter: true},                    // 请求参数(起始日期，是否过滤)
+            next: null,                                         // 下一页的请求参数
+            items: [],                                          // 标题列表
+            archive : {uuid: null, title:'', url:'', contents:[]},      // 弹出的正文详情
+            loading: false
+        },
+        computed: {
+            is_vip: function () { return this.user.vip; }
+        },
+        watch: {
+            loading: function(val){ val ? $.showLoading() : $.hideLoading(); },
+            'view': 'update_view',
+            'params.filter': 'update_view'
+        },
+        methods: {
+            init: function(){
+                var vm = this;
+                vm.loading = true;
+                vm.$http.get('/api/v3/user').then(function(resp){
+                    vm.loading = false;
+                    var data = resp.body;
+                    vm.rule = data.rule;
+                    vm.user = data.user;
+                    vm.days = data.days;
+                    vm.reload();
+                }, function(){ vm.loading = false; });
+            },
+            reload: function(){
+                var vm = this;
+                vm.view = 'list';
+                vm.loading = true;
+                vm.$http.get('/api/v3/titles', {params: vm.params}).then(function(resp){
+                    vm.loading = false;
+                    var data = resp.body;
+                    vm.items = data.items;
+                    vm.next = data.next;
+                    setTimeout(function () {
+                        $('#list').scrollTop(0);
+                        $('#list').trigger('scroll');
+                    }, 0);
+                }, function(){ vm.loading = false; });
+            },
+            append: function(){
+                var vm = this;
+                if (!vm.next) return;
+                if (vm.appending) return;
+                vm.appending = true;
+                vm.$http.get('/api/v3/titles', {params: vm.next}).then(function(resp){
+                    vm.appending = false;
+                    var data = resp.body;
+                    vm.next = data.next;
+                    Array.prototype.push.apply(vm.items, data.items);
+                    setTimeout(function () {
+                        $('#list').trigger('scroll');
+                    }, 0);
+                }, function(){ vm.appending = false; });
+            },
+            view_content: function(x){
+                var vm = this;
+                vm.archive.uuid = x.uuid;
+                vm.loading = true;
+                vm.$http.get('/api/v3/content/'+x.uuid).then(function(resp){
+                    vm.loading = false;
+                    vm.archive = resp.body;
+                    vm.archive.title = x.title;
+                    $('#content_popup').popup();
+                    history.pushState(null, null, document.URL);
+                }, function(){ vm.loading = false; });
+            },
+            update_view: function(){
+                var vm = this;
+
+                // tab view state
+                $('.weui-tab__bd-item').removeClass('weui-tab__bd-item--active');
+                $('#' + vm.view).addClass('weui-tab__bd-item--active');
+                if (vm.view != 'list'){ history.pushState(null, null, document.URL); }
+
+                // tab button state
+                var on = 'weui-bar__item--on';
+                $('.weui-tabbar__item').removeClass(on);
+                switch (vm.view) {
+                    case 'list': $(vm.params.filter ? '#btn_rule' : '#btn_all').addClass(on); break;
+                    case 'rule': $('#btn_rule').addClass(on); break;
+                    case 'user': $('#btn_user').addClass(on); break;
+                }
+            },
+            view_all: function(){
+                var vm = this;
+                vm.params.filter = false;
+                vm.reload();
+            },
+            day_submit: function(comp){
+                var vm = this;
+                vm.params.day = comp.day;
+                vm.reload();
+            },
+            rule_submit: function(comp){
+                var choice = function(vals, invert) {
+                    return $.grep(vals, function(o) { return o.select; }, invert)
+                            .map(function(o) { return o.value ? o.value : o.text; });
+                };
+                var vm = this;
+                var data = {
+                    sources: choice(comp.sources),
+                    subjects: choice(comp.subjects),
+                    keys: choice(comp.keys),
+                    suggests: comp.keys.map(function(o){ return o.text; })
+                };
+                vm.$http.post('/api/v3/rule', data).then(function(resp){
+                    $.toast("保存成功", 2000);
+                    setTimeout(function () {
+                        vm.params.filter = true;
+                        vm.init();
+                    }, 2800);
+                }, function(){ vm.loading = false; });
+            },
+            view_user: function(){
+                var vm = this;
+                vm.view = 'user';
+            },
+            highlight: function(v){
+                var keys = this.rule.keys.filter(function (o) { return o.select; });
+                keys.forEach(function(k){
+                    var reg = new RegExp(k.text, 'g');
+                    var rep = '<b>' + k.text + '</b>';
+                    v = v.replace(reg, rep);
+                });
+                return v;
+            },
+        }
+    });
+
+    vm_app.init();
+
+    // 滚动加载
+    $('#list').infinite().on("infinite", function() {
+        vm_app.append();
+    });
+
+    // 弹出详情页时防止回退
+    window.addEventListener('popstate', function () {
+        if ($('.weui-popup__container--visible').length > 0){
+            $.closePopup();
+        }
+        else if (vm_app.view != 'list'){
+            vm_app.view = 'list';
+        }
+        else {
+            history.back();
+        }
+    });
+
+</script>
+
+</body>
+</html>
