@@ -29,7 +29,7 @@
         #list .weui-loadmore_line { margin-top: 20px; margin-bottom: 50px; }
         #rule .weui-panel__hd { padding-bottom: 3px; }
         #rule .button_sp_area { padding: 5px 5px 0 5px; }
-        #rule .button_sp_area .weui-btn { margin: 0 5px 0 0; line-height: 2.1; padding: 0 0.8em; }
+        #rule .weui-btn_mini { margin: 0 5px 0 0; line-height: 2.1; padding: 0 8px;}
         /*#rule button { margin: 15px; } */
         /*.weui-tabbar { z-index: 10; }*/
         /*.popup-bottom, .popup-bottom weui-popup__overlay { z-index: 600; } */
@@ -262,6 +262,13 @@
       <div class="weui-panel__hd">信息来源</div>
       <div class="weui-panel__bd button_sp_area">
         <template v-for="x of sources">
+            <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_default"
+               :class="{'weui-btn_primary': x.select}" @click="select(x)" >{{ x.text }}</a>
+        </template>
+      </div>
+      <div class="weui-panel__hd">信息类型</div>
+      <div class="weui-panel__bd button_sp_area">
+        <template v-for="x of subjects">
             <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_default"
                :class="{'weui-btn_primary': x.select}" @click="select(x)" >{{ x.text }}</a>
         </template>

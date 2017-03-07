@@ -11,6 +11,8 @@ app.config['RESTFUL_JSON'] = {'ensure_ascii': False}
 
 @app.before_request
 def before_req():
+    uid = request.cookies.get('uid', '')
+    AccessLog.log_access(uid, request.url, {'ip': request.remote_addr})
     Database.connect()
 
 
@@ -60,21 +62,20 @@ def before_api_request():
     user = UserInfo.get_user(uid)
     if not user:
         return make_response('Invalid usage.')
-    # AccessLog.log_access(uid, request.url, {'ip': request.remote_addr})
 
 
 # 注册API接口
 app.register_blueprint(api_v3)
 
-# # 调试
-# @app.route('/debug')
-# def debug():
-#     resp = make_response(redirect(url_for('welcome', _external=True)))
-#     # 设置 cookie，帮助 welcome 网址判断转向
-#     resp.set_cookie('uid', value='o31RHuPslKvzzBccwwoXv_GKmfEA')
-#     resp.set_cookie('oid_a', value='o3cwBvzJe_vrBtOc2P3AUBS1wbEM')
-#     return resp
-#
+
+# 调试
+@app.route('/debug')
+def debug():
+    resp = make_response(redirect(url_for('welcome', _external=True)))
+    # 设置 cookie，帮助 welcome 网址判断转向
+    resp.set_cookie('uid', value='o31RHuPslKvzzBccwwoXv_GKmfEA')
+    return resp
+
 
 if __name__ == '__main__':
     if __debug__:
