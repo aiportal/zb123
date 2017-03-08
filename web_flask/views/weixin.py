@@ -3,7 +3,7 @@ from .core import json_response, text_response
 from database import GatherInfo, UserInfo, SysConfig
 from peewee import fn
 from weixin import wx_zb123, svc_zb123
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 
 class WxServiceApi(MethodView):
@@ -99,11 +99,12 @@ class WxPublishApi(MethodView):
 
     def totals_content(self, day: date):
         # 统计各省信息数量
+        day = day - timedelta(1)
         totals = self.query_day_totals(day)
 
         # 标题
         amount = sum([v for _, v in totals.items()])
-        headers = ['今日各省共发布 {} 条招标信息'.format(amount), '']
+        headers = ['昨日各省共发布 {} 条招标信息'.format(amount), '']
 
         # 正文
         items = []

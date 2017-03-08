@@ -179,9 +179,6 @@ class DayTitlesApi(HTTPMethodView):
         source_ordered = ','.join(self.get_sources_by_distance(uid))
         distance = Func('find_in_set', GatherInfo.source, source_ordered)
         order_col_source = fn.IF(GatherInfo.source << rule.sources, distance, 10000 + distance)
-        # col_source_match = fn.IF(True, 0, 0)
-        # if rule.sources:
-        #     col_source_match += fn.IF(GatherInfo.source << rule.sources, distance, 10000 + distance)
 
         # 招标类型匹配度
         col_subject_match = fn.IF(True, 0, 0)
@@ -193,10 +190,12 @@ class DayTitlesApi(HTTPMethodView):
         for i, key in enumerate(rule.keys):
             col_key_match += fn.IF(GatherInfo.title.contains(key), 0, 100 - i)
 
+        # 全国信息的查询，只提供预公告和招标公告
+        default_filter = GatherInfo.subject.startswith('预公告') | GatherInfo.subject.startswith('招标公告')
+
         # 查询
-        query = GatherInfo.select().where(GatherInfo.day == day).order_by(
-            order_col_source, col_subject_match, col_key_match
-        )
+        query = GatherInfo.select().where(GatherInfo.day == day).where(default_filter)
+        query = query.order_by(order_col_source, col_subject_match, col_key_match)
         query = query.paginate(page, size)
         return [x for x in query]
 

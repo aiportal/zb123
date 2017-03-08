@@ -1,4 +1,4 @@
-from .core import HTTPMethodView, request, xml_response, send_image, ServerError
+from .core import HTTPMethodView, request, text_response, xml_response, send_image, ServerError
 from database import AnnualFee
 from weixin import wx_bayesian
 from datetime import datetime, date
@@ -19,6 +19,8 @@ class WxPayApi(HTTPMethodView):
         # 用户ID
         uid = request.cookies.get('uid')
         assert uid and len(uid) > 10
+        if not uid:
+            return text_response('Invalid usage.')
 
         # 支付金额
         fee = int(request.args.get('fee', 300))
