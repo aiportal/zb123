@@ -15,4 +15,5 @@ class Database:
     @staticmethod
     def close():
         for conn in db_connections:
-            conn.close()
+            if not conn.is_closed():
+                conn.close()

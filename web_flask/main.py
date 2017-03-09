@@ -11,15 +11,14 @@ app.config['RESTFUL_JSON'] = {'ensure_ascii': False}
 
 @app.before_request
 def before_req():
-    uid = request.cookies.get('uid', '')
-    AccessLog.log_access(uid, request.url, {'ip': request.remote_addr})
     Database.connect()
 
 
-@app.after_request
-def after_req(response):
+@app.teardown_request
+def teardown_req(exc):
+    uid = request.cookies.get('uid', '')
+    AccessLog.log_access(uid, request.url, {'ip': request.remote_addr})
     Database.close()
-    return response
 
 
 @app.errorhandler
