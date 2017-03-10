@@ -4,7 +4,8 @@ import uuid
 from datetime import datetime
 
 
-db_tel = PooledMySQLDatabase(host='127.0.0.1', user='root', password='lq1990', port=3306, database='telephone', charset='utf8')
+db_tel = PooledMySQLDatabase(host='127.0.0.1', user='root', password='lq1990', port=3306, database='telephone',
+                             charset='utf8', max_connections=32)
 
 
 class IndexInfo(peewee.Model):

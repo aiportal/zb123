@@ -41,10 +41,7 @@ class Crawler:
         try:
             links = await self.parse_links(response)
             for link in links:
-                if await IndexUrls.url_exists(link):
-                    continue
                 self._queue.put_nowait(link)
-            await IndexUrls.url_add(str(response.url_obj))
         except Exception as ex:
             print('fetch:', ex)
         finally:
@@ -73,7 +70,7 @@ class MinglujiCrawler(Crawler):
 
     def __init__(self, loop):
         session = aiohttp.ClientSession(loop=loop, headers=self.headers)
-        super().__init__(session, max_tasks=100)
+        super().__init__(session, max_tasks=30)
 
     @property
     def start_urls(self):
@@ -81,10 +78,17 @@ class MinglujiCrawler(Crawler):
             yield 'https://gongshang.mingluji.com/{0}/list'.format(k)
 
     async def parse_links(self, response: ClientResponse):
+        link_urls = set()
         try:
             url = str(response.url_obj)
             text = await response.text()
             print(url, len(text), self._queue.qsize())
+
+            # 记录当前页，避免重入
+            try:
+                await IndexUrls.url_add(url)
+            except Exception as ex:
+                print('add_url: ', ex)
 
             # 提取详情页链接
             dom = parser.fromstring(text)
@@ -97,10 +101,17 @@ class MinglujiCrawler(Crawler):
             # 翻页
             page = int(response.url_obj.query.get('page', 1))
             page_count = self.province_count.get(response.url_obj.parts[1], 2000)
-            link_count = self._queue.qsize() < 1000 and 10 or 3
-            if page < page_count:
-                return {str(response.url_obj.with_query(page=page+x)) for x in range(1, link_count)}
+            link_count = self._queue.qsize() < 1000 and 9 or 3
+            for page_current in range(page, page_count + 1):
+                url = str(response.url_obj.with_query(page=page_current))
+                if await IndexUrls.url_exists(url):
+                    continue
+                link_urls.add(url)
+                if len(link_urls) > link_count:
+                    break
+
         except Exception as ex:
             print('parse_links: ', ex)
-
+        finally:
+            return link_urls
 
