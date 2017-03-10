@@ -1,14 +1,15 @@
 import scrapy
 import random
-from datetime import datetime
+from datetime import datetime, date
 
 
 class DynamicDelayMiddleware(object):
     def __init__(self):
-        self.hours_delay = dict([(x, 0.1) for x in range(0, 24)])
-        self.hours_delay.update([(0, 1.0)])
-        self.hours_delay.update([(x, 0.6) for x in range(9, 10)])
-        self.hours_delay.update([(x, 0.6) for x in range(14, 16)])
+        self.hours_delay = dict([(x, 0.01) for x in range(0, 24)])
+        # self.hours_delay.update([(0, 0.2)])
+        if date.today().weekday() < 5:
+            self.hours_delay.update([(x, 0.6) for x in range(9, 11)])
+            self.hours_delay.update([(x, 0.6) for x in range(13, 17)])
 
     def process_request(self, request, spider):
         hour = datetime.now().hour

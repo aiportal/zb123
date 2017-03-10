@@ -19,7 +19,7 @@ class MinglujiSpider(scrapy.Spider):
     name = 'mingluji'
     custom_settings = {
         'COOKIES_ENABLED': True,
-        'DOWNLOAD_DELAY': 0.1,
+        'DOWNLOAD_DELAY': 0.2,
         # 'COOKIES_DEBUG': __debug__ and True or False,
         'DOWNLOADER_MIDDLEWARES': {
             'telephone.middlewares.DynamicDelayMiddleware': 200,
@@ -85,6 +85,19 @@ class MinglujiSpider(scrapy.Spider):
         '正则': '222222',
     }
 
+    login_accounts_new = {
+        '价位', '654321',
+        '我问问', '999999',
+        '日日日', '999999',
+        '通天塔', '999999',
+        '也一样', '999999',
+        '噢噢哦', '999999',
+        '啪啪啪', '999999',
+        '噗噗噗', '999999',
+        '事实上', '999999',
+        '多大的', '999999',
+    }
+
     # 启动多个登录
     def start_requests(self):
         login_url = 'https://gongshang.mingluji.com/user'
@@ -127,8 +140,6 @@ class MinglujiSpider(scrapy.Spider):
             for industry in self.industry_list:
                 url = 'https://gongshang.mingluji.com/{0}/{1}'.format(meta['area'], industry)
                 meta['industry'] = industry
-                if JobIndex.url_exists(url):
-                    continue
                 yield scrapy.Request(url, meta=meta, callback=self.parse_index)
 
     # 解析索引页
@@ -162,18 +173,14 @@ class MinglujiSpider(scrapy.Spider):
             if pages:
                 meta['page_count'] = int(page_num_regex.search(pages[0].url).group(1))
 
-        # 如果没有新链接，此索引页不再访问
-        if not has_link and not JobIndex.url_exists(response.url):
-            JobIndex.url_add(response.url, state=1)
-
         # 下一页链接
         page_next = page_next_extractor.extract_links(response)
         if page_next:
-            page_num = int(page_num_regex.search(page_next[0].url).group(1))
-            meta.update(page_num=page_num)
             url = page_next[0].url
-            if not JobIndex.url_exists(url):
-                yield scrapy.Request(page_next[0].url, meta=meta, callback=self.parse_index)
+            page_num = int(page_num_regex.search(url).group(1))
+            meta.update(page_num=page_num)
+            # if not JobIndex.url_exists(url):
+            yield scrapy.Request(url, meta=meta, callback=self.parse_index)
         else:
             # 没有下一页链接时，检查 page_count 是否达到
             num = meta.get('page_num', 0) + 1
@@ -181,8 +188,12 @@ class MinglujiSpider(scrapy.Spider):
             if num < count:
                 url = parse.splitquery(response.url)[0] + '?page=' + str(num)
                 meta.update(page_num=num)
-                if not JobIndex.url_exists(url):
-                    yield scrapy.Request(url, meta=meta, callback=self.parse_index)
+                # if not JobIndex.url_exists(url):
+                yield scrapy.Request(url, meta=meta, callback=self.parse_index)
+
+        # 如果没有新链接，此索引页不再访问
+        # if not has_link and not JobIndex.url_exists(response.url):
+        #     JobIndex.url_add(response.url, state=1)
 
     # 解析详情页
     def parse_item(self, response):

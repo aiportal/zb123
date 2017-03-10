@@ -22,7 +22,7 @@ USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
 RETRY_ENABLED = True
-RETRY_TIMES = 3
+RETRY_TIMES = 15
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 # CONCURRENT_REQUESTS = 32
@@ -40,9 +40,9 @@ DOWNLOAD_DELAY = 1
 COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
-TELNETCONSOLE_ENABLED = True
-TELNETCONSOLE_HOST = '127.0.0.1'
-TELNETCONSOLE_PORT = [6023]
+TELNETCONSOLE_ENABLED = False
+# TELNETCONSOLE_HOST = '127.0.0.1'
+# TELNETCONSOLE_PORT = [6023]
 
 
 # Override the default request headers:
@@ -104,3 +104,8 @@ ITEM_PIPELINES = {
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+CLOSESPIDER_TIMEOUT = 0
+CLOSESPIDER_ITEMCOUNT = 0
+CLOSESPIDER_PAGECOUNT = 0
+CLOSESPIDER_ERRORCOUNT = 0
