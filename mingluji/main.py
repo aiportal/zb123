@@ -17,7 +17,7 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 process = CrawlerProcess(get_project_settings())
 # spiders = process.spider_loader.list()
-spiders = ['mingluji']
+spiders = ['mingluji_index']
 for spider in spiders:
     process.crawl(process.spider_loader.load(spider))
 process.start()
