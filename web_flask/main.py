@@ -41,6 +41,7 @@ app.add_url_rule('/wx/pay', view_func=views.WxPayApi.as_view('pay'))            
 app.add_url_rule('/wx/accounts', view_func=views.WxAccountsApi.as_view('accounts'))         # 微信账号同步
 app.add_url_rule('/wx/svc', view_func=views.WxServiceApi.as_view('svc'))                    # 微信公众号消息服务
 app.add_url_rule('/wx/publish', view_func=views.WxPublishApi.as_view('publish'))            # 微信每日推送/预览
+app.add_url_rule('/wx/sendall', view_func=views.WxPublishApi.as_view('sendall'))            # 微信每日推送/预览
 app.add_url_rule('/wx/preview', view_func=views.WxPublishApi.as_view('preview'))
 app.add_url_rule('/wx/menu', view_func=views.WxMenuApi.as_view('menu'))                     # 初始化微信菜单
 

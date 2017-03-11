@@ -88,6 +88,8 @@ class WxPublishApi(MethodView):
         # 发布或预览
         if request.path.endswith('/publish'):
             self.wx_app.publish_text(content)
+        elif request.path.endswith('/sendall'):
+            self.send_all(content)
         else:
             for oid in self.wx_app.admin:
                 self.wx_app.preview_text(content, oid)
@@ -97,6 +99,15 @@ class WxPublishApi(MethodView):
             'content': content
         })
 
+    def send_all(self, content: str):
+        """ 全网推送 """
+        users = UserInfo.select(UserInfo.zb123).order_by(-UserInfo.subscribe).limit(90).execute()
+        for user in users:
+            try:
+                self.wx_app.preview_text(content, user.zb123)
+            except Exception as ex:
+                pass
+
     def totals_content(self, day: date):
         # 统计各省信息数量
         day = day - timedelta(1)
@@ -104,7 +115,8 @@ class WxPublishApi(MethodView):
 
         # 标题
         amount = sum([v for _, v in totals.items()])
-        headers = ['昨日各省共发布 {} 条招标信息'.format(amount), '']
+        headers = ['昨日各省共发布 {} 条招标信息'.format(amount), '',
+                   '{0:%Y}年{0:%m}月{0:%d}日'.format(day)]
 
         # 正文
         items = []
