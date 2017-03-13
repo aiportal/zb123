@@ -1,27 +1,30 @@
 import peewee
-from peewee_async import Manager, MySQLDatabase
+from .core import JSONField
 from datetime import datetime, date
 import uuid
 
 
-host = __debug__ and '127.0.0.1' or 'data.ultragis.com'
-db_mysql = MySQLDatabase(host=host, database='fetch', user='root', passwd='lq1990', charset='utf8')
+host =  __debug__ and '127.0.0.1' or 'data.ultragis.com'
+pwd = __debug__ and 'lq1990' or 'Bayesian@2018'
+host = '127.0.0.1'
+pwd = 'lq1990'
+db_fetch = peewee.MySQLDatabase(host=host, database='fetch', user='root', password=pwd, charset='utf8')
 
 
 class BaseModel(peewee.Model):
     class Meta:
-        database = db_mysql
+        database = db_fetch
 
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     cls = type(self)
-    #
-    #     # 确认数据库连接
-    #     if db_mysql.is_closed():
-    #         db_mysql.connect()
-    #     # 确认数据表
-    #     if not cls.table_exists():
-    #         cls.create_table(fail_silently=True)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        cls = type(self)
+
+        # 确认数据库连接
+        if db_fetch.is_closed():
+            db_fetch.connect()
+        # 确认数据表
+        if not cls.table_exists():
+            cls.create_table(fail_silently=True)
 
 
 # 信息采集表
@@ -46,7 +49,6 @@ class GatherInfo(BaseModel):
     tels = peewee.CharField(null=True, help_text='联系电话')
     extends = peewee.TextField(null=True, help_text='扩展信息(json格式)')
     time = peewee.DateTimeField(default=datetime.now, help_text='时间戳')
-
 GatherInfo.create_table(True)
 
 
@@ -87,7 +89,6 @@ class JobIndex(BaseModel):
     def url_insert(url, state=0):
         url_hash = JobIndex.url_hash(url)
         JobIndex.get_or_create(uuid=url_hash, state=state)
-
 JobIndex.create_table(True)
 
 
@@ -97,14 +98,37 @@ class EventLog(BaseModel):
         db_table = 'event_log'
     ID = peewee.PrimaryKeyField()
     source = peewee.CharField(max_length=50)            # 招标来源（爬虫名称）
-    url = peewee.CharField()                            # 请求网址/
     level = peewee.CharField(max_length=50)             # 异常类型
-    status = peewee.IntegerField()                      # 状态码
+    info = JSONField(max_length=2000)                   # 异常信息描述
     time = peewee.DateTimeField(default=datetime.now)   # 时间戳
-    info = peewee.TextField()                           # 异常信息描述
+
+    url = peewee.CharField()                            # 请求网址/
+    status = peewee.IntegerField()                      # 状态码
     data = peewee.TextField()                           # 附加数据
 
+    @staticmethod
+    def log_event(source: str, level: str, msg: str='', info: dict={}):
+        EventLog.create(source=source, level=level, url=msg, info=info, status=0, data=info)
+
 EventLog.create_table(True)
+
+
+# 异常记录表
+class ExceptionLog(BaseModel):
+    class Meta:
+        db_table = 'exception_log'
+    ID = peewee.PrimaryKeyField()
+    source = peewee.CharField(max_length=50)                # 招标来源（爬虫名称）
+    level = peewee.CharField(max_length=50)                 # 异常类型
+    url = peewee.CharField(max_length=512, null=True)       # 请求网址
+    info = JSONField(max_length=2000)                       # 异常信息描述
+    time = peewee.DateTimeField(default=datetime.now)       # 时间戳
+
+    @staticmethod
+    def log_exception(source: str, level: str, url: str, info: dict):
+        return ExceptionLog.create(source=source, level=level, url=url, info=info)
+
+ExceptionLog.create_table(True)
 
 
 # 系统设置表

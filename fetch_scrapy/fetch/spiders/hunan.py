@@ -1,6 +1,6 @@
 import scrapy
-from . import JsonMetaSpider, GatherItem
-from . import DateExtractor, JsonLinkGenerator, JsonPageGenerator, HtmlContentExtractor
+from . import JsonMetaSpider
+from . import DateExtractor, HtmlPlainExtractor
 import json
 
 
@@ -9,45 +9,49 @@ class HunanSpider(JsonMetaSpider):
     alias = '湖南'
     allowed_domains = None      # ['ccgp-shandong.gov.cn', 'ccgp-shandong.gov.cn:8080']
     start_referer = None        # 'http://www.ccgp-hunan.gov.cn:8080/page/notice/more.jsp'
-    start_urls = ['http://www.ccgp-hunan.gov.cn:8080/portal/protalAction!getNoticeList.action']
+    start_urls = [
+        'http://www.ccgp-hunan.gov.cn:8080/mvc/getNoticeList4Web.do',           # 省级
+        'http://www.ccgp-hunan.gov.cn:8080/mvc/getNoticeListOfCityCounty.do'    # 市县
+    ]
     start_params = {
-        'page': {1: None},
-        'pageSize': {50: None},
+        'page': '1',
+        'pageSize': '50',
     }
     custom_settings = {'COOKIES_ENABLED': True, 'DOWNLOAD_DELAY': 2.6}
 
-    # 详情页链接（带框架的详情页）
-    link_generator = JsonLinkGenerator('/portal/protalAction!viewNoticeContent.action?noticeId={0[NOTICE_ID]}',
-                                       # '/page/notice/notice.jsp?noticeId={0[NOTICE_ID]}',
-                                       '', lambda x: x)
-
-    # 翻页链接（应该首次请求时获取记录总数，此处直接写数值）
-    # 获取记录总数：http://www.ccgp-hunan.gov.cn:8080/portal/protalAction!getNoticeListCount.action
-    page_generator = JsonPageGenerator('page', 'pageSize', lambda x: 28351)
-
-    def parse(self, response):
-        # 访问较为频繁时，服务器返回不正确的JSON包，需要稍后重试
-        if response.body == b'[]':
-            return [scrapy.Request(response.url, meta=response.meta)]
-        try:
-            objs = json.loads(response.body.decode())
-            return super().parse(response)
-        except:
-            return [scrapy.Request(response.url, meta=response.meta)]
+    def start_requests(self):
+        for url in self.start_urls:
+            yield scrapy.FormRequest(url, formdata=self.start_params, meta={'params': self.start_params},
+                                     headers={'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'})
 
     def link_requests(self, response):
-        if not hasattr(response, 'text'):
-            response.text = response.body.decode()
-        return super().link_requests(response)
+        url_ref = 'http://www.ccgp-hunan.gov.cn:8080/page/notice/notice.jsp?noticeId={0}'
+        url_item = 'http://www.ccgp-hunan.gov.cn:8080/mvc/viewNoticeContent.do?noticeId={0}&area_id={1}'
+        data = json.loads(response.text)
+        for row in isinstance(data, list) and data or data['rows']:
+            ref = url_ref.format(row['NOTICE_ID'])
+            url = url_item.format(row['NOTICE_ID'], row.get('AREA_ID') > 0 and '1' or '')
+            meta = {'data': row, 'top_url': ref, 'index_url': response.url}
+            yield scrapy.Request(url, meta=meta, headers={'Referer': ref}, callback=self.parse_item)
 
     def page_requests(self, response):
-        if not hasattr(response, 'text'):
-            response.text = response.body.decode()
-        return super().page_requests(response)
+        params = response.meta['params']
+        page = int(params['page'])
+        size = int(params['pageSize'])
+
+        data = json.loads(response.text)
+        if isinstance(data, list):
+            if len(data) == size:
+                params['page'] = str(page + 1)
+                yield scrapy.FormRequest(response.url, formdata=params, meta={'params': params})
+        else:
+            total = json.loads(response.text)['total']
+            if (page * size) < total:
+                params['page'] = str(page + 1)
+                yield scrapy.FormRequest(response.url, formdata=params, meta={'params': params})
 
     def parse_item(self, response):
         """ 解析详情页 """
-        # TODO: 应该先载入框架页，再请求详情页，即使详情页请求失败，也返回Item对象，这样就不会漏掉信息。
         data = response.meta['data']
         # 'AREA_ID'  = {int} -1
         # 'AREA_NAME'  = {str} '湖南省'
@@ -76,25 +80,32 @@ class HunanSpider(JsonMetaSpider):
         g['end'] = None
         g['title'] = data.get('NOTICE_TITLE')
         g['area'] = self.join_words(self.alias, data.get('AREA_NAME'))
-        g['subject'] = self.join_words(data.get('NOTICE_NAME'), data.get('PRCM_MODE_NAME'))
+        g['subject'] = self._subjects(data)
         g['industry'] = None
 
         # 详情页正文
-        content_extractor = HtmlContentExtractor(xpath=('//body/table/tr', '//body/*'))
-        if not response.xpath('//body/table/tr'):
-            content_extractor = HtmlContentExtractor(xpath=('//body/*',))
-        g['contents'] = content_extractor.extract_contents(response)
-        if response.text.startswith('[{') or response.text.startswith('{"count":'):
-            g['contents'] = []  # 空内容重试多次时，会返回索引页的JSON或count内容。
-            # TODO: 应该用配置项控制空返回值的重试功能是否启用，此处即使response返回空值，也可以返回Item对象。
+        content_extractor = HtmlPlainExtractor(xpath=('//body/div/p | //body/div/table',
+                                                      '//body/div/div/p | //body/div/div/table',
+                                                      '//form/div/table',
+                                                      '//body/table/tr', '//body/*'))
+        contents = content_extractor.contents(response)
+
+        g['contents'] = contents
         g['pid'] = None
         g['tender'] = None
         g['budget'] = None
         g['tels'] = None
         g['extends'] = data
-        g['digest'] = content_extractor.extract_digest(response)
+        g['digest'] = content_extractor.digest(contents)
 
-        # 附件
-        # files_extractor = FileLinkExtractor(css='#file_list a', attrs_css={'text': './text()'})
-        # g['attachments'] = [f for f in files_extractor.extract_files(response)]
         yield g
+
+    def _subjects(self, data: dict):
+        subject = {
+            '采购公告': '招标公告',
+            '更正公告': '更正公告',
+            '成交公告': '中标公告',
+            '合同公告': '其他公告',
+            '单一来源公示': '其他公告',
+        }.get(data['NOTICE_NAME'], '其他公告')
+        return self.join_words(subject, data.get('NOTICE_NAME'), data.get('PRCM_MODE_NAME'))

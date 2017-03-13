@@ -1,5 +1,5 @@
 from scrapy import signals
-from database import EventLog
+from database import EventLog, ExceptionLog
 from datetime import datetime, timedelta
 import json
 import sys
@@ -15,11 +15,8 @@ class ExceptionLogExtension(object):
         return ext
 
     def spider_error(self, failure, response, spider):
-        err = EventLog(source=spider.name, url=response.url, level='ERROR')
-        err.status = 6001
-        err.info = str(failure)
-        err.data = json.dumps(response.meta, ensure_ascii=False)
-        err.save()
+        ExceptionLog.log_exception(spider.name, 'ERROR', response.url,
+                                   info={'meta': response.meta, 'exception': str(failure)})
         spider.logger.error('failure at: ' + response.url)
         spider.logger.error('failure info: ' + str(failure))
 
@@ -45,36 +42,18 @@ class SpiderStatsExtension(object):
         return ext
 
     def spider_opened(self, spider):
-        data = {
-            'spider': spider.name,
-            'alias': spider.alias,
-            'args': self.args,
-            'start': str(self.start),
-        }
         self.count += 1
-        url = '({1:02}) {0}'.format(spider.name, self.count)
-        evt = EventLog(source='statistics', url=url, level='OPEN', status=1101)
-        evt.info = spider.name
-        evt.data = json.dumps(data, ensure_ascii=False)
-        evt.save()
+        EventLog.log_event(spider.name, 'OPEN', info={'start': str(self.start), 'count': self.count})
 
     def spider_closed(self, spider, reason):
-        data = {
-            'spider': spider.name,
-            'alias': spider.alias,
-            'items': self.items,
-            'errors': self.errors,
-            'args': self.args,
-            'start': str(self.start),
-            'stop': str(datetime.now()),
-        }
         self.count -= 1
-        url = '({1:02}) {0}: {2} seconds'.format(spider.name, self.count, (datetime.now() - self.start).seconds)
-        evt = EventLog(source='statistics', url=url, level='CLOSE', status=1102)
-        evt.info = '{0} items: {1}, errors: {2}'.format(
-            spider.name, self.items.get(spider.name, 0), self.errors.get(spider.name, 0))
-        evt.data = json.dumps(data, ensure_ascii=False)
-        evt.save()
+        seconds = (datetime.now() - self.start).seconds
+        items = self.items.get(spider.name, 0)
+        errors = self.errors.get(spider.name, 0)
+        msg = '({0:2}) seconds: {1}, items: {2}, errors: {3}'.format(self.count, seconds, items, errors)
+        EventLog.log_event(spider.name, 'CLOSE', msg,
+                           info={'start': str(self.start), 'count': self.count, 'reason': str(reason),
+                                 'seconds': seconds, 'items': items, 'errors': errors})
 
     def item_scraped(self, item, spider):
         self.items[spider.name] = self.items.get(spider.name, 0) + 1

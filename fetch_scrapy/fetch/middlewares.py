@@ -1,22 +1,29 @@
 from scrapy.exceptions import IgnoreRequest
 from scrapy.downloadermiddlewares.retry import RetryMiddleware
-from database import EventLog
+from database import ExceptionLog
 import json
 
 
-# HTTP请求异常时记录信息
+# 请求异常时记录信息
 class HttpExceptionMiddleware(object):
-    def process_exception(self, request, exception, spider):
-        e = EventLog(source=spider.name, url=request.url, level='HTTP', status=5001)
-        e.info = str(exception)
-        e.data = json.dumps(request.meta, ensure_ascii=False)
-        e.save()
+    @staticmethod
+    def process_exception(request, exception, spider):
+        ExceptionLog.log_exception(spider.name, 'HTTP', request.url,
+                                   info={'meta': request.meta, 'exception': str(exception)})
         spider.logger.error('HTTP exception at: ' + request.url)
+
+
+# 解析异常时记录信息
+class SpiderExceptionMiddleware(object):
+    @staticmethod
+    def process_spider_exception(response, exception, spider):
+        ExceptionLog.log_exception(spider.name, 'SPIDER', response.url,
+                                   info={'meta': response.meta, 'exception': str(exception), 'status': response.status})
+        spider.logger.error('PARSE exception for: ' + response.url)
 
 
 # 服务器返回空值时重试
 class EmptyRetryMiddleware(object):
-
     def __init__(self, settings):
         self.max_retry_times = settings.getint('RETRY_TIMES')
 
@@ -32,22 +39,11 @@ class EmptyRetryMiddleware(object):
             req = request.copy()
             req.meta['retry_times'] = retry
             req.dont_filter = True
+            ExceptionLog.log_exception(spider.name, 'RETRY', response.url, info={})
             spider.logger.warning('retry: {0} for {1} times.'.format(req.url, retry))
             return req
         else:
-            e = EventLog(source=spider.name, url=response.url, level='RETRY', status=5002)
-            e.info = 'retry {0} times fail.'.format(retry)
-            e.data = json.dumps(request.meta, ensure_ascii=False)
-            e.save()
+            ExceptionLog.log_exception(spider.name, 'RETRY_MAX', response.url, info={})
             spider.logger.error('RETRY max fails for: ' + request.url)
-            raise IgnoreRequest(e.info)
+            raise IgnoreRequest('retry {0} times fail.'.format(retry))
 
-
-# 解析异常时记录
-class SpiderExceptionMiddleware(object):
-    def process_spider_exception(self, response, exception, spider):
-        e = EventLog(source=spider.name, url=response.url, level='SPIDER', status=response.status)
-        e.info = str(exception)
-        e.data = json.dumps(response.meta, ensure_ascii=False)
-        e.save()
-        spider.logger.error('SPIDER exception for: ' + response.url)

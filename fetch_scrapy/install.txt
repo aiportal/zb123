@@ -11,7 +11,7 @@ sudo apt-get install libssl-dev
 apt-get install -y libffi-dev
 pip3 install Twisted
 pip3 install w3lib
-pip3 install lxm
+pip3 install lxml
 
 pip3 install scrapy
 

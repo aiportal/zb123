@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import scrapy
 import re
 from datetime import datetime, date
 from urllib.parse import urljoin
@@ -202,6 +203,52 @@ class HtmlContentExtractor(object):
     @staticmethod
     def _text(selector, sep=''):
         return sep.join([s.strip() for s in selector.xpath('.//text()').extract() if s.strip()])
+
+
+class HtmlPlainExtractor:
+    """ 将HTML文件转换为普通文本 """
+    def __init__(self, css=(), xpath=(), tags=('div', 'p', 'ul', 'table')):
+        """ 多个选择器为择一使用关系，优先使用选中元素最多的那个 """
+        self.css = isinstance(css, str) and (css,) or css
+        self.xpath = isinstance(xpath, str) and (xpath,) or xpath
+        self.tags = tags
+
+    def contents(self, response):
+        selectors = [response.css(x) for x in self.css] + [response.xpath(x) for x in self.xpath]
+        selector = max(selectors, key=lambda x: len(x))
+        if not selector:
+            return None
+        rows = []
+        for row in selector:
+            assert isinstance(row, scrapy.Selector)
+            if self._is_table(row):
+                content = ''.join([s for s in row.extract() if s])
+            else:
+                contents = [x for x in row.xpath('.//text()').extract()]
+                content = ''.join([s.strip() for s in contents if s.strip()])
+            if content:
+                assert isinstance(content, str)
+                rows.append(content)
+        return rows
+
+    @staticmethod
+    def _is_table(selector: scrapy.Selector):
+        return selector.root.tag.lower() == 'table'
+
+    @staticmethod
+    def digest(contents: list, key_max_len=30, val_max_len=100):
+        digest = {}
+        for i, row in enumerate(contents):
+            if '：' in row.strip('：'):
+                val = row.split('：')[-2:]
+                if len(val) == 2 and len(val[0]) < key_max_len and len(val[1]) < val_max_len:
+                    digest[val[0]] = val[1]
+            elif row.endswith('：'):
+                if i + 1 >= len(contents):
+                    continue
+                if len(row) < key_max_len and len(contents[i+1]) < val_max_len:
+                    digest[row] = contents[i+1]
+        return digest
 
 
 class DateExtractor:

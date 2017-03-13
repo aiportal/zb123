@@ -1,5 +1,5 @@
 from .items import GatherItem
-from database import GatherInfo, ContentInfo, SysConfig, db_mysql
+from database import GatherInfo, ContentInfo, SysConfig
 import json
 import zipfile
 import csv

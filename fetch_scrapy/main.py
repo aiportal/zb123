@@ -4,7 +4,6 @@ import sys
 import logging
 from database import EventLog
 import os
-from datetime import datetime
 
 
 # 设置工作目录
@@ -16,7 +15,7 @@ logging.getLogger('peewee').setLevel(logging.ERROR)
 
 
 # log startup
-EventLog(source='process', url=str(os.getpid()), level='STARTUP', status=1001, info=str(datetime.now()), data='').save()
+EventLog.log_event('main', 'START', ' '.join(sys.argv), info={'pid': os.getpid()})
 
 
 # 启动spiders
@@ -33,4 +32,4 @@ process.start()
 
 
 # log stopped
-EventLog(source='process', url=str(os.getpid()), level='STOPPED', status=1002, info=str(datetime.now()), data='').save()
+EventLog.log_event('main', 'STOP', ' '.join(sys.argv), info={'pid': os.getpid()})

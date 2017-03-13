@@ -27,8 +27,7 @@ class ChongqingSpider(JsonMetaSpider):
     dict_purchase = {'100': '公开招标', '200': '邀请招标', '300': '竞争性谈判', '400': '询价', '500': '单一来源',
                      '800': '竞争性磋商', '6001': '电子竞价', '6002': '电子反拍'}
 
-    link_generator = JsonLinkGenerator('/gwebsite/api/v1/notices/stable/{0[id]}', '/notices/{0[id]}',
-                                       lambda x: x['notices'])
+    link_generator = JsonLinkGenerator('/gwebsite/api/v1/notices/stable/{0[id]}', '', lambda x: x['notices'])
     page_generator = JsonPageGenerator('pi', 'ps', lambda x: x['total'])
 
     def parse_item(self, response):
