@@ -6,7 +6,7 @@ from urllib.parse import urljoin
 import json
 from urllib.parse import urlsplit, parse_qs, urlencode, urlunsplit
 from scrapy.selector import Selector
-from typing import Union
+from typing import List, Union
 
 
 class NodesExtractor:
@@ -218,25 +218,30 @@ class HtmlPlainExtractor:
         selector = max(selectors, key=lambda x: len(x))
         if not selector:
             return None
-        rows = []
+
+        contents = []
         for row in selector:
             assert isinstance(row, scrapy.Selector)
-            if self._is_table(row):
+            tag = hasattr(row.root, 'tag') and row.root.tag.lower() or 'str'
+
+            if tag == 'str':
+                content = ''.join([s.strip() for s in row.extract() if s.strip()])
+            elif tag == 'table':
                 content = ''.join([s for s in row.extract() if s])
+            elif tag == 'img':
+                contents = ''.join([s for s in row.extract() if s])
             else:
-                contents = [x for x in row.xpath('.//text()').extract()]
-                content = ''.join([s.strip() for s in contents if s.strip()])
+                lns = [x for x in row.xpath('.//text()').extract()]
+                content = ''.join([s.strip() for s in lns if s.strip()])
+
             if content:
                 assert isinstance(content, str)
-                rows.append(content)
-        return rows
+                contents.append(content)
+        return contents
 
     @staticmethod
-    def _is_table(selector: scrapy.Selector):
-        return selector.root.tag.lower() == 'table'
-
-    @staticmethod
-    def digest(contents: list, key_max_len=30, val_max_len=100):
+    def digest(contents: list, key_max_len=30, val_max_len=255):
+        """ 提取摘要信息 """
         digest = {}
         for i, row in enumerate(contents):
             if '：' in row.strip('：'):

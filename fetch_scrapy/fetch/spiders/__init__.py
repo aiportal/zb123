@@ -85,7 +85,7 @@ class BaseSpider(scrapy.Spider, SpiderHelper):
     def parse(self, response):
         yield from super().parse(response)
 
-    def gather_item(self, response):
+    def gather_item(self, response) -> GatherItem:
         """ 解析 GatherItem 对象的基本属性"""
 
         # 用请求网址的hash做主键

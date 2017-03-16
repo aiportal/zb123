@@ -39,11 +39,11 @@ class EmptyRetryMiddleware(object):
             req = request.copy()
             req.meta['retry_times'] = retry
             req.dont_filter = True
-            ExceptionLog.log_exception(spider.name, 'RETRY', response.url, info={})
+            ExceptionLog.log_exception(spider.name, 'RETRY', response.url, info=request.meta)
             spider.logger.warning('retry: {0} for {1} times.'.format(req.url, retry))
             return req
         else:
-            ExceptionLog.log_exception(spider.name, 'RETRY_MAX', response.url, info={})
+            ExceptionLog.log_exception(spider.name, 'RETRY_MAX', response.url, info=request.meta)
             spider.logger.error('RETRY max fails for: ' + request.url)
             raise IgnoreRequest('retry {0} times fail.'.format(retry))
 
