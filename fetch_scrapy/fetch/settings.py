@@ -7,6 +7,7 @@
 #     http://doc.scrapy.org/en/latest/topics/settings.html
 #     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
+import sys
 
 
 BOT_NAME = 'fetch'
@@ -16,10 +17,10 @@ NEWSPIDER_MODULE = 'fetch.spiders'
 # COMMANDS_MODULE = 'fetch.commands'
 
 # 压缩文件和CSV文件的保存路径
-PACKAGE_FOLDER = '/prj/zb123/data/v2'
+PACKAGE_FOLDER = '/prj/zb123/data'
 
 # 附件存储路径
-FILES_STORE = '/prj/zb123/data/v2'
+FILES_STORE = '/prj/zb123/data'
 
 # 服务器返回空值时的重试次数
 RETRY_TIMES = 3
@@ -47,7 +48,7 @@ ITEM_PIPELINES = {
     # 'scrapy.pipelines.files.FilesPipeline': 1,
     # 'fetch.pipelines.AttachmentsPipeline': 10,
     'fetch.pipelines.MysqlPipeline': 200,
-    'fetch.pipelines.ZipPackagePipeline': None,
+    'fetch.pipelines.ZipPackagePipeline': '-full' in sys.argv and 300 or None,
     'fetch.pipelines.CsvPipeline': None,
 }
 
@@ -92,7 +93,9 @@ DOWNLOAD_DELAY = __debug__ and 0.1 or 1.0
 COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
-TELNETCONSOLE_ENABLED = False
+# TELNETCONSOLE_ENABLED = True
+# TELNETCONSOLE_PORT = [6023, 6073]
+# TELNETCONSOLE_HOST = '127.0.0.1'
 
 
 # Enable and configure the AutoThrottle extension (disabled by default)

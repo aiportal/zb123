@@ -12,6 +12,7 @@ import uuid
 from database import JobIndex
 from fetch.items import GatherItem
 from fetch.extractors import *
+import sys
 
 
 class SpiderHelper(object):
@@ -94,7 +95,7 @@ class BaseSpider(scrapy.Spider, SpiderHelper):
         url_hash = JobIndex.url_hash(url)
 
         g = GatherItem(source=source, url=url, uuid=url_hash)
-        g['html'] = None
+        g['html'] = '-full' in sys.argv and response.text or None
         g['real_url'] = response.url == url and None or response.url
         g['top_url'] = response.meta.get('top_url')
         g['index_url'] = response.meta.get('index_url') or response.request.headers.get('Referer', '').decode()

@@ -1,6 +1,6 @@
 from scrapy import signals
 from database import EventLog, ExceptionLog
-from datetime import datetime, timedelta
+from datetime import datetime, date, timedelta
 import json
 import sys
 
@@ -43,6 +43,7 @@ class SpiderStatsExtension(object):
 
     def spider_opened(self, spider):
         self.count += 1
+        self.items[spider.name] = 0
         EventLog.log_event(spider.name, 'OPEN', info={'start': str(self.start), 'count': self.count})
 
     def spider_closed(self, spider, reason):
@@ -55,8 +56,27 @@ class SpiderStatsExtension(object):
                            info={'start': str(self.start), 'count': self.count, 'reason': str(reason),
                                  'seconds': seconds, 'items': items, 'errors': errors})
 
+        if self.count < 1:
+            self.send_stat_msg()
+
     def item_scraped(self, item, spider):
         self.items[spider.name] = self.items.get(spider.name, 0) + 1
 
     def spider_error(self, failure, response, spider):
         self.errors[spider.name] = self.errors.get(spider.name, 0) + 1
+
+    def send_stat_msg(self):
+        # 发送结果统计
+        from wechatpy.enterprise.client import WeChatClient
+        from wechatpy.enterprise.client.api import WeChatMessage
+        wx_company = WeChatClient('wx2c67ebb55a4012c3', 'dFtHnrP3gBqIwj0aEmaRxyTlgQhg1caMWVQXW1HykiaGQ3Qpk-KIOUtF27G1IDQ5')
+        wx_msg = WeChatMessage(wx_company)
+
+        head = ['[scrapy]'
+                '{0:%Y-%m-%d %H:%M}'.format(self.start),
+                '{0} seconds'.format((datetime.now()-self.start).seconds),
+                '']
+        stat = ['{0}: {1} items, {2} errors.'.format(k, v, self.errors.get(k, 0))
+                for k, v in self.items.items()]
+        msg = '\n'.join(head + stat)
+        wx_msg.send_text(10, 'bfbd', msg)
