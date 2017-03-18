@@ -235,7 +235,8 @@ class DayTitlesApi(HTTPMethodView):
                 }
 
         # 默认以北京为中心点
-        default = next([x for x in self.sources if x.key == 'beijing'], self.sources[0])
+        beijing = [x for x in self.sources if x.key == 'beijing']
+        default = next(iter(beijing + self.sources))
         return json.loads(default.info)
 
 

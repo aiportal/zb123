@@ -6,7 +6,8 @@ import platform
 
 
 host = platform.system() == 'Windows' and 'data.ultragis.com' or '127.0.0.1'
-db_zb123 = PooledMySQLDatabase(host=host, database='zb123', user='root', password='Bayesian@2018', charset='utf8mb4')
+db_zb123 = PooledMySQLDatabase(host=host, database='zb123', user='root', password='Bayesian@2018', charset='utf8mb4',
+                               max_connections=32)
 
 
 class BaseModel(peewee.Model):

@@ -16,8 +16,11 @@ def before_req():
 
 @app.teardown_request
 def teardown_req(exc):
-    uid = request.cookies.get('uid', '')
-    AccessLog.log_access(uid, request.url, {'ip': request.remote_addr})
+    try:
+        uid = request.cookies.get('uid', '')
+        AccessLog.log_access(uid, request.url, {'ip': request.remote_addr})
+    except Exception as ex:
+        print('<<< teardown_req >>> ', str(ex))
     Database.close()
 
 
@@ -58,11 +61,11 @@ api_v3.add_url_rule('/suggest', view_func=apis.SuggestApi.as_view('suggest'))   
 @api_v3.before_request
 def before_api_request():
     """ 检查访问权限 """
+    Database.connect()
     uid = request.cookies.get('uid')
     user = UserInfo.get_user(uid)
     if not user:
         return make_response('Invalid usage.')
-
 
 # 注册API接口
 app.register_blueprint(api_v3)
@@ -73,7 +76,8 @@ app.register_blueprint(api_v3)
 def debug():
     resp = make_response(redirect(url_for('welcome', _external=True)))
     # 设置 cookie，帮助 welcome 网址判断转向
-    resp.set_cookie('uid', value='o31RHuPslKvzzBccwwoXv_GKmfEA')
+    uid = request.args.get('uid', 'o31RHuPslKvzzBccwwoXv_GKmfEA')
+    resp.set_cookie('uid', value=uid)
     return resp
 
 
