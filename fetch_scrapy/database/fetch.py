@@ -4,7 +4,7 @@ from datetime import datetime, date
 import uuid
 
 
-host =  __debug__ and '127.0.0.1' or 'data.ultragis.com'
+host = __debug__ and '127.0.0.1' or 'data.ultragis.com'
 pwd = __debug__ and 'lq1990' or 'Bayesian@2018'
 host = '127.0.0.1'
 pwd = 'lq1990'

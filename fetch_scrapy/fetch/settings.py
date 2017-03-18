@@ -47,7 +47,7 @@ USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
 ITEM_PIPELINES = {
     # 'scrapy.pipelines.files.FilesPipeline': 1,
     # 'fetch.pipelines.AttachmentsPipeline': 10,
-    'fetch.pipelines.MysqlPipeline': 200,
+    'fetch.pipelines.MysqlPipeline': (not __debug__) and 200 or None,
     'fetch.pipelines.ZipPackagePipeline': '-full' in sys.argv and 300 or None,
     'fetch.pipelines.CsvPipeline': None,
 }

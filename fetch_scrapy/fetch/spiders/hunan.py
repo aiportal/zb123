@@ -102,7 +102,8 @@ class HunanSpider(JsonMetaSpider):
         link = digest.get('公告链接')
         if link:
             assert len(contents) < 10
-            return [scrapy.Request(link, meta=response.meta, callback=self.parse_item)]
+            url = link.startswith('http:') and link or ('http://'+link)
+            return [scrapy.Request(url, meta=response.meta, callback=self.parse_item)]
 
         # GatherItem
         g = self.gather_item(response)

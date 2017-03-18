@@ -1,6 +1,6 @@
 import scrapy
 from . import HtmlMetaSpider, GatherItem
-from . import NodeValueExtractor, MetaLinkExtractor, DateExtractor, HtmlContentExtractor, FileLinkExtractor
+from . import NodeValueExtractor, MetaLinkExtractor, DateExtractor, HtmlContentExtractor, HtmlPlainExtractor
 import re
 
 
@@ -12,10 +12,17 @@ class AnhuiSpider(HtmlMetaSpider):
     start_urls = ['http://www.ahzfcg.gov.cn/mhxt/MhxtSearchBulletinController.zc']
     start_params = {
         'method': {'bulletinChannelRightDown': None},
-        'bType': {'01': '招标公告/采购公告', '02': '更正公告', '03': '中标公告', '04': '中标公告/成交公告', '06': '其他公告/单一来源公示',
-                  '99': '其他公告/合同公告', '07': '其他公告/废标、流标公告'},
+        'bType': {
+            '01': '招标公告/采购公告',
+            '02': '更正公告',
+            '03': '中标公告',
+            '04': '中标公告/成交公告',
+            '06': '其他公告/单一来源公示',
+            '99': '其他公告/合同公告',
+            '07': '其他公告/废标、流标公告'
+        },
         'pageNo': {1: None},
-        'pageSize': {10: None}
+        'pageSize': {50: None}
     }
     # 详情页链接
     link_extractor = MetaLinkExtractor(css='ul > li > a', url_attr='href',
@@ -47,14 +54,20 @@ class AnhuiSpider(HtmlMetaSpider):
         g['industry'] = None
 
         # 详情页正文
-        content_extractor = HtmlContentExtractor(css=('div.frameNews table tr', 'div.frameNews > *'))
-        g['contents'] = content_extractor.extract_contents(response)
+        content_extractor = HtmlPlainExtractor(
+            xpath=('//div[@class="frameNews"]/*[not(br)]|//div[@class="frameNews"]/text()',),
+            css=('div.frameNews > *', 'div.frameNews table tr'),
+        )
+        contents = content_extractor.contents(response)
+        digest = content_extractor.digest(contents)
+
+        g['contents'] = contents
         g['pid'] = None
         g['tender'] = None
         g['budget'] = None
         g['tels'] = None
         g['extends'] = data
-        g['digest'] = content_extractor.extract_digest(response)
+        g['digest'] = digest
 
         # 附件
         # files_extractor = FileLinkExtractor(css='#file_list a', attrs_css={'text': './text()'})

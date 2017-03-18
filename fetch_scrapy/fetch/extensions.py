@@ -64,6 +64,10 @@ class SpiderStatsExtension(object):
 
     def spider_error(self, failure, response, spider):
         self.errors[spider.name] = self.errors.get(spider.name, 0) + 1
+        ExceptionLog.log_exception(spider.name, 'ERROR', response.url, info={
+            'meta': response.meta,
+            'failure': str(failure)
+        })
 
     def send_stat_msg(self):
         # 发送结果统计
@@ -72,7 +76,7 @@ class SpiderStatsExtension(object):
         wx_company = WeChatClient('wx2c67ebb55a4012c3', 'dFtHnrP3gBqIwj0aEmaRxyTlgQhg1caMWVQXW1HykiaGQ3Qpk-KIOUtF27G1IDQ5')
         wx_msg = WeChatMessage(wx_company)
 
-        head = ['[scrapy]'
+        head = ['[scrapy]',
                 '{0:%Y-%m-%d %H:%M}'.format(self.start),
                 '{0} seconds'.format((datetime.now()-self.start).seconds),
                 '']

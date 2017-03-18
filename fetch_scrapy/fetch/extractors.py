@@ -217,7 +217,7 @@ class HtmlPlainExtractor:
         selectors = [response.css(x) for x in self.css] + [response.xpath(x) for x in self.xpath]
         selector = max(selectors, key=lambda x: len(x))
         if not selector:
-            return None
+            return []
 
         contents = []
         for row in selector:
@@ -226,10 +226,13 @@ class HtmlPlainExtractor:
 
             if tag == 'str':
                 content = ''.join([s.strip() for s in row.extract() if s.strip()])
-            elif tag == 'table':
+            elif tag in ('table', 'img'):
                 content = ''.join([s for s in row.extract() if s])
-            elif tag == 'img':
-                contents = ''.join([s for s in row.extract() if s])
+            elif tag in ('div', 'p', 'tr', 'span', 'u', 'h1', 'font'):
+                lns = [x for x in row.xpath('.//text()').extract()]
+                content = ''.join([s.strip() for s in lns if s.strip()])
+            elif tag in ('style', 'script'):
+                content = ''
             else:
                 lns = [x for x in row.xpath('.//text()').extract()]
                 content = ''.join([s.strip() for s in lns if s.strip()])

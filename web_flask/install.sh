@@ -66,7 +66,7 @@ docker save -o docker_python35.tar python35:sanic
 
 
 # zb123
-docker run -dit --name=zb123 --net=host -v /prj:/prj zb123:3.3.3
+docker run -dit --name=zb123 --net=host -v /prj:/prj zb123:3.3.5
 
 # mysql
 docker run -dit --name=r_mysql --restart=always -p 3306:3306 zb123:3.3.1
@@ -76,7 +76,7 @@ docker exec r_mysql service mysql start
 docker run -dit --name=r_sanic --net=host --restart=always -v /prj:/prj zb123:3.3.1 ~/sanic.sh
 
 # fetch
-docker run -dit --name=r_fetch --net=host -v /prj:/prj zb123:3.3.3 ~/fetch.sh
+docker run -dit --name=r_fetch --net=host -v /prj:/prj zb123:3.3.5 ~/fetch.sh
 
 # flask
 docker run -dit --name=r_flask --net=host -v /prj:/prj zb123:3.3.3 ~/flask.sh
