@@ -1,6 +1,6 @@
 import scrapy
-from . import HtmlMetaSpider, GatherItem
-from . import MetaLinkExtractor, DateExtractor, HtmlContentExtractor, FileLinkExtractor
+from . import HtmlMetaSpider
+from . import MetaLinkExtractor, DateExtractor, HtmlContentExtractor, MoneyExtractor
 import re
 
 
@@ -17,7 +17,7 @@ class GuangxiSpider(HtmlMetaSpider):
     start_urls = ['http://www.gxgp.gov.cn/']
     start_params = {
         'subject': {
-            'ygswz/index.htm': '预公告',
+            'ygswz/index.htm': '预公告/预公示',
             'cggkzb/index.htm': '招标公告/公开招标', 'cgjz/index.htm': '招标公告/竞争性谈判',
             'cgdyly/index.htm': '招标公告/单一来源', 'cgxjcg/index.htm': '招标公告/询价采购',
             'zbgkzb/index.htm': '中标公告/公开招标', 'zbjz/index.htm': '中标公告/竞争性谈判',
@@ -55,12 +55,9 @@ class GuangxiSpider(HtmlMetaSpider):
         g['contents'] = content_extractor.extract_contents(response)
         g['pid'] = None
         g['tender'] = None
-        g['budget'] = None
+        g['budget'] = MoneyExtractor.money_max(response.css('div.pbox'))
         g['tels'] = None
         g['extends'] = data
         g['digest'] = content_extractor.extract_digest(response)
 
-        # 附件
-        # files_extractor = FileLinkExtractor(css='#file_list a', attrs_css={'text': './text()'})
-        # g['attachments'] = [f for f in files_extractor.extract_files(response)]
         yield g

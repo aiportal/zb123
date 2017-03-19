@@ -1,6 +1,6 @@
 import scrapy
 from . import HtmlMetaSpider, GatherItem
-from . import NodeValueExtractor, MetaLinkExtractor, DateExtractor, HtmlContentExtractor, HtmlPlainExtractor
+from . import NodeValueExtractor, MetaLinkExtractor, DateExtractor, MoneyExtractor
 import re
 
 
@@ -54,22 +54,19 @@ class AnhuiSpider(HtmlMetaSpider):
         g['industry'] = None
 
         # 详情页正文
-        content_extractor = HtmlPlainExtractor(
-            xpath=('//div[@class="frameNews"]/*[not(br)]|//div[@class="frameNews"]/text()',),
-            css=('div.frameNews > *', 'div.frameNews table tr'),
-        )
-        contents = content_extractor.contents(response)
-        digest = content_extractor.digest(contents)
+        # content_extractor = HtmlPlainExtractor(
+        #     xpath=('//div[@class="frameNews"]/*[not(br)]|//div[@class="frameNews"]/text()',),
+        #     css=('div.frameNews > *', 'div.frameNews table tr'),
+        # )
+        # contents = content_extractor.contents(response)
+        # digest = content_extractor.digest(contents)
 
-        g['contents'] = contents
+        g['contents'] = response.css('div.frameNews').extract()
         g['pid'] = None
         g['tender'] = None
-        g['budget'] = None
+        g['budget'] = max(MoneyExtractor.money_all(response.css('div.frameNews')) + [0])
         g['tels'] = None
         g['extends'] = data
-        g['digest'] = digest
+        g['digest'] = None
 
-        # 附件
-        # files_extractor = FileLinkExtractor(css='#file_list a', attrs_css={'text': './text()'})
-        # g['attachments'] = [f for f in files_extractor.extract_files(response)]
-        yield g
+        return [g]

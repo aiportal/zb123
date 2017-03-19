@@ -1,89 +1,76 @@
 import scrapy
-from . import JsonMetaSpider, GatherItem
-from . import DateExtractor, HtmlContentExtractor, JsonLinkGenerator, JsonPageGenerator
+from . import HtmlMetaSpider, GatherItem
+from . import DateExtractor, MetaLinkExtractor, MoneyExtractor
 import json
 
 
-class FujianSpider(JsonMetaSpider):
+class FujianSpider(HtmlMetaSpider):
     name = 'fujian'
     alias = '福建'
     allowed_domains = ["cz.fjzfcg.gov.cn"]
+
     start_referer = 'http://cz.fjzfcg.gov.cn/n/webfjs/secpag.do'
-    start_urls = ['http://cz.fjzfcg.gov.cn/n/webfjs/queryPageData.do?']
+    start_urls = ['http://cz.fjzfcg.gov.cn/notice/noticelist/']
     start_params = {
-        'zs': 1,
-        'sid': {
-            '200100007': '预公告',
-            '200100001': '招标公告',
-            '200100002': '中标公告',
-            '200100003': '其他公告/补充公告',
-            '200100009': '其他公告/流标公告',
-            '200100010': '其他公告/分散采购公告',
-            # '200100008': '预审结果公告',
-            # '200100015': '延期公告',
-            # '200100016': '结果变更',
-            # '200100017': '资格预审公告',
+        'notice_type': {
+            '200000001': '招标公告/采购公告',
+            '200000002': '更正公告',
+            '200000004': '中标公告/合同公告',
+            '200000005': '预公告/资格预审',
         },
-        'level': {'province': '省级', 'city': '市级', 'county': '县级'},
-        'page': 1,
-        'rows': 20,
+        'page': 1
     }
-    custom_settings = {'COOKIES_ENABLED': True, 'DOWNLOAD_DELAY': 3.0}
+    custom_settings = {'COOKIES_ENABLED': True, 'DOWNLOAD_DELAY': 2.1}
 
     def start_requests(self):
-        url = self.start_urls[0]
-        for lk, lv in self.start_params['level'].items():
-            for sk, sv in self.start_params['sid'].items():
-                form = {'zs': '1', 'sid': sk, 'level': lk, 'page': '1', 'rows': '20'}
-                params = {'level': lv, 'sid': sv}
-                yield scrapy.FormRequest(url, formdata=form, meta={'params': params, 'form': form}, dont_filter=True)
+        for k, v in self.start_params['notice_type'].items():
+            url = '{0}?notice_type={1}&page={2}'.format(self.start_urls[0], k, 1)
+            params = {'subject': v, 'page': '1'}
+            yield scrapy.Request(url, meta={'params': params}, dont_filter=True)
 
-    link_generator = JsonLinkGenerator('/n/noticemgr/query-viewcontentfj.do?noticeId={0[noticeId]}',
-                                       '/n/webfjs/article.do?noticeId={0[noticeId]}', lambda x: x['list'])
+    def link_requests(self, response):
+        link_extractor = MetaLinkExtractor(css=('ul.pag_box20 > li > a',),
+                                           attrs_xpath={'text': './/text()',
+                                                        'day': '../span//text()'})
+        for link in link_extractor.extract_links(response):
+            data = dict(link.meta, **response.meta['params'])
+            yield scrapy.Request(link.url, meta={'data': data})
 
     def page_requests(self, response):
-        res = json.loads(response.text)
-        total = int(res['list1'][0]['TOTAL'])
-        form = response.meta['form']
-        page = int(form['page'])
-        size = int(form['rows'])
-        if (page * size) < total:
-            form['page'] = str(page + 1)
-            yield scrapy.FormRequest(self.start_urls[0], formdata=form, meta=response.meta)
+        page_extractor = MetaLinkExtractor(css=('div.pag_box23 > p > a', ),
+                                           attrs_xpath={'text': './/text()'})
+        pages = [int(x.meta['text']) for x in page_extractor.extract_links(response)
+                 if x.meta['text'].isdecimal()]
+        count = max(pages + [1])
+        page = int(response.meta['params']['page']) + 1
+        if page < count:
+            response.meta['params']['page'] = str(page)
+            url = self.replace_url_param(response.url, page=page)
+            return [scrapy.Request(url, meta=response.meta)]
+        else:
+            return []
 
     def parse_item(self, response):
         """ 解析详情页
         """
-        self.logger.info('parse item: ' + response.url)
         data = response.meta['data']
-        # 'areaCode' (2100655384112) = {str} '591'      （地区编码）
-        # 'areaName' (2100655384176) = {str} '福建省'
-        # 'author' (2100655324832) = {str} 'C025052BDB3740F89B7ED926C9A3DF79'   (招标单位？)
-        # 'bidDate' (2100655324888) = {str} '20161020093000'
-        # 'dictCode' (2100655384304) = {str} '200100001'
-        # 'noticeId' (2100655384432) = {str} '2DC88C76265B4CA79AA4AB4F00C22C32'
-        # 'proId' (2100655324944) = {str} 'FJXW2016065'
-        # 'time' (2100655325000) = {str} '20160928145005'
-        # 'title' (2100655325056) = {str} '卫生应急队伍装备建设项目项目招标公告'
-        # 'type' (2100655325112) = {str} '招标公告'
 
         # GatherItem
         g = self.gather_item(response)
 
-        g['day'] = DateExtractor.extract(data.get('time'))
-        g['end'] = DateExtractor.extract(data.get('bidDate'))
-        g['title'] = data.get('title')
-        g['area'] = self.join_words(self.alias, data.get('level'), data.get('areaName'))
-        g['subject'] = self.join_words(data.get('sid'), data.get('zzxs'), data.get('type'))
+        g['day'] = DateExtractor.extract(data.get('day'))
+        g['end'] = None
+        g['title'] = data.get('title') or data.get('text')
+        g['area'] = self.join_words(self.alias)
+        g['subject'] = data.get('subject')
         g['industry'] = None
 
-        content_extractor = HtmlContentExtractor(xpath='//body')
-        g['contents'] = response.xpath('//body').extract()
+        g['contents'] = response.css('div.pag_box29').extract()
         g['pid'] = data.get('proId')
-        g['tender'] = self.join_words(data.get('author'))
-        g['budget'] = None
+        g['tender'] = None
+        g['budget'] = MoneyExtractor.money_max(response.css('div.pag_box29'))
         g['tels'] = None
         g['extends'] = data
-        g['digest'] = content_extractor.extract_digest(response)
+        g['digest'] = None
 
-        yield g
+        return [g]

@@ -6,8 +6,6 @@ import uuid
 
 host = __debug__ and '127.0.0.1' or 'data.ultragis.com'
 pwd = __debug__ and 'lq1990' or 'Bayesian@2018'
-host = '127.0.0.1'
-pwd = 'lq1990'
 db_fetch = peewee.MySQLDatabase(host=host, database='fetch', user='root', password=pwd, charset='utf8')
 
 
@@ -121,7 +119,7 @@ class ExceptionLog(BaseModel):
     source = peewee.CharField(max_length=50)                # 招标来源（爬虫名称）
     level = peewee.CharField(max_length=50)                 # 异常类型
     url = peewee.CharField(max_length=512, null=True)       # 请求网址
-    info = JSONField(max_length=2000)                       # 异常信息描述
+    info = JSONField(max_length=4000)                       # 异常信息描述
     time = peewee.DateTimeField(default=datetime.now)       # 时间戳
 
     @staticmethod

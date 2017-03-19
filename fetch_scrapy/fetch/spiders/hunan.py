@@ -1,9 +1,8 @@
 import scrapy
 from . import JsonMetaSpider
-from . import DateExtractor, HtmlPlainExtractor
+from . import DateExtractor, HtmlPlainExtractor, MoneyExtractor
 import json
 import re
-from typing import List
 
 
 class HunanSpider(JsonMetaSpider):
@@ -20,7 +19,7 @@ class HunanSpider(JsonMetaSpider):
         'pageSize': '50'
     }
     custom_settings = {
-        'COOKIES_ENABLED': True, 'DOWNLOAD_DELAY': 2.6,
+        'COOKIES_ENABLED': True, 'DOWNLOAD_DELAY': 1.8,
         'DOWNLOADER_MIDDLEWARES': {
             'fetch.middlewares.EmptyRetryMiddleware': None,
             'fetch.middlewares.HttpExceptionMiddleware': 300,
@@ -118,10 +117,7 @@ class HunanSpider(JsonMetaSpider):
         g['contents'] = contents
         g['pid'] = None
         g['tender'] = None
-        try:
-            g['budget'] = self._budget(digest, contents)
-        except Exception as ex:
-            self.logger.error('budget: ', str(ex))
+        g['budget'] = MoneyExtractor.money_max(response.xpath('//body'))
         g['tels'] = None
         g['extends'] = data
         g['digest'] = digest
@@ -138,43 +134,43 @@ class HunanSpider(JsonMetaSpider):
         }.get(data['NOTICE_NAME'], '其他公告')
         return self.join_words(subject, data.get('NOTICE_NAME'), data.get('PRCM_MODE_NAME'))
 
-    def _budget(self, digest, contents):
-        tags = ['采购预算', '项目预算', '预算', '合同金额', '金额']
-        patterns_yuan = ['([\d,]+)\.\d{1,2}\s*元?', '￥?\s*([\d,]+)\s*元']
-        patterns_wan = ['￥?\s*([\d,.]+)\s*万元?']
-
-        # 废标公告直接返回0
-        if any(['废标原因' in x for x in digest.keys()]):
-            return 0
-
-        # 在摘要信息中搜索包含tags内容的关键词，提取后面的金额
-        items = [(x, digest[x]) for x in digest.keys() if any([s in x for s in tags])]
-        if len(items) > 1:
-            self.logger.error('budget: ' + str(items))
-        for k, v in items:
-            values_yuan = [int(re.search(p, v).group(1).replace(',', ''))
-                           for p in patterns_yuan if re.search(p, v)]
-            values_wan = [int(float(re.search(p, v).group(1).replace(',', '')) * 10000)
-                          for p in patterns_wan if re.search(p, v)]
-            if any(values_yuan + values_wan):
-                return max(values_yuan + values_wan)
-
-        # 在表格中搜索包含tags内容的关键词，提取同行或合并同列的金额
-
-        # 遍历所有行，搜索表示金额的内容，提取最大值
-        money_list = []
-        lns = [s for s in contents if any([re.search(p, s) for p in (patterns_yuan + patterns_wan)])]
-        for ln in lns:
-            for p in patterns_yuan:
-                vs = [int(s.replace(',', '')) for s in re.findall(p, ln) if s]
-                money_list.extend(vs)
-            for p in patterns_wan:
-                vs = [int(float(s.replace(',', '')) * 10000) for s in re.findall(p, ln) if s]
-                money_list.extend(vs)
-        if money_list:
-            return max(money_list)
-        else:
-            return None
+    # def _budget(self, digest, contents):
+    #     tags = ['采购预算', '项目预算', '预算', '合同金额', '金额']
+    #     patterns_yuan = ['([\d,]+)\.\d{1,2}\s*元?', '￥?\s*([\d,]+)\s*元']
+    #     patterns_wan = ['￥?\s*([\d,.]+)\s*万元?']
+    #
+    #     # 废标公告直接返回0
+    #     if any(['废标原因' in x for x in digest.keys()]):
+    #         return 0
+    #
+    #     # 在摘要信息中搜索包含tags内容的关键词，提取后面的金额
+    #     items = [(x, digest[x]) for x in digest.keys() if any([s in x for s in tags])]
+    #     if len(items) > 1:
+    #         self.logger.error('budget: ' + str(items))
+    #     for k, v in items:
+    #         values_yuan = [int(re.search(p, v).group(1).replace(',', ''))
+    #                        for p in patterns_yuan if re.search(p, v)]
+    #         values_wan = [int(float(re.search(p, v).group(1).replace(',', '')) * 10000)
+    #                       for p in patterns_wan if re.search(p, v)]
+    #         if any(values_yuan + values_wan):
+    #             return max(values_yuan + values_wan)
+    #
+    #     # 在表格中搜索包含tags内容的关键词，提取同行或合并同列的金额
+    #
+    #     # 遍历所有行，搜索表示金额的内容，提取最大值
+    #     money_list = []
+    #     lns = [s for s in contents if any([re.search(p, s) for p in (patterns_yuan + patterns_wan)])]
+    #     for ln in lns:
+    #         for p in patterns_yuan:
+    #             vs = [int(s.replace(',', '')) for s in re.findall(p, ln) if s]
+    #             money_list.extend(vs)
+    #         for p in patterns_wan:
+    #             vs = [int(float(s.replace(',', '')) * 10000) for s in re.findall(p, ln) if s]
+    #             money_list.extend(vs)
+    #     if money_list:
+    #         return max(money_list)
+    #     else:
+    #         return None
 
 
 # class HtmlDigestExtractor:

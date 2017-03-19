@@ -3,6 +3,8 @@ from database import EventLog, ExceptionLog
 from datetime import datetime, date, timedelta
 import json
 import sys
+from wechatpy.enterprise.client import WeChatClient
+from wechatpy.enterprise.client.api import WeChatMessage
 
 
 # Spider 运行异常日志
@@ -44,7 +46,8 @@ class SpiderStatsExtension(object):
     def spider_opened(self, spider):
         self.count += 1
         self.items[spider.name] = 0
-        EventLog.log_event(spider.name, 'OPEN', info={'start': str(self.start), 'count': self.count})
+        msg = '({0:2})'.format(self.count)
+        EventLog.log_event(spider.name, 'OPEN', msg, info={'start': str(self.start), 'count': self.count})
 
     def spider_closed(self, spider, reason):
         self.count -= 1
@@ -56,7 +59,7 @@ class SpiderStatsExtension(object):
                            info={'start': str(self.start), 'count': self.count, 'reason': str(reason),
                                  'seconds': seconds, 'items': items, 'errors': errors})
 
-        if self.count < 1:
+        if self.count <= 1:
             self.send_stat_msg()
 
     def item_scraped(self, item, spider):
@@ -71,16 +74,17 @@ class SpiderStatsExtension(object):
 
     def send_stat_msg(self):
         # 发送结果统计
-        from wechatpy.enterprise.client import WeChatClient
-        from wechatpy.enterprise.client.api import WeChatMessage
-        wx_company = WeChatClient('wx2c67ebb55a4012c3', 'dFtHnrP3gBqIwj0aEmaRxyTlgQhg1caMWVQXW1HykiaGQ3Qpk-KIOUtF27G1IDQ5')
+        wx_company = WeChatClient('wx2c67ebb55a4012c3',
+                                  'dFtHnrP3gBqIwj0aEmaRxyTlgQhg1caMWVQXW1HykiaGQ3Qpk-KIOUtF27G1IDQ5')
         wx_msg = WeChatMessage(wx_company)
 
         head = ['[scrapy]',
                 '{0:%Y-%m-%d %H:%M}'.format(self.start),
-                '{0} seconds'.format((datetime.now()-self.start).seconds),
+                '{0}'.format((datetime.now()-self.start)),
                 '']
-        stat = ['{0}: {1} items, {2} errors.'.format(k, v, self.errors.get(k, 0))
-                for k, v in self.items.items()]
+        items = [(k, v, self.errors.get(k, 0)) for k, v in self.items.items()]
+        items = sorted(items, key=lambda x: x[2] * 10000 + int(x[1]), reverse=True)
+        stat = ['{2:3} error, {1:3} item, {0:>13}'.format(k, v, e)
+                for k, v, e in items]
         msg = '\n'.join(head + stat)
         wx_msg.send_text(10, 'bfbd', msg)

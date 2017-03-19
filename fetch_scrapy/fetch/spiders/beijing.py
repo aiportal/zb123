@@ -1,6 +1,6 @@
 import scrapy
 from . import HtmlMetaSpider, GatherItem
-from . import NodeValueExtractor, MetaLinkExtractor, FileLinkExtractor, DateExtractor, HtmlContentExtractor
+from . import NodeValueExtractor, MetaLinkExtractor, DateExtractor, MoneyExtractor
 import re
 
 
@@ -73,12 +73,12 @@ class TianjinSpider(HtmlMetaSpider):
         g['industry'] = None
 
         # 详情页正文
-        content_extractor = HtmlContentExtractor(css='#zoom > div > *')
-        g['contents'] = content_extractor.extract_contents(response)
+        # content_extractor = HtmlContentExtractor(css='#zoom > div > *')
+        g['contents'] = response.css('#zoom').extract()
         g['pid'] = None
         g['tender'] = None
-        g['budget'] = None
+        g['budget'] = max(MoneyExtractor.money_all(response.css('#zoom')) + [0])
         g['tels'] = None
         g['extends'] = data
-        g['digest'] = content_extractor.extract_digest(response)
-        yield g
+        g['digest'] = None
+        return [g]

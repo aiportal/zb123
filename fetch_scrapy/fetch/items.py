@@ -41,3 +41,23 @@ class GatherItem(scrapy.Item):
     @property
     def year(self):
         return datetime.strptime(str(self['day']), '%Y-%m-%d').year
+
+
+class ItemProxy:
+    def __init__(self, item: scrapy.Item):
+        self._item = item
+        for key in item.fields:
+            super().__setattr__(key, None)
+
+    def __setattr__(self, key, value):
+        if hasattr(self, '_item') and key in self._item.fields:
+            self._item[key] = value
+        super().__setattr__(key, value)
+
+    def set(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+    @property
+    def item(self):
+        return self._item.copy()

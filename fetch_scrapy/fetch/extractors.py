@@ -228,7 +228,7 @@ class HtmlPlainExtractor:
                 content = ''.join([s.strip() for s in row.extract() if s.strip()])
             elif tag in ('table', 'img'):
                 content = ''.join([s for s in row.extract() if s])
-            elif tag in ('div', 'p', 'tr', 'span', 'u', 'h1', 'font'):
+            elif tag in ('div', 'p', 'tr', 'span', 'u', 'h1', 'h2', 'h3', 'h4', 'font'):
                 lns = [x for x in row.xpath('.//text()').extract()]
                 content = ''.join([s.strip() for s in lns if s.strip()])
             elif tag in ('style', 'script'):
@@ -257,6 +257,54 @@ class HtmlPlainExtractor:
                 if len(row) < key_max_len and len(contents[i+1]) < val_max_len:
                     digest[row] = contents[i+1]
         return digest
+
+
+class MoneyExtractor:
+    """ 提取金额信息 """
+    patterns_yuan = ['([\d,]{5,})\.\d{1,2}\s*元?', '￥?\s*([\d,]{3,})\s*元']
+    patterns_wan = ['￥?\s*(\d[\d,.]*)\s*万元?']
+    patterns_sci = ['(\d\.\d+)E(\d)']   # 科学记数法
+
+    pattern_cn = '([零壹贰叁肆伍陆柒捌玖拾佰仟万亿]{2,})[圆元]整?'
+    nums_cn = [('拾$', '0'), ('佰$', '00'), ('仟$', '000'), ('万$', '0000'), ('亿$', '00000000'),
+               ('拾万$', '00000'), ('佰万$', '000000'), ('仟万$', '0000000'),
+               ('拾', ''), ('佰', ''), ('仟', ''), ('万', ''), ('亿', ''),
+               ('零', '0'), ('壹', '1'), ('贰', '2'), ('叁', '3'), ('肆', '4'), ('伍', '5'),
+               ('陆', '6'), ('柒', '7'), ('捌', '8'), ('玖', '9')]
+
+    @classmethod
+    def money_all(cls, selector: scrapy.Selector):
+        from itertools import chain
+        from functools import reduce
+        """ 提取文本内容中的金额 """
+        money_all = []
+
+        try:
+            lns = [s.strip() for s in selector.xpath('.//text()').extract() if s.strip()]
+            content = ''.join(lns)
+            for ln in [content]:
+                values_yuan = [int(s.replace(',', '')) for s in
+                               chain(*[re.findall(p, ln) for p in cls.patterns_yuan])]
+                values_wan = [int(float(s.replace(',', '')) * 10000) for s in
+                              chain(*[re.findall(p, ln) for p in cls.patterns_wan])]
+                values_sci = [int(float(s[0]) * (10 ** int(s[1]))) for s in
+                              chain(*(re.findall(p, ln) for p in cls.patterns_sci))]
+
+                values_cn = []
+                if re.search(cls.pattern_cn, ln):
+                    values_cn = [int(reduce(lambda s, r: re.sub(r[0], r[1], s), cls.nums_cn, x))
+                                 for x in re.findall(cls.pattern_cn, ln)]
+                money_all.extend(values_yuan + values_wan + values_sci + values_cn)
+        except Exception as ex:
+            print('money_all: ', str(ex))
+            raise
+
+        return money_all
+
+    @classmethod
+    def money_max(cls, selector: scrapy.Selector):
+        money_all = cls.money_all(selector)
+        return any(money_all) and max(money_all) or None
 
 
 class DateExtractor:

@@ -2,7 +2,7 @@ import scrapy
 from . import HtmlMetaSpider, GatherItem
 from . import NodeValueExtractor, MetaLinkExtractor, FileLinkExtractor, DateExtractor, HtmlContentExtractor
 import re
-import json
+
 
 # channelCode:0005（采购公告）000501：公开招标，000502：邀请招标...
 # channelCode:0006（更正公告）
@@ -10,30 +10,27 @@ import json
 # channelCode:0014（代理机构公示）
 # channelCode:0017（电子反拍公告）
 # channelCode:-3（批量集中采购）
-subjects = {
-    '0005': '招标公告',
-    '0006': '更正公告',
-    '0008': '中标公告',
-    '招标公告': {'01': '公开招标', '02': '邀请招标', '03': '询价采购', '04': '竞争性谈判', '05': '单一来源采购',
-             '06': '其他采购', '07': '协议采购', '08': '批量采购', '09': '网上竞价', '10': '竞争性磋商'},
-    '更正公告': {'01': '公开招标', '02': '邀请招标', '03': '询价采购', '04': '竞争性谈判', '05': '单一来源采购',
-             '06': '其他采购', '07': '协议采购', '08': '批量采购', '09': '网上竞价', '10': '竞争性磋商'},
-    '中标公告': {'01': '公开招标', '02': '邀请招标', '03': '询价采购', '04': '竞争性谈判', '05': '单一来源采购',
-             '06': '其他采购', '07': '协议采购', '08': '批量采购', '09': '网上竞价','10': 'PPP预中标公告',
-             '11': 'PPP中标公告', '12': '废标/终止公告', '13': '竞争性磋商', '14': '网上竞价终止公告'}
-}
 
 
 class GuangdongSpider(HtmlMetaSpider):
     name = 'guangdong'
     alias = '广东'
     allowed_domains = ['gdgpo.gov.cn']
-    start_urls = ['http://www.gdgpo.gov.cn/queryMoreInfoList.do?']
-    start_params = {'channelCode': {(code + k): (name + '/' + v)
-                                    for code, name in subjects.items() if isinstance(name, str)
-                                    for k, v in subjects[name].items()},
-                    'pageIndex': 1,
-                    'pageSize': 20}
+    start_urls = ['http://www.gdgpo.gov.cn/queryMoreInfoList.do']
+    start_params = {
+        'channelCode': {
+            '0005': '招标公告/采购公告',
+            '0006': '更正公告',
+            '0008': '中标公告',
+        },
+        'pageIndex': 1,
+        'pageSize': 50
+    }
+
+    def start_requests(self):
+        for k, v in self.start_params['channelCode'].items():
+            params = {'channelCode': k, 'pageIndex': '1', 'pageSize': '50'}
+            yield scrapy.FormRequest(self.start_urls[0], formdata=params, meta={'params': params}, dont_filter=True)
 
     # 索引页详情链接
     link_extractor = MetaLinkExtractor(css='div.n_main div.m_m_cont > ul.m_m_c_list > li', url_attr='href',
@@ -47,8 +44,9 @@ class GuangdongSpider(HtmlMetaSpider):
     def page_requests(self, response):
         next_page = [p for p in self.page_extractor.extract_values(response)]
         if next_page:
-            url = self.replace_url_param(response.request.url, pageIndex=next_page[0])
-            yield scrapy.Request(url, meta={'params': response.meta['params']})
+            params = response.meta['params']
+            params['pageIndex'] = next_page[0]
+            yield scrapy.FormRequest(response.url, formdata=params, meta={'params': params})
 
     # 详情页摘要信息
     digest_extractor = NodeValueExtractor(css='div.zw_c_c_qx span', value_xpath='.//text()',
@@ -98,9 +96,5 @@ class GuangdongSpider(HtmlMetaSpider):
         g['tels'] = None
         g['extends'] = data
         g['digest'] = dict(self.content_extractor.extract_digest(response), **digest)
-
-        attachments = [f for f in self.files_extractor.extract_files(response)]
-        g['attachments'] = attachments
-        g['file_urls'] = [f['url'] for f in attachments]
 
         yield g

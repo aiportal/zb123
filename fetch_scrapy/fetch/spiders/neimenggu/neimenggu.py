@@ -1,6 +1,6 @@
 import scrapy
-from . import HtmlMetaSpider, GatherItem
-from . import MetaLinkExtractor, DateExtractor, HtmlContentExtractor
+from .. import HtmlMetaSpider
+from .. import MetaLinkExtractor, DateExtractor, HtmlContentExtractor
 import re
 
 
@@ -12,10 +12,18 @@ class NeimengguSpider(HtmlMetaSpider):
     start_urls = ['http://www.nmgp.gov.cn/procurement/pages/tender.jsp?pos=1']
     start_params = {
         # 信息类型
-        'type': {'0': '招标公告', '1': '更正公告/招标更正公告', '2': '中标公告', '3': '更正公告/中标更正公告', '4': '其他公告/废标公告',
-                 '5': '其他公告/预审公告', '6': '其他公告/预审更正公告', '7': '其他公告/合同公告'},
+        'type': {
+            '0': '招标公告',
+             '1': '更正公告/招标更正公告',
+             '2': '中标公告',
+             '3': '更正公告/中标更正公告',
+             '4': '其他公告/废标公告',
+             '5': '其他公告/预审公告',
+             '6': '其他公告/预审更正公告',
+             '7': '其他公告/合同公告'
+        },
         # 采购方式
-        'purmet': {'1': '公开招标', '2': '邀请招标', '3': '竞争性谈判', '4': '询价', '5': '单一来源'},
+        # 'purmet': {'1': '公开招标', '2': '邀请招标', '3': '竞争性谈判', '4': '询价', '5': '单一来源'},
     }
     # 索引页详情链接
     link_extractor = MetaLinkExtractor(css='body > table.recordlist tr > td > a', url_attr='href',

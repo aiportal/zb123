@@ -91,12 +91,12 @@ class BaseSpider(scrapy.Spider, SpiderHelper):
 
         # 用请求网址的hash做主键
         source = self.name.split('/')[0]
-        url = response.meta.get('top_url') or self._request_url(response)
-        url_hash = JobIndex.url_hash(url)
+        req_url = self._request_url(response)
+        url_hash = JobIndex.url_hash(req_url)
 
-        g = GatherItem(source=source, url=url, uuid=url_hash)
+        g = GatherItem(source=source, url=req_url, uuid=url_hash)
         g['html'] = '-full' in sys.argv and response.text or None
-        g['real_url'] = response.url == url and None or response.url
+        g['real_url'] = response.url == req_url and None or response.url
         g['top_url'] = response.meta.get('top_url')
         g['index_url'] = response.meta.get('index_url') or response.request.headers.get('Referer', '').decode()
         return g
