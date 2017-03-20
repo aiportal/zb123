@@ -63,7 +63,8 @@ class HunanSpider(JsonMetaSpider):
         # 返回空值时，换area_id重试
         if len(response.body) == 0:
             url = response.url.endswith('=1') and response.url.rstrip('1') or (response.url + '1')
-            return [scrapy.Request(url, meta=response.meta, callback=self.parse_item)]
+            if not self.url_exists(url):
+                return [scrapy.Request(url, meta=response.meta, callback=self.parse_item)]
 
         """ 解析详情页 """
         data = response.meta['data']
@@ -102,7 +103,8 @@ class HunanSpider(JsonMetaSpider):
         if link:
             assert len(contents) < 10
             url = link.startswith('http:') and link or ('http://'+link)
-            return [scrapy.Request(url, meta=response.meta, callback=self.parse_item)]
+            if not self.url_exists(url):
+                return [scrapy.Request(url, meta=response.meta, callback=self.parse_item)]
 
         # GatherItem
         g = self.gather_item(response)

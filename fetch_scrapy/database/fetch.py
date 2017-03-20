@@ -4,9 +4,8 @@ from datetime import datetime, date
 import uuid
 
 
-host = __debug__ and '127.0.0.1' or 'data.ultragis.com'
-pwd = __debug__ and 'lq1990' or 'Bayesian@2018'
-db_fetch = peewee.MySQLDatabase(host=host, database='fetch', user='root', password=pwd, charset='utf8')
+host = '127.0.0.1'
+db_fetch = peewee.MySQLDatabase(host=host, database='fetch', user='root', password='Bayesian@2018', charset='utf8')
 
 
 class BaseModel(peewee.Model):
@@ -95,18 +94,15 @@ class EventLog(BaseModel):
     class Meta:
         db_table = 'event_log'
     ID = peewee.PrimaryKeyField()
-    source = peewee.CharField(max_length=50)            # 招标来源（爬虫名称）
-    level = peewee.CharField(max_length=50)             # 异常类型
-    info = JSONField(max_length=2000)                   # 异常信息描述
-    time = peewee.DateTimeField(default=datetime.now)   # 时间戳
-
-    url = peewee.CharField()                            # 请求网址/
-    status = peewee.IntegerField()                      # 状态码
-    data = peewee.TextField()                           # 附加数据
+    source = peewee.CharField(max_length=50)                    # 招标来源（爬虫名称）
+    level = peewee.CharField(max_length=50)                         # 信息类型
+    url = peewee.CharField(max_length=512, null=True, help_text='简单描述')
+    info = JSONField(max_length=4000)                           # 信息描述
+    time = peewee.DateTimeField(default=datetime.now)           # 时间戳
 
     @staticmethod
     def log_event(source: str, level: str, msg: str='', info: dict={}):
-        EventLog.create(source=source, level=level, url=msg, info=info, status=0, data=info)
+        EventLog.create(source=source, level=level, url=msg, info=info)
 
 EventLog.create_table(True)
 

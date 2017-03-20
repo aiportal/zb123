@@ -7,6 +7,7 @@ import json
 from urllib.parse import urlsplit, parse_qs, urlencode, urlunsplit
 from scrapy.selector import Selector
 from typing import List, Union
+from typing import Union
 
 
 class NodesExtractor:
@@ -81,7 +82,7 @@ class MetaLinkExtractor(NodesExtractor):
         self.url_attr = url_attr
         self.url_process = url_process
 
-    def extract_links(self, response):
+    def extract_links(self, response) -> MetaLink:
         base_url = response.url.rpartition('/')[0] + '/'
         for node in self._extract_nodes(response):
             attr = node.get(self.url_attr)
@@ -335,6 +336,25 @@ class DateExtractor:
         if max_day and max_day < dt:
             dt = max_day
         return str(dt)
+
+
+class FieldExtractor:
+    @classmethod
+    def date(cls, *args) -> date:
+        """ 解析出日期内容 """
+        day = str(date.min)
+        for arg in args:
+            if isinstance(arg, scrapy.Selector):
+                arg = ''.join([x.strip() for x in arg.xpath('.//text()').extract() if x.strip()])
+            day = DateExtractor.extract(str(arg))
+            if day != str(date.min):
+                break
+        return datetime.strptime(day, '%Y-%m-%d').date()
+
+    @classmethod
+    def money(cls, selector: scrapy.Selector):
+        """ 解析出金额内容 """
+        return MoneyExtractor.money_max(selector)
 
 
 # class ContentExtractor:

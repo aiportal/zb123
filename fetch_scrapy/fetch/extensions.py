@@ -73,6 +73,8 @@ class SpiderStatsExtension(object):
         })
 
     def send_stat_msg(self):
+        if __debug__:
+            return
         # 发送结果统计
         wx_company = WeChatClient('wx2c67ebb55a4012c3',
                                   'dFtHnrP3gBqIwj0aEmaRxyTlgQhg1caMWVQXW1HykiaGQ3Qpk-KIOUtF27G1IDQ5')
