@@ -1,6 +1,7 @@
 import scrapy
-from . import HtmlMetaSpider, GatherItem
-from . import NodeValueExtractor, MetaLinkExtractor, DateExtractor, HtmlContentExtractor, FileLinkExtractor
+from fetch.spiders import HtmlMetaSpider
+from fetch.extractors import NodeValueExtractor, MetaLinkExtractor, DateExtractor, HtmlContentExtractor, FileLinkExtractor
+from fetch.items import GatherItem
 import re
 
 
@@ -15,14 +16,14 @@ class SichuanSpider(HtmlMetaSpider):
         'moreType': {'provincebuyBulletinMore': None},
         'channelCode': {'cgygg': '预公告/采购预告',
                         'cggg': '招标公告/采购公告',
-                        'jgygg': '中标公告/结果预告',
+                        # 'jgygg': '中标公告/结果预告',
                         'jggg': '中标公告/结果公告',
                         'gzgg': '更正公告',
-                        'shiji_cggg1': '预公告/市县采购预公告',
-                        'shiji_cggg': '招标公告/市县采购公告',
-                        'shiji_jggg1': '中标公告/市县结果预公告',
-                        'shiji_jggg': '中标公告/市县结果公告',
-                        'shiji_gzgg': '更正公告/市县更正公告'},
+                        'shiji_cggg1': '预公告/市县',
+                        'shiji_cggg': '招标公告/市县',
+                        # 'shiji_jggg1': '中标公告/市县',
+                        'shiji_jggg': '中标公告/市县',
+                        'shiji_gzgg': '更正公告/市县'},
         'rp': {'25': None},
         'page': {'1': None},
     }

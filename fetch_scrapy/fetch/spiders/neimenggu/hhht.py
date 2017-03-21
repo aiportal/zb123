@@ -35,8 +35,7 @@ class HhhtSpider(scrapy.Spider):
     ]
 
     custom_settings = {
-        'COOKIES_ENABLED': True,
-        'DEPTH_LIMIT': 5,
+        'COOKIES_ENABLED': True
     }
 
     def start_requests(self):
@@ -53,8 +52,8 @@ class HhhtSpider(scrapy.Spider):
         links = self.link_extractor.extract_links(response)
         links = SpiderTool.url_filter(links, key=lambda x: x.url)
         for link in links:
-            data = dict(link.meta, **response.meta['data'])
-            yield scrapy.Request(link.url, meta={'data': data, 'depth': 0}, callback=self.parse_item)
+            link.meta.update(response.meta['data'])
+            yield scrapy.Request(link.url, meta={'data': link.meta}, callback=self.parse_item)
 
         pager = self.page_extractor.extract_value(response)
         if pager and self.page_regex.search(pager):
@@ -67,15 +66,19 @@ class HhhtSpider(scrapy.Spider):
 
     def parse_item(self, response):
         """ 解析详情页 """
+
         data = response.meta['data']
         day = FieldExtractor.date(data.get('day'), response.css('#tdTitle font.webfont'))
         contents = response.css('#TDContent > *').extract()
-        g = GatherItem(response,
-                       source=self.name.split('/')[0],
-                       day=day,
-                       title=data.get('title') or data.get('text'),
-                       contents=contents)
+        g = GatherItem.create(
+            response,
+            source=self.name.split('/')[0],
+            day=day,
+            title=data.get('title') or data.get('text'),
+            contents=contents
+        )
 
         g.set(area=self.alias)
         g.set(subject=data.get('subject'))
-        return []
+        g.set(budget=FieldExtractor.money(response.css('#TDContent > *')))
+        return [g]

@@ -5,6 +5,7 @@ import json
 import sys
 from wechatpy.enterprise.client import WeChatClient
 from wechatpy.enterprise.client.api import WeChatMessage
+import socket
 
 
 # Spider 运行异常日志
@@ -80,13 +81,13 @@ class SpiderStatsExtension(object):
                                   'dFtHnrP3gBqIwj0aEmaRxyTlgQhg1caMWVQXW1HykiaGQ3Qpk-KIOUtF27G1IDQ5')
         wx_msg = WeChatMessage(wx_company)
 
-        head = ['[scrapy]',
+        head = ['[scrapy] {0}'.format(socket.gethostname()),
                 '{0:%Y-%m-%d %H:%M}'.format(self.start),
                 '{0}'.format((datetime.now()-self.start)),
                 '']
         items = [(k, v, self.errors.get(k, 0)) for k, v in self.items.items()]
         items = sorted(items, key=lambda x: x[2] * 10000 + int(x[1]), reverse=True)
-        stat = ['{2:3} error, {1:3} item, {0:>13}'.format(k, v, e)
+        stat = ['{2:3} err, {1:3} item, {0:>15}'.format(k, v, e)
                 for k, v, e in items]
         msg = '\n'.join(head + stat)
         wx_msg.send_text(10, 'bfbd', msg)

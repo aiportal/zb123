@@ -34,7 +34,7 @@ class NodesExtractor:
 
     def _extract_node(self, selector):
         """ 将节点提取为字典对象 """
-        node = selector.root.attrib or {}
+        node = dict(selector.root.attrib) or {}
         for k, v in self.attrs_css.items():
             node[k] = self.extract_text(selector.css(v))
         for k, v in self.attrs_xpath.items():

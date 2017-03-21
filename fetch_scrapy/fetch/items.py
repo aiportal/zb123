@@ -45,22 +45,24 @@ class GatherItem(scrapy.Item):
     def year(self):
         return datetime.strptime(str(self['day']), '%Y-%m-%d').year
 
-    def __init__(self, response, source: str, day: date, title: str, contents: List[str], **kwargs):
+    @staticmethod
+    def create(response, source: str, day: date, title: str, contents: List[str], **kwargs):
+        if (not source) or (day == date.min) or (not title) or (not contents):
+            raise ValueError('GatherItem')
 
         assert not isinstance(response.request, scrapy.FormRequest)     # Post网址的hash要加上参数
-
         redirects = response.request.meta.get('redirect_urls', [])
         req_url = redirects and redirects[0] or response.url            # 原始请求网址
         url_hash = JobIndex.url_hash(req_url)                           # 防止重入的网址hash
 
-        url = response.meta.get('top_url') and req_url                  # 用户跳转的原文页面
+        url = response.meta.get('top_url') or req_url                  # 用户跳转的原文页面
         html = '-full' in sys.argv and response.text or None            # -full模式下保存html
-        real_url = (response.url == req_url) and None or response.url   # 有redirect时记录最终请求网址
+        real_url = (response.url != req_url) and response.url or None   # 有redirect时记录最终请求网址
         top_url = response.meta.get('top_url')                          # 有框架时记录顶层网址
 
         kwargs.update(source=source, day=day, title=title, contents=contents)
         kwargs.update(uuid=url_hash, url=url, html=html, index_url=None, top_url=top_url, real_url=real_url)
-        super().__init__(kwargs)
+        return GatherItem(kwargs)
 
     def set(self,
             end: date=None,
