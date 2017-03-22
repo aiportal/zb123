@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
+from scrapy.selector import SelectorList
 import re
 from datetime import datetime, date
 from urllib.parse import urljoin
@@ -7,7 +8,7 @@ import json
 from urllib.parse import urlsplit, parse_qs, urlencode, urlunsplit
 from scrapy.selector import Selector
 from typing import List, Union
-from typing import Union
+from typing import Union, List
 
 
 class NodesExtractor:
@@ -48,7 +49,8 @@ class NodesExtractor:
 
 class NodeValueExtractor(NodesExtractor):
     """ 提取字符串数组 """
-    def __init__(self, css=(), xpath=(), value_css=None, value_xpath=None, value_process=lambda x: x, value_regex=None):
+    def __init__(self, css=(), xpath=(), value_css: str=None, value_xpath: str=None,
+                 value_process=lambda x: x, value_regex=None):
         attrs_css = value_css and {'value': value_css} or {}
         attrs_xpath = value_xpath and {'value': value_xpath} or {}
         super().__init__(css=css, xpath=xpath, attrs_css=attrs_css, attrs_xpath=attrs_xpath)
@@ -385,3 +387,35 @@ class ScriptExtractor:
 
     def extract(self):
         return None
+
+
+class MetaLink:
+    def __init__(self, url, node):
+        self.url = url
+        self.meta = node
+
+
+class GenericExtractor:
+    """ 通用解析器 """
+
+    @classmethod
+    def text(cls, selector: Selector, xpath: str='.//text()') -> str:
+        if not isinstance(selector.root, str) and xpath:
+            selector = selector.xpath(xpath)
+        return ''.join([s.strip() for s in selector.extract() if s.strip()])
+
+    @classmethod
+    def value(cls, selector: Selector, xpath: str='.//text()', regex: str=None) -> str:
+        return None
+
+    @classmethod
+    def values(cls, selector: SelectorList, xpath: str='.//text()', regex: str=None) -> List[str]:
+        return []
+
+    @classmethod
+    def nodes(cls, selectors: SelectorList, attrs:dict) -> List[dict]:
+        return []
+
+    @classmethod
+    def links(cls, selectors: SelectorList, source_url: str, attrs:dict) -> List[dict]:
+        return []

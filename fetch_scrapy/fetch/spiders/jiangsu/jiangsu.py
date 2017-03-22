@@ -1,6 +1,6 @@
 import scrapy
-from . import HtmlMetaSpider
-from . import NodeValueExtractor, MetaLinkExtractor, DateExtractor, HtmlPlainExtractor
+from .. import HtmlMetaSpider
+from fetch.extractors import NodeValueExtractor, MetaLinkExtractor, DateExtractor, HtmlPlainExtractor
 import re
 from functools import reduce
 from itertools import chain

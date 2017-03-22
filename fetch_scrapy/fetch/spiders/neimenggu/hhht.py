@@ -13,25 +13,25 @@ class HhhtSpider(scrapy.Spider):
     start_urls = [
         # 政府采购
         ('http://www.ggzyjy.com.cn/hsweb/004/004002/004002001/MoreInfo.aspx?CategoryNum=004002001', '招标公告/政府采购'),
-        # ('http://www.ggzyjy.com.cn/hsweb/004/004002/004002003/MoreInfo.aspx?CategoryNum=004002003', '中标公告/政府采购'),
-        # ('http://www.ggzyjy.com.cn/hsweb/004/004002/004002004/MoreInfo.aspx?CategoryNum=004002004', '变更公告/政府采购'),
-        # ('http://www.ggzyjy.com.cn/hsweb/004/004002/004002007/MoreInfo.aspx?CategoryNum=004002007', '其他公告/废标公告/政府采购'),
-        # # 建设工程
-        # ('http://www.ggzyjy.com.cn/hsweb/004/004001/004001001/MoreInfo.aspx?CategoryNum=004001001', '招标公告/建设工程'),
-        # ('http://www.ggzyjy.com.cn/hsweb/004/004001/004001002/MoreInfo.aspx?CategoryNum=004001002', '更正公告/建设工程'),
-        # ('http://www.ggzyjy.com.cn/hsweb/004/004001/004001003/MoreInfo.aspx?CategoryNum=004001003', '招标公告/建设工程'),
-        # # 交通工程
-        # ('http://www.ggzyjy.com.cn/hsweb/004/004010/004010001/MoreInfo.aspx?CategoryNum=004010001', '招标公告/交通工程'),
-        # ('http://www.ggzyjy.com.cn/hsweb/004/004010/004010002/MoreInfo.aspx?CategoryNum=004010002', '更正公告/交通工程'),
-        # ('http://www.ggzyjy.com.cn/hsweb/004/004010/004010003/MoreInfo.aspx?CategoryNum=004010003', '中标公示/交通工程'),
-        # # 水利工程
-        # ('http://www.ggzyjy.com.cn/hsweb/004/004011/004011001/MoreInfo.aspx?CategoryNum=004011001', '招标公告/水利工程'),
-        # ('http://www.ggzyjy.com.cn/hsweb/004/004011/004011002/MoreInfo.aspx?CategoryNum=004011002', '更正公告/水利工程'),
-        # ('http://www.ggzyjy.com.cn/hsweb/004/004011/004011003/MoreInfo.aspx?CategoryNum=004011003', '中标公告/水利工程'),
-        # # 电力工程
-        # ('http://www.ggzyjy.com.cn/hsweb/004/004012/004012001/MoreInfo.aspx?CategoryNum=004012001', '招标公告/电力工程'),
-        # ('http://www.ggzyjy.com.cn/hsweb/004/004012/004012002/MoreInfo.aspx?CategoryNum=004012002', '更正公告/电力工程'),
-        # ('http://www.ggzyjy.com.cn/hsweb/004/004012/004012003/MoreInfo.aspx?CategoryNum=004012003', '中标公告/电力工程'),
+        ('http://www.ggzyjy.com.cn/hsweb/004/004002/004002003/MoreInfo.aspx?CategoryNum=004002003', '中标公告/政府采购'),
+        ('http://www.ggzyjy.com.cn/hsweb/004/004002/004002004/MoreInfo.aspx?CategoryNum=004002004', '变更公告/政府采购'),
+        ('http://www.ggzyjy.com.cn/hsweb/004/004002/004002007/MoreInfo.aspx?CategoryNum=004002007', '其他公告/废标公告/政府采购'),
+        # 建设工程
+        ('http://www.ggzyjy.com.cn/hsweb/004/004001/004001001/MoreInfo.aspx?CategoryNum=004001001', '招标公告/建设工程'),
+        ('http://www.ggzyjy.com.cn/hsweb/004/004001/004001002/MoreInfo.aspx?CategoryNum=004001002', '更正公告/建设工程'),
+        ('http://www.ggzyjy.com.cn/hsweb/004/004001/004001003/MoreInfo.aspx?CategoryNum=004001003', '招标公告/建设工程'),
+        # 交通工程
+        ('http://www.ggzyjy.com.cn/hsweb/004/004010/004010001/MoreInfo.aspx?CategoryNum=004010001', '招标公告/交通工程'),
+        ('http://www.ggzyjy.com.cn/hsweb/004/004010/004010002/MoreInfo.aspx?CategoryNum=004010002', '更正公告/交通工程'),
+        ('http://www.ggzyjy.com.cn/hsweb/004/004010/004010003/MoreInfo.aspx?CategoryNum=004010003', '中标公示/交通工程'),
+        # 水利工程
+        ('http://www.ggzyjy.com.cn/hsweb/004/004011/004011001/MoreInfo.aspx?CategoryNum=004011001', '招标公告/水利工程'),
+        ('http://www.ggzyjy.com.cn/hsweb/004/004011/004011002/MoreInfo.aspx?CategoryNum=004011002', '更正公告/水利工程'),
+        ('http://www.ggzyjy.com.cn/hsweb/004/004011/004011003/MoreInfo.aspx?CategoryNum=004011003', '中标公告/水利工程'),
+        # 电力工程
+        ('http://www.ggzyjy.com.cn/hsweb/004/004012/004012001/MoreInfo.aspx?CategoryNum=004012001', '招标公告/电力工程'),
+        ('http://www.ggzyjy.com.cn/hsweb/004/004012/004012002/MoreInfo.aspx?CategoryNum=004012002', '更正公告/电力工程'),
+        ('http://www.ggzyjy.com.cn/hsweb/004/004012/004012003/MoreInfo.aspx?CategoryNum=004012003', '中标公告/电力工程'),
     ]
 
     custom_settings = {
