@@ -33,6 +33,9 @@ LOG_ENABLED = True
 LOG_ENCODING = 'UTF-8'
 LOG_LEVEL = __debug__ and 'DEBUG' or 'ERROR'    # DEBUG,INFO,WARNING,ERROR
 
+# 最大爬取深度
+if '-full' not in sys.argv:
+    DEPTH_LIMIT = 10
 
 DEFAULT_REQUEST_HEADERS = {
     'Accept': '*/*',

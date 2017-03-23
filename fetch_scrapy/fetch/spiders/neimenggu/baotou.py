@@ -61,7 +61,8 @@ class BaotouSpider(scrapy.Spider):
     def real_url(url):          # 减少一次302跳转
         mc = re.findall('=(\d+)$', url)
         if mc:
-            return 'http://www.btzfcg.gov.cn/portal/documentView.do?method=view&id={}&ver=null'.format(mc[0])
+            return url
+            # return 'http://www.btzfcg.gov.cn/portal/documentView.do?method=view&id={}&ver=null'.format(mc[0])
         else:
             return url
 

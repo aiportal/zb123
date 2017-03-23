@@ -47,8 +47,13 @@ class GatherItem(scrapy.Item):
 
     @staticmethod
     def create(response, source: str, day: date, title: str, contents: List[str], **kwargs):
-        if (not source) or (day == date.min) or (not title) or (not contents):
-            raise ValueError('GatherItem')
+        assert source
+        if day == day.min:
+            raise ValueError('day')
+        if not title:
+            raise ValueError('title')
+        if not contents:
+            raise ValueError('contents')
 
         assert not isinstance(response.request, scrapy.FormRequest)     # Post网址的hash要加上参数
         redirects = response.request.meta.get('redirect_urls', [])

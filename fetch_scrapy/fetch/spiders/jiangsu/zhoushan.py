@@ -41,7 +41,7 @@ class ZhoushanSpider(scrapy.Spider):
 
         data = response.meta['data']
         day = FieldExtractor.date(data.get('day'), response.css('div.show_note'))
-        title = data['text']
+        title = data['text']    # or response.css('div.show_tit').extract()
         contents = response.css('div.show_txt > *').extract()
         g = GatherItem.create(
             response,
