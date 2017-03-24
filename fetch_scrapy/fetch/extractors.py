@@ -93,6 +93,9 @@ class MetaLinkExtractor(NodesExtractor):
                 url = value.startswith('http') and value or urljoin(base_url, value)
                 yield self.MetaLink(node, url)
 
+    def links(self, response) -> List[MetaLink]:
+        return [x for x in self.extract_links(response)]
+
 
 class FileLinkExtractor(MetaLinkExtractor):
     """ 提取附件链接
@@ -342,6 +345,11 @@ class DateExtractor:
 
 class FieldExtractor:
     @classmethod
+    def text(cls, selector: scrapy.Selector) -> str:
+        """ 解析出文本内容 """
+        return ''.join([x.strip() for x in selector.xpath('.//text()').extract() if x.strip()])
+
+    @classmethod
     def date(cls, *args) -> date:
         """ 解析出日期内容 """
         day = str(date.min)
@@ -389,33 +397,33 @@ class ScriptExtractor:
         return None
 
 
-class MetaLink:
-    def __init__(self, url, node):
-        self.url = url
-        self.meta = node
-
-
-class GenericExtractor:
-    """ 通用解析器 """
-
-    @classmethod
-    def text(cls, selector: Selector, xpath: str='.//text()') -> str:
-        if not isinstance(selector.root, str) and xpath:
-            selector = selector.xpath(xpath)
-        return ''.join([s.strip() for s in selector.extract() if s.strip()])
-
-    @classmethod
-    def value(cls, selector: Selector, xpath: str='.//text()', regex: str=None) -> str:
-        return None
-
-    @classmethod
-    def values(cls, selector: SelectorList, xpath: str='.//text()', regex: str=None) -> List[str]:
-        return []
-
-    @classmethod
-    def nodes(cls, selectors: SelectorList, attrs:dict) -> List[dict]:
-        return []
-
-    @classmethod
-    def links(cls, selectors: SelectorList, source_url: str, attrs:dict) -> List[dict]:
-        return []
+# class MetaLink:
+#     def __init__(self, url, node):
+#         self.url = url
+#         self.meta = node
+#
+#
+# class GenericExtractor:
+#     """ 通用解析器 """
+#
+#     @classmethod
+#     def text(cls, selector: Selector, xpath: str='.//text()') -> str:
+#         if not isinstance(selector.root, str) and xpath:
+#             selector = selector.xpath(xpath)
+#         return ''.join([s.strip() for s in selector.extract() if s.strip()])
+#
+#     @classmethod
+#     def value(cls, selector: Selector, xpath: str='.//text()', regex: str=None) -> str:
+#         return None
+#
+#     @classmethod
+#     def values(cls, selector: SelectorList, xpath: str='.//text()', regex: str=None) -> List[str]:
+#         return []
+#
+#     @classmethod
+#     def nodes(cls, selectors: SelectorList, attrs:dict) -> List[dict]:
+#         return []
+#
+#     @classmethod
+#     def links(cls, selectors: SelectorList, source_url: str, attrs:dict) -> List[dict]:
+#         return []

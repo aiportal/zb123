@@ -6,8 +6,8 @@ import re
 
 
 class ZhoushanSpider(scrapy.Spider):
-    name = 'jiangsu/zhoushan'
-    alias = '江苏/舟山'
+    name = 'zhejiang/zhoushan'
+    alias = '浙江/舟山'
     allowed_domains = ['zszfcg.gov.cn']
     start_urls = [
         ('http://www.zszfcg.gov.cn/news/94.html', '招标公告/市级'),

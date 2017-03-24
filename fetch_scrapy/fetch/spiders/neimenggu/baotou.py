@@ -9,9 +9,7 @@ class BaotouSpider(scrapy.Spider):
     name = 'neimenggu/baotou'
     alias = '内蒙古/包头'
     allowed_domains = ['btzfcg.gov.cn']
-
-    start_url = 'http://www.btzfcg.gov.cn/portal/topicView.do?method=view'
-
+    start_urls = ['http://www.btzfcg.gov.cn/portal/topicView.do?method=view']
     start_params = {
         'view': 'stockBulletin',
         'id': {
@@ -33,29 +31,28 @@ class BaotouSpider(scrapy.Spider):
     }
 
     def start_requests(self):
-        for k, v in self.start_params['id'].items():
-            form = self.start_params.copy()
-            form.update(id=k, subject=v)
-            yield scrapy.FormRequest(self.start_url, formdata=form, meta={'data': form}, dont_filter=True)
+        url = self.start_urls[0]
+        for form, data in SpiderTool.iter_params(self.start_params):
+            yield scrapy.FormRequest(url, formdata=form, meta={'form': form, 'data': data}, dont_filter=True)
 
     link_extractor = MetaLinkExtractor(css=('#topicChrList_20070702_table > tbody > tr > td > a',),
                                        attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})
     page_extractor = NodeValueExtractor(xpath=('//select[@name="__ec_pages"]/option',), value_xpath='./text()')
 
     def parse(self, response):
-        links = self.link_extractor.extract_links(response)
-        links = SpiderTool.url_filter(links, key=lambda x: x.url)
+        links = self.link_extractor.links(response)
         for link in links:
             url = self.real_url(link.url)
-            link.meta.update(response.meta['data'])
+            link.meta['subject'] = response.meta['data']['id']
             yield scrapy.Request(url, meta={'data': link.meta}, callback=self.parse_item)
 
         pages = self.page_extractor.extract_values(response)
         count = max([int(x) for x in pages])
-        page = int(response.meta['data']['topicChrList_20070702_p']) + 1
+        form = response.meta['form']
+        page = int(form['topicChrList_20070702_p']) + 1
         if page <= count:
-            response.meta['data']['topicChrList_20070702_p'] = str(page)
-            yield scrapy.FormRequest(response.url, formdata=response.meta['data'], meta=response.meta)
+            form['topicChrList_20070702_p'] = str(page)
+            yield scrapy.FormRequest(response.url, formdata=form, meta=response.meta)
 
     @staticmethod
     def real_url(url):          # 减少一次302跳转
@@ -80,7 +77,6 @@ class BaotouSpider(scrapy.Spider):
             title=title,
             contents=contents
         )
-
         g.set(area=self.alias)
         g.set(subject=data.get('subject'))
         g.set(budget=FieldExtractor.money(response.css('#bulletinContent')))

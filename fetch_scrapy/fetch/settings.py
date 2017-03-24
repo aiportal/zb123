@@ -47,6 +47,10 @@ DEFAULT_REQUEST_HEADERS = {
 
 USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36'
 
+
+DUPEFILTER_CLASS = 'fetch.middlewares.UrlFilterMiddleware'
+DUPEFILTER_DEBUG = __debug__
+
 ITEM_PIPELINES = {
     # 'scrapy.pipelines.files.FilesPipeline': 1,
     # 'fetch.pipelines.AttachmentsPipeline': 10,

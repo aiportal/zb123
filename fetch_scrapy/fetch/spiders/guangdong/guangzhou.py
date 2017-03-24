@@ -32,8 +32,7 @@ class GuangzhouSpider(scrapy.Spider):
     page_extractor = NodeValueExtractor(css=('div.pagination a:contains(下一页)',), value_xpath='./@onclick')
 
     def parse(self, response):
-        links = self.link_extractor.extract_links(response)
-        links = SpiderTool.url_filter(links, key=lambda x: x.url)
+        links = self.link_extractor.links(response)
         for link in links:
             link.meta.update(response.meta['data'])
             yield scrapy.Request(link.url, meta={'data': link.meta}, callback=self.parse_item)
