@@ -87,9 +87,11 @@ class GatherItem(scrapy.Item):
                 continue
             if isinstance(v, list):
                 self[k] = self._words(v)
-            if isinstance(v, date):
+            elif isinstance(v, date):
                 self[k] = str(v)
-            self[k] = v
+            else:
+                self[k] = v
+        return self
 
     @staticmethod
     def _words(value: Union[str, list]):

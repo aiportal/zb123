@@ -2,7 +2,8 @@ import scrapy
 from database import JobIndex
 import urllib.parse as parse
 import itertools
-from typing import Iterable, Tuple
+from typing import Iterable, Tuple, Union
+import re
 
 
 class SpiderTool:
@@ -41,3 +42,24 @@ class SpiderTool:
                 meta[k] = m or v
             yield form, meta
 
+    @staticmethod
+    def re_nums(regex: str, text: str) -> Union[int, Tuple[int]]:
+        """ 正则提取数字 """
+        r = re.compile(regex)
+        assert r.groups > 0
+        mcs = r.findall(text)
+        if r.groups > 1:
+            return mcs and (int(x) for x in mcs[0]) or tuple(itertools.repeat(0, r.groups))
+        else:
+            return mcs and int(mcs[0]) or 0
+
+    @staticmethod
+    def re_text(regex: str, text: str) -> Union[str, Tuple[str]]:
+        """ 正则提取字符串 """
+        r = re.compile(regex)
+        assert r.groups > 0
+        mcs = r.findall(text)
+        if r.groups > 1:
+            return mcs and (x for x in mcs[0]) or tuple(itertools.repeat('', r.groups))
+        else:
+            return mcs and mcs[0] or ''

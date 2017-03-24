@@ -1,12 +1,12 @@
 import scrapy
-from . import HtmlMetaSpider, GatherItem
-from . import NodesExtractor, NodeValueExtractor, MetaLinkExtractor, DateExtractor, HtmlContentExtractor, FileLinkExtractor
+from .. import HtmlMetaSpider, GatherItem
+from fetch.extractors import NodesExtractor, NodeValueExtractor, MetaLinkExtractor, DateExtractor, HtmlContentExtractor, FileLinkExtractor
 import re
 
 
-class HainanSpider(HtmlMetaSpider):
-    name = 'hainan'
-    alias = '海南'
+class SanyaSpider(HtmlMetaSpider):
+    name = 'hainan/sanya'
+    alias = '海南/三亚'
     allowed_domains = ['ztb.sanya.gov.cn']  # 三亚
     start_referer = None
     start_urls = {
