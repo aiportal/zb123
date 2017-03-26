@@ -16,7 +16,7 @@ class Sichuan3Spider(scrapy.Spider):
 
         ('http://www.spprec.com/sczw/jyfwpt/005002/005002002/005002002002/MoreInfo.aspx?CategoryNum=005002002002', '采购公告/政府采购'),
         ('http://www.spprec.com/sczw/jyfwpt/005002/005002004/005002004002/MoreInfo.aspx?CategoryNum=005002004002', '中标公告/政府采购'),
-        ('http://www.spprec.com/sczw/jyfwpt/005002/005002005/MoreInfo.aspx?CategoryNum=005002005', '变更公告/政府采购'),
+        ('http://www.spprec.com/sczw/jyfwpt/005002/005002005/MoreInfo.aspx?CategoryNum=005002005', '更正公告/政府采购'),
 
         ('http://www.spprec.com/sczw/jyfwpt/005003/005003001/MoreInfo.aspx?CategoryNum=005003001', '招标公告/铁路工程'),
         ('http://www.spprec.com/sczw/jyfwpt/005003/005003002/MoreInfo.aspx?CategoryNum=005003002', '更正公告/铁路工程'),

@@ -16,7 +16,7 @@ class Hebei2Spider(scrapy.Spider):
         ('http://www.hebpr.cn/002/002009/002009001/002009001002/moreinfo.html', '更正公告/政府采购'),
         ('http://www.hebpr.cn/002/002009/002009002/002009002001/moreinfo.html', '招标公告/工程建设'),
         ('http://www.hebpr.cn/002/002009/002009002/002009002005/moreinfo.html', '中标公告/工程建设'),
-        ('http://www.hebpr.cn/002/002009/002009002/002009002002/moreinfo.html', '变更公告/工程建设'),
+        ('http://www.hebpr.cn/002/002009/002009002/002009002002/moreinfo.html', '更正公告/工程建设'),
     ]
 
     def start_requests(self):

@@ -1,6 +1,6 @@
 import scrapy
-from . import HtmlMetaSpider, GatherItem
-from . import DateExtractor, MetaLinkExtractor, MoneyExtractor
+from .. import HtmlMetaSpider, GatherItem
+from fetch.extractors import DateExtractor, MetaLinkExtractor, MoneyExtractor
 import json
 
 

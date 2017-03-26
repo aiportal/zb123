@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from scrapy.selector import SelectorList
+from scrapy.selector import Selector, SelectorList
 import re
 from datetime import datetime, date
 from urllib.parse import urljoin
@@ -317,10 +317,11 @@ class DateExtractor:
     """ 从字符串中提取日期
     """
     patterns = [
-        {'regex': r'(\d{4}-\d{1,2}-\d{1,2})', 'format': '%Y-%m-%d'},
-        {'regex': r'(\d{4}年\d{1,2}月\d{1,2}日)', 'format': '%Y年%m月%d日'},
-        {'regex': r'(\d{8})', 'format': '%Y%m%d'},
-        {'regex': r'(\d{4}-\d{1,2})', 'format': '%Y-%m'},
+        {'regex': r'(20\d{2}-\d{1,2}-\d{1,2})', 'format': '%Y-%m-%d'},
+        {'regex': r'(20\d{2}年\d{1,2}月\d{1,2}日)', 'format': '%Y年%m月%d日'},
+        {'regex': r'(20\d{2}/\d{1,2}/\d{1,2})', 'format': '%Y/%m/%d'},
+        {'regex': r'(20\d{6})', 'format': '%Y%m%d'},
+        {'regex': r'(20\d{2}-\d{1,2})', 'format': '%Y-%m'},
         {'regex': r'(\d{1,2}-\d{1,2})', 'format': '%m-%d'},
     ]
 
@@ -334,8 +335,13 @@ class DateExtractor:
         if not pattern:
             return str(default)
 
+        assert pattern and text and re.search(pattern['regex'], text)
         mc = re.search(pattern['regex'], text)
-        dt = datetime.strptime(mc.group(1), pattern['format']).date()
+        try:
+            dt = datetime.strptime(mc.group(1), pattern['format']).date()
+        except:
+            return None
+
         if dt.year < 1990:
             dt = date(date.today().year, dt.month, dt.day)
         if max_day and max_day < dt:
@@ -354,7 +360,7 @@ class FieldExtractor:
         """ 解析出日期内容 """
         day = str(date.min)
         for arg in args:
-            if isinstance(arg, scrapy.Selector):
+            if isinstance(arg, Selector) or isinstance(arg, SelectorList):
                 arg = ''.join([x.strip() for x in arg.xpath('.//text()').extract() if x.strip()])
             day = DateExtractor.extract(str(arg))
             if day != str(date.min):

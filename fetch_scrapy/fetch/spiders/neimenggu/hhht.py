@@ -14,7 +14,7 @@ class HhhtSpider(scrapy.Spider):
         # 政府采购
         ('http://www.ggzyjy.com.cn/hsweb/004/004002/004002001/MoreInfo.aspx?CategoryNum=004002001', '招标公告/政府采购'),
         ('http://www.ggzyjy.com.cn/hsweb/004/004002/004002003/MoreInfo.aspx?CategoryNum=004002003', '中标公告/政府采购'),
-        ('http://www.ggzyjy.com.cn/hsweb/004/004002/004002004/MoreInfo.aspx?CategoryNum=004002004', '变更公告/政府采购'),
+        ('http://www.ggzyjy.com.cn/hsweb/004/004002/004002004/MoreInfo.aspx?CategoryNum=004002004', '更正公告/政府采购'),
         ('http://www.ggzyjy.com.cn/hsweb/004/004002/004002007/MoreInfo.aspx?CategoryNum=004002007', '其他公告/废标公告/政府采购'),
         # 建设工程
         ('http://www.ggzyjy.com.cn/hsweb/004/004001/004001001/MoreInfo.aspx?CategoryNum=004001001', '招标公告/建设工程'),
