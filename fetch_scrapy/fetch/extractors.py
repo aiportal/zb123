@@ -33,7 +33,7 @@ class NodesExtractor:
             selectors += response.xpath(xpath)
         return [self._extract_node(o) for o in selectors]
 
-    def _extract_node(self, selector):
+    def _extract_node(self, selector) -> dict:
         """ 将节点提取为字典对象 """
         node = dict(selector.root.attrib) or {}
         for k, v in self.attrs_css.items():
@@ -291,7 +291,7 @@ class MoneyExtractor:
             for ln in [content]:
                 values_yuan = [int(s.replace(',', '')) for s in
                                chain(*[re.findall(p, ln) for p in cls.patterns_yuan])]
-                values_wan = [int(float(s.replace(',', '')) * 10000) for s in
+                values_wan = [int(float(s.replace(',', '').strip('.')) * 10000) for s in
                               chain(*[re.findall(p, ln) for p in cls.patterns_wan])]
                 values_sci = [int(float(s[0]) * (10 ** int(s[1]))) for s in
                               chain(*(re.findall(p, ln) for p in cls.patterns_sci))]
@@ -370,8 +370,10 @@ class FieldExtractor:
     @classmethod
     def money(cls, selector: scrapy.Selector):
         """ 解析出金额内容 """
-        return MoneyExtractor.money_max(selector)
-
+        try:
+            return MoneyExtractor.money_max(selector)
+        except:
+            return None
 
 # class ContentExtractor:
 #     """ 从HTML中提取正文内容
