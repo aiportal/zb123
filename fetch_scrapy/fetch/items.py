@@ -60,10 +60,10 @@ class GatherItem(scrapy.Item):
         req_url = redirects and redirects[0] or response.url            # 原始请求网址
         url_hash = JobIndex.url_hash(req_url)                           # 防止重入的网址hash
 
-        url = response.meta.get('top_url') or req_url                  # 用户跳转的原文页面
-        html = '-full' in sys.argv and response.text or None            # -full模式下保存html
-        real_url = (response.url != req_url) and response.url or None   # 有redirect时记录最终请求网址
-        top_url = response.meta.get('top_url')                          # 有框架时记录顶层网址
+        url = response.meta.get('top_url') or req_url                       # 用户跳转的原文页面
+        html = '-full' in sys.argv and response.text or None                # -full模式下保存html
+        real_url = req_url
+        top_url = response.meta.get('top_url')                              # 有框架时记录顶层网址
 
         kwargs.update(source=source, day=str(day), title=title, contents=contents)
         kwargs.update(uuid=url_hash, url=url, html=html, index_url=None, top_url=top_url, real_url=real_url)

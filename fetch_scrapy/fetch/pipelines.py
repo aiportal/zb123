@@ -22,13 +22,13 @@ class MysqlPipeline(object):
         try:
             # GatherInfo
             g = GatherInfo(**obj)
-            g.extends = json.dumps(item['extends'], ensure_ascii=False)
+            g.extends = json.dumps(item.get('extends', {}), ensure_ascii=False)
             g.save(force_insert=True)
 
             # ContentInfo
             c = ContentInfo(**obj)
             c.html = None
-            c.contents = json.dumps(item['contents'], ensure_ascii=False)
+            c.contents = json.dumps(item.get('contents', []), ensure_ascii=False)
             c.digest = item.get('digest') and json.dumps(item['digest'], ensure_ascii=False)
             c.attachments = item.get('attachments') and json.dumps(item['attachments'], ensure_ascii=False)
             c.save(force_insert=True)

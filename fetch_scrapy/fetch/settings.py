@@ -51,6 +51,7 @@ USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
 DUPEFILTER_CLASS = 'fetch.middlewares.UrlFilterMiddleware'
 DUPEFILTER_DEBUG = __debug__
 
+
 ITEM_PIPELINES = {
     # 'scrapy.pipelines.files.FilesPipeline': 1,
     # 'fetch.pipelines.AttachmentsPipeline': 10,
