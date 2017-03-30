@@ -33,9 +33,9 @@ pip install sanic peewee peewee-async aiomysql requests qrcode Pillow xmltodict
 
 
 # scrapy
-apt-get install libssl-dev
+apt-get install libssl-dev -y
 source /env/scrapy/bin/activate
-pip install scrapy peewee pymysql
+pip install scrapy peewee pymysql wechatpy
 
 
 # flask

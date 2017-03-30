@@ -249,6 +249,8 @@ class ContentApi(HTTPMethodView):
 
         # contents 字体加粗
         contents = json.loads(rec.contents or '[]')
+        if isinstance(contents, str):
+            contents = [contents]
         for i, ln in enumerate(contents):
             ln = re.sub('^(.{2,30}?：)', '<b>\g<1></b>', ln)
             # 从开头到中文冒号，有2~30个字符的内容标题
