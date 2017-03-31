@@ -353,6 +353,8 @@ class FieldExtractor:
     @classmethod
     def text(cls, selector: scrapy.Selector) -> str:
         """ 解析出文本内容 """
+        if isinstance(selector.root, str):
+            return selector.root
         return ''.join([x.strip() for x in selector.xpath('.//text()').extract() if x.strip()])
 
     @classmethod
@@ -372,7 +374,7 @@ class FieldExtractor:
         """ 解析出金额内容 """
         try:
             return MoneyExtractor.money_max(selector)
-        except:
+        except Exception as ex:
             return None
 
 # class ContentExtractor:

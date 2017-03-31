@@ -6,6 +6,10 @@ import re
 
 
 class NanjingSpider(scrapy.Spider):
+    """
+    @title: 四川省公共资源交易服务平台
+    @href: http://www.scztb.gov.cn/
+    """
     name = 'jiangsu/nanjing'
     alias = '江苏/南京'
     allowed_domains = ['njgp.gov.cn']
@@ -26,6 +30,7 @@ class NanjingSpider(scrapy.Spider):
 
     link_extractor = MetaLinkExtractor(css=('div.R_cont_detail > ul > li > a',),
                                        attrs_xpath={'text': './/text()', 'day': '../text()'})
+
     def parse(self, response):
         links = self.link_extractor.extract_links(response)
         links = SpiderTool.url_filter(links, key=lambda x: x.url)

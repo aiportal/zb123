@@ -60,7 +60,7 @@ class SpiderStatsExtension(object):
                            info={'start': str(self.start), 'count': self.count, 'reason': str(reason),
                                  'seconds': seconds, 'items': items, 'errors': errors})
 
-        if self.count < 1:
+        if self.count <= 1:
             self.send_stat_msg()
 
     def item_scraped(self, item, spider):

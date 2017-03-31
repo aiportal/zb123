@@ -31,9 +31,6 @@ class Sichuan2Spider(scrapy.Spider):
         for link in links:          # type: dict
             link['url'] = 'http://www.scztb.gov.cn' + link['Link']
             link['subject'] = response.meta['data']['subject']
-
-        links = SpiderTool.url_filter(links, key=lambda x: x['url'])
-        for link in links:
             yield scrapy.Request(link['url'], meta={'data': link}, callback=self.parse_item)
 
         count = pkg['pageCount']
@@ -48,7 +45,7 @@ class Sichuan2Spider(scrapy.Spider):
 
         data = response.meta['data']
         day = FieldExtractor.date(data.get('CreateDateStr'), data.get('CreateDate'), )
-        contents = response.css('div.projectcontent')[-1].extract()
+        contents = response.css('div.projectcontent').extract()
         g = GatherItem.create(
             response,
             source=self.name.split('/')[0],

@@ -12,7 +12,7 @@ class LiantongSpider(scrapy.Spider):
     name = 'other/liantong'
     alias = '其他/中国联通'
     start_urls = [
-        ('http://www.chinaunicombidding.cn/jsp/cnceb/web/info1/infoList.jsp?page=1', '招标公告'),
+        # ('http://www.chinaunicombidding.cn/jsp/cnceb/web/info1/infoList.jsp?page=1', '招标公告'),
     ]
 
     def start_requests(self):

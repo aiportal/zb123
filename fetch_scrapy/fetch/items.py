@@ -62,11 +62,12 @@ class GatherItem(scrapy.Item):
 
         url = response.meta.get('top_url') or req_url                       # 用户跳转的原文页面
         html = '-full' in sys.argv and response.text or None                # -full模式下保存html
+        index_url = response.request.headers.get('Referer')
         real_url = req_url
         top_url = response.meta.get('top_url')                              # 有框架时记录顶层网址
 
         kwargs.update(source=source, day=str(day), title=title, contents=contents)
-        kwargs.update(uuid=url_hash, url=url, html=html, index_url=None, top_url=top_url, real_url=real_url)
+        kwargs.update(uuid=url_hash, url=url, html=html, index_url=index_url, top_url=top_url, real_url=real_url)
         return GatherItem(kwargs)
 
     def set(self,

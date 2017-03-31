@@ -8,7 +8,7 @@ from urllib.parse import urljoin
 class NanchongSpider(scrapy.Spider):
     """
     @note: 南充市公共资源交易中心
-    @see: http://ggzy.scnczw.gov.cn/TPFront/front_gcjs/072001/
+    @see: http://ggzy.scnczw.gov.cn
     """
     name = 'sichuan/nanchong'
     alias = '四川/南充'
