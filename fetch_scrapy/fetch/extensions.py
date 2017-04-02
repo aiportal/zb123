@@ -60,7 +60,7 @@ class SpiderStatsExtension(object):
                            info={'start': str(self.start), 'count': self.count, 'reason': str(reason),
                                  'seconds': seconds, 'items': items, 'errors': errors})
 
-        if self.count <= 1:
+        if self.count < 1:
             self.send_stat_msg()
 
     def item_scraped(self, item, spider):
@@ -74,8 +74,6 @@ class SpiderStatsExtension(object):
         })
 
     def send_stat_msg(self):
-        if __debug__:
-            return
         # 发送结果统计
         wx_company = WeChatClient('wx2c67ebb55a4012c3',
                                   'dFtHnrP3gBqIwj0aEmaRxyTlgQhg1caMWVQXW1HykiaGQ3Qpk-KIOUtF27G1IDQ5')

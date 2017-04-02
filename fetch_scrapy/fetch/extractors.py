@@ -351,8 +351,10 @@ class DateExtractor:
 
 class FieldExtractor:
     @classmethod
-    def text(cls, selector: scrapy.Selector) -> str:
+    def text(cls, selector: Union[Selector,SelectorList]) -> str:
         """ 解析出文本内容 """
+        if isinstance(selector, SelectorList):
+            selector = selector[0]
         if isinstance(selector.root, str):
             return selector.root
         return ''.join([x.strip() for x in selector.xpath('.//text()').extract() if x.strip()])

@@ -35,7 +35,7 @@ LOG_LEVEL = __debug__ and 'DEBUG' or 'ERROR'    # DEBUG,INFO,WARNING,ERROR
 
 # 最大爬取深度
 if '-full' not in sys.argv:
-    DEPTH_LIMIT = 10
+    DEPTH_LIMIT = 6
 
 DEFAULT_REQUEST_HEADERS = {
     'Accept': '*/*',
@@ -101,7 +101,7 @@ DOWNLOAD_DELAY = __debug__ and 0.1 or 1.0
 COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
-# TELNETCONSOLE_ENABLED = True
+TELNETCONSOLE_ENABLED = False
 # TELNETCONSOLE_PORT = [6023, 6073]
 # TELNETCONSOLE_HOST = '127.0.0.1'
 

@@ -12,7 +12,7 @@ class LiangShanSpider(scrapy.Spider):
     name = 'sichuan/liangshan'
     alias = '四川/凉山'
     start_urls = [
-        ('http://www.lszw.gov.cn/plus/list.php?tid=30', '招标公告/凉山州'),
+        # ('http://www.lszw.gov.cn/plus/list.php?tid=30', '招标公告/凉山州'),
     ]
 
     def start_requests(self):
