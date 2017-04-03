@@ -36,6 +36,13 @@
         /*.weui-tabbar { z-index: 10; }*/
         /*.popup-bottom, .popup-bottom weui-popup__overlay { z-index: 600; } */
         /*.weui-actionsheet__action { position: relative; width:100%; bottom: 0px; } */
+        .weui-search-bar__submit-btn {
+            display: none;
+            margin-left: 10px;
+            line-height: 28px;
+            color: #09BB07;
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body>
@@ -47,6 +54,22 @@
       <template>
         <div class="weui-panel">
             <div class="weui-panel__bd">
+                <!-- start search bar -->
+                <div class="weui-search-bar" v-if="!params.filter">
+                  <form class="weui-search-bar__form" @submit.prevent="key_search">
+                    <div class="weui-search-bar__box">
+                      <i class="weui-icon-search"></i>
+                      <input type="search" class="weui-search-bar__input" placeholder="搜索" required="" v-model="params.key">
+                      <a href="javascript:" class="weui-icon-clear" @click="params.key=null"></a>
+                    </div>
+                    <label class="weui-search-bar__label">
+                      <i class="weui-icon-search"></i>
+                      <span>搜索</span>
+                    </label>
+                  </form>
+                  <a href="javascript:" class="weui-search-bar__cancel-btn" @click="key_search">搜索</a>
+                </div>
+                <!-- end search bar -->
               <div class="weui-media-box weui-media-box_small-appmsg">
                 <div class="weui-cells" v-for="x of items">
                     <template v-if="x.uuid">
@@ -268,7 +291,7 @@
               <i class="weui-icon-search"></i>
               <input type="search" class="weui-search-bar__input" id="searchInput" required
                      placeholder="请输入要搜索的词" v-model="key">
-              <a href="javascript:" class="weui-icon-clear" id="searchClear"></a>
+              <a href="javascript:" class="weui-icon-clear"></a>
             </div>
             <label class="weui-search-bar__label" id="searchText">
               <i class="weui-icon-search"></i><span>添加搜索词</span>
@@ -405,7 +428,7 @@
             days: [],
             rule: {sources:[], keys:[]},                        // 筛选规则
             user: {vip: false, end: '', pays:[]},               // 用户信息(是否vip, 到期时间, 支付记录)
-            params: {day: '', filter: true},                    // 请求参数(起始日期，是否过滤)
+            params: {day: '', filter: true, key:null},            // 请求参数(起始日期，是否过滤，搜索词)
             next: null,                                         // 下一页的请求参数
             items: [],                                          // 标题列表
             archive : {uuid: null, title:'', url:'', contents:[]},      // 弹出的正文详情
@@ -525,7 +548,7 @@
                 var vm = this;
                 vm.view = 'user';
             },
-            highlight: function(v){
+            _highlight: function(v){
                 var keys = this.rule.keys.filter(function (o) { return o.select; });
                 keys.forEach(function(k){
                     var reg = new RegExp(k.text, 'g');
@@ -534,6 +557,32 @@
                 });
                 return v;
             },
+            key_search: function(){
+                this.reload();
+                var key = this.params.key;
+                if (key && key.length > 0) {
+                    var bar = $(event.target).parents('.weui-search-bar');
+                    setTimeout(function(){
+                       bar.addClass('weui-search-bar_focusing');
+                    },0);
+                }
+            },
+            highlight: function(v){
+                var vm = this;
+                var keys = [vm.params.key];
+                if (vm.params.filter) {
+                    keys = vm.rule.keys.filter(function (o) { return o.select; })
+                            .map(function(o){ return o.text;});
+                }
+                keys.forEach(function(k){
+                    var reg = new RegExp(k, 'g');
+                    var rep = '<b>' + k + '</b>';
+                    v = v.replace(reg, rep);
+                });
+                return v;
+            }
+        },
+        filters: {
         }
     });
 

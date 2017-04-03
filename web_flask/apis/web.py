@@ -23,6 +23,7 @@ class DayTitlesApi(HTTPMethodView):
         page = int(request.args.get('page', '1'))
         size = min(int(request.args.get('size', 20)), 50)
         do_filter = request.args.get('filter') == 'true'
+        key = request.args.get('key')
 
         # 只提供30天内的信息，超出范围时直接返回
         if day < (date.today() - timedelta(30)) or date.today() < day:
@@ -41,6 +42,8 @@ class DayTitlesApi(HTTPMethodView):
         # 是否应用筛选规则
         if do_filter:
             records = self.query_filtered_gathers(uid, query_day, page, size)
+        elif key:
+            records = self.query_search_gathers(uid, query_day, key, page, size)
         else:
             records = self.query_ordered_gathers(uid, query_day, page, size)
 
@@ -56,79 +59,18 @@ class DayTitlesApi(HTTPMethodView):
 
         # 下一页的请求参数
         if len(records) == size:
-            next_params = {'day': str(query_day), 'page': page + 1, 'size': size, 'filter': do_filter}
+            next_params = {'day': str(query_day), 'page': page + 1, 'size': size, 'filter': do_filter, 'key': key}
         else:
-            next_params = {'day': str(query_day - timedelta(1)), 'page': 1, 'size': size, 'filter': do_filter}
+            next_params = {'day': str(query_day - timedelta(1)), 'page': 1, 'size': size, 'filter': do_filter, 'key': key}
 
         # 返回查询结果
         result = {
-            'params': {'day': str(day), 'page': page, 'size': size, 'filter': do_filter},    # 当前请求的参数
+            'params': {'day': str(day), 'page': page, 'size': size, 'filter': do_filter, 'key': key},    # 当前请求的参数
             'items': items,
             'next': next_params
         }
 
         return json_response(result)
-
-    @staticmethod
-    def _query_filtered_gathers(day: date, page: int=1, size: int=20, sources=(), subjects=(), keys=()):
-        """ 查询信息列表：只显示符合条件的记录 """
-        assert size < 100
-
-        # 按天查询
-        query = GatherInfo.select().where(GatherInfo.day == day)
-
-        # 筛选条件
-        if sources:
-            query = query.where(GatherInfo.source << sources)
-        if subjects:
-            exp = False
-            for subject in subjects:
-                exp = exp | GatherInfo.subject.startswith(subject)
-            query = query.where(exp)
-        if keys:
-            exp = False
-            for key in keys:
-                exp = exp | GatherInfo.title.contains(key)
-            query = query.where(exp)
-
-        # 排序和分页
-        query = query.order_by(+GatherInfo.source, +GatherInfo.subject, -GatherInfo.title)
-        query = query.limit(size).offset((page - 1) * size)
-        return [x for x in query]
-
-    @staticmethod
-    def _query_sorted_gathers(day: date, page: int=1, size: int=20, sources=(), subjects=(), keys=()):
-        """ 查询信息列表：按条件排序"""
-        # sql example:
-        # select uuid, source, subject, title,
-        # 	if(source in ("qinghai", "tianjin"), 2000, 1000) as v_source,
-        # 	if(subject like '预公告%', 90, 0) + if(subject like '招标公告%', 89, 0) as v_subject,
-        # 	if(title like '%工程%', 100, 0) + if(title like '%电子%', 99, 0) + if(title like '%软件%', 99, 0) as v_key
-        # from gather_full where day='2017-02-20'
-        # order by v_source desc, source, v_subject + v_key, title desc
-        assert size < 100
-
-        # 招标来源匹配度
-        col_source_match = fn.IF(True, 0, 0)
-        if sources:
-            col_source_match += fn.IF(GatherInfo.source << sources, 2000, 1000)
-
-        # 招标类型匹配度
-        col_subject_match = fn.IF(True, 0, 0)
-        for i, subject in enumerate(subjects):
-            col_subject_match += fn.IF(GatherInfo.subject.startswith(subject), (90 - i), 0)
-
-        # 关键词匹配度
-        col_key_match = fn.IF(True, 0, 0)
-        for i, key in enumerate(keys):
-            col_key_match += fn.IF(GatherInfo.title.contains(key), (100 - i), 0)
-
-        # 查询
-        query = GatherInfo.select().where(GatherInfo.day == day).order_by(
-            -col_source_match, GatherInfo.source, -col_subject_match, -col_key_match
-        )
-        query = query.limit(size).offset((page - 1) * size)
-        return [x for x in query]
 
     def query_filtered_gathers(self, uid: str, day: date, page: int=1, size: int=20):
         """ 查询招标信息，按筛选条件进行筛选 """
@@ -195,6 +137,34 @@ class DayTitlesApi(HTTPMethodView):
 
         # 查询
         query = GatherInfo.select().where(GatherInfo.day == day).where(default_filter)
+        query = query.order_by(order_col_source, col_subject_match, col_key_match)
+        query = query.paginate(page, size)
+        return [x for x in query]
+
+    def query_search_gathers(self, uid: str, day: date, key: str, page: int, size: int):
+        rule = FilterRule.get_rule(uid) or FilterRule()
+
+        # 招标来源匹配度
+        source_ordered = ','.join(self.get_sources_by_distance(uid))
+        distance = Func('find_in_set', GatherInfo.source, source_ordered)
+        order_col_source = fn.IF(GatherInfo.source << rule.sources, distance, 10000 + distance)
+
+        # 招标类型匹配度
+        col_subject_match = fn.IF(True, 0, 0)
+        for i, subject in enumerate(rule.subjects):
+            col_subject_match += fn.IF(GatherInfo.subject.startswith(subject), 0, 1000 * (i+1))
+
+        # 关键词匹配度
+        col_key_match = fn.IF(True, 0, 0)
+        for i, k in enumerate(rule.keys):
+            col_key_match += fn.IF(GatherInfo.title.contains(k), 0, 100 - i)
+
+        # 全国信息的查询，只提供预公告和招标公告
+        default_filter = GatherInfo.subject.startswith('预公告') | GatherInfo.subject.startswith('招标公告')
+
+        # 查询
+        query = GatherInfo.select().where(GatherInfo.day == day).where(default_filter)\
+            .where(GatherInfo.title.contains(key))
         query = query.order_by(order_col_source, col_subject_match, col_key_match)
         query = query.paginate(page, size)
         return [x for x in query]
