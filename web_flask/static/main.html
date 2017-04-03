@@ -261,28 +261,7 @@
 
 <template id="rule-tab">
     <div class="weui-panel weui-panel_access">
-      <div class="weui-panel__hd">信息来源</div>
-      <div class="weui-panel__bd button_sp_area">
-        <template v-for="x of sources">
-            <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_default"
-               :class="{'weui-btn_primary': x.select}" @click="select(x)" >{{ x.text }}</a>
-        </template>
-      </div>
-      <div class="weui-panel__hd">信息类型</div>
-      <div class="weui-panel__bd button_sp_area">
-        <template v-for="x of subjects">
-            <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_default"
-               :class="{'weui-btn_primary': x.select}" @click="select(x)" >{{ x.text }}</a>
-        </template>
-      </div>
-      <div class="weui-panel__hd">搜索词</div>
-      <div class="weui-panel__bd button_sp_area">
-        <template v-for="x of keys">
-            <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_default"
-               :class="{'weui-btn_primary': x.select}" @click="select(x)" >{{ x.text }}</a>
-        </template>
-      </div>
-        <!-- search bar -->
+        <!-- start search bar -->
         <div class="weui-search-bar">
           <form class="weui-search-bar__form" @submit.prevent="add_key">
             <div class="weui-search-bar__box">
@@ -297,10 +276,32 @@
           </form>
           <a href="javascript:" class="weui-search-bar__cancel-btn" @click="add_key">添加</a>
         </div>
+        <!-- end search bar -->
+        <div class="weui-panel__hd">搜索词</div>
+        <div class="weui-panel__bd button_sp_area">
+        <template v-for="x of keys">
+            <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_default"
+               :class="{'weui-btn_primary': x.select}" @click="select(x)" >{{ x.text }}</a>
+        </template>
+        </div>
+        <div class="weui-panel__hd">公告类型</div>
+        <div class="weui-panel__bd button_sp_area">
+            <template v-for="x of subjects">
+                <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_default"
+                   :class="{'weui-btn_primary': x.select}" @click="select(x)" >{{ x.text }}</a>
+            </template>
+        </div>
+        <div class="weui-panel__hd">信息来源</div>
+        <div class="weui-panel__bd button_sp_area">
+            <template v-for="x of sources">
+                <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_default"
+                   :class="{'weui-btn_primary': x.select}" @click="select(x)" >{{ x.text }}</a>
+            </template>
+        </div>
         <!-- buttons -->
         <div class="weui-panel__bd">
             <p class="weui-btn-area" style="margin-bottom: 65px;">
-              <a href="javascript:;" class="weui-btn weui-btn_primary" @click="submit">保存</a>
+              <a href="javascript:;" class="weui-btn weui-btn_primary" @click="submit">完成</a>
               <a href="javascript:;" class="weui-btn weui-btn_default" @click="cancel">取消</a>
             </p>
         </div>
@@ -319,7 +320,10 @@
                 vm.keys = $.grep(vm.keys, function(v) { return v.text != key; });
                 vm.keys.splice(0, 0, {text: key, select: true});
             },
-            submit: function(){ this.$emit('submit', this); },
+            submit: function(){
+                this.add_key();
+                this.$emit('submit', this);
+            },
             cancel: function(){ this.$emit('cancel', this); }
         }
     });
