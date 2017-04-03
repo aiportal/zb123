@@ -548,23 +548,19 @@
                 var vm = this;
                 vm.view = 'user';
             },
-            _highlight: function(v){
-                var keys = this.rule.keys.filter(function (o) { return o.select; });
-                keys.forEach(function(k){
-                    var reg = new RegExp(k.text, 'g');
-                    var rep = '<b>' + k.text + '</b>';
-                    v = v.replace(reg, rep);
-                });
-                return v;
-            },
             key_search: function(){
                 this.reload();
-                var key = this.params.key;
+                var vm = this;
+                var key = vm.params.key;
                 if (key && key.length > 0) {
+                    // 搜索框一直显示搜索词
                     var bar = $(event.target).parents('.weui-search-bar');
                     setTimeout(function(){
                        bar.addClass('weui-search-bar_focusing');
                     },0);
+                    // 添加搜索词到筛选规则
+                    vm.rule.keys = $.grep(vm.rule.keys, function(v) { return v.text != key; });
+                    vm.rule.keys.splice(0, 0, {text: key, select: false});
                 }
             },
             highlight: function(v){

@@ -44,6 +44,7 @@ class DayTitlesApi(HTTPMethodView):
             records = self.query_filtered_gathers(uid, query_day, page, size)
         elif key:
             records = self.query_search_gathers(uid, query_day, key, page, size)
+            self.add_rule_key(uid, key)
         else:
             records = self.query_ordered_gathers(uid, query_day, page, size)
 
@@ -208,6 +209,16 @@ class DayTitlesApi(HTTPMethodView):
         beijing = [x for x in self.sources if x.key == 'beijing']
         default = next(iter(beijing + self.sources))
         return json.loads(default.info)
+
+    @staticmethod
+    def add_rule_key(uid: str, key: str):
+        try:
+            rule = FilterRule.get_rule(uid) or FilterRule()
+            if key not in rule.suggests:
+                rule.suggests.insert(0, key)
+                rule.save()
+        except Exception as ex:
+            print(ex)
 
 
 class ContentApi(HTTPMethodView):
