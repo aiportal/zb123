@@ -36,40 +36,34 @@
         /*.weui-tabbar { z-index: 10; }*/
         /*.popup-bottom, .popup-bottom weui-popup__overlay { z-index: 600; } */
         /*.weui-actionsheet__action { position: relative; width:100%; bottom: 0px; } */
-        .weui-search-bar__submit-btn {
-            display: none;
-            margin-left: 10px;
-            line-height: 28px;
-            color: #09BB07;
-            white-space: nowrap;
-        }
+        #search { z-index: 100; position: fixed; top: 0; width: 100%; }
     </style>
 </head>
 <body>
 
 <div class="weui-tab" id="app">
   <div class="weui-tab__bd">
+    <!-- start search bar -->
+    <div id="search" class="weui-search-bar" :class="{'weui-search-bar_focusing': params.key}" v-if="view=='list'">
+      <form class="weui-search-bar__form" @submit.prevent="key_search">
+        <div class="weui-search-bar__box">
+          <i class="weui-icon-search"></i>
+          <input type="search" class="weui-search-bar__input" placeholder="搜索" v-model="params.key" required>
+          <a href="javascript:" class="weui-icon-clear" @click="params.key=null"></a>
+        </div>
+        <label class="weui-search-bar__label">
+          <i class="weui-icon-search"></i>
+          <span>搜索</span>
+        </label>
+      </form>
+      <a href="javascript:" class="weui-search-bar__cancel-btn" @click="key_search">搜索</a>
+    </div>
+    <!-- end search bar -->
     <div id="list" class="weui-tab__bd-item weui-tab__bd-item--active">
       <!-- list -->
       <template>
         <div class="weui-panel">
-            <div class="weui-panel__bd">
-                <!-- start search bar -->
-                <div class="weui-search-bar" v-if="!params.filter">
-                  <form class="weui-search-bar__form" @submit.prevent="key_search">
-                    <div class="weui-search-bar__box">
-                      <i class="weui-icon-search"></i>
-                      <input type="search" class="weui-search-bar__input" placeholder="搜索" required="" v-model="params.key">
-                      <a href="javascript:" class="weui-icon-clear" @click="params.key=null"></a>
-                    </div>
-                    <label class="weui-search-bar__label">
-                      <i class="weui-icon-search"></i>
-                      <span>搜索</span>
-                    </label>
-                  </form>
-                  <a href="javascript:" class="weui-search-bar__cancel-btn" @click="key_search">搜索</a>
-                </div>
-                <!-- end search bar -->
+            <div class="weui-panel__bd" style="margin-top: 42px;">
               <div class="weui-media-box weui-media-box_small-appmsg">
                 <div class="weui-cells" v-for="x of items">
                     <template v-if="x.uuid">
@@ -190,8 +184,8 @@
     <!-- date popup -->
     <days-pop id="date-popup" menu="#btn_days" :days="days" @submit="day_submit" ></days-pop>
 </div>
-</div>
 
+</div>
 <!-- vue -->
 <script src="//cdn.bootcss.com/vue/2.1.10/vue.min.js"></script>
 <script src="//cdn.bootcss.com/vue-resource/1.2.0/vue-resource.min.js"></script>
@@ -204,7 +198,7 @@
 <template id="content-pop">
     <div :id="id" class="weui-popup__container">
       <div class="weui-popup__overlay"></div>
-      <div class="weui-popup__modal">
+      <div class="weui-popup__modal" style="overflow-x: auto;">
         <article class="weui-article" >
             <h1><b>{{ archive.title }}</b></h1>
             <section v-for="x in archive.contents">
@@ -435,7 +429,8 @@
             loading: false
         },
         computed: {
-            is_vip: function () { return this.user.vip; }
+            is_vip: function () { return this.user.vip; },
+            search_focus: function() { return 'weui-search-bar_focusing'; }
         },
         watch: {
             loading: function(val){ val ? $.showLoading() : $.hideLoading(); },
@@ -513,6 +508,9 @@
                     case 'rule': $('#btn_rule').addClass(on); break;
                     case 'user': $('#btn_user').addClass(on); break;
                 }
+
+                // search bar
+                vm.params.key = vm.params.filter ? null : vm.params.key;
             },
             view_all: function(){
                 var vm = this;
@@ -549,8 +547,9 @@
                 vm.view = 'user';
             },
             key_search: function(){
-                this.reload();
                 var vm = this;
+                vm.params.filter = false;
+                this.reload();
                 var key = vm.params.key;
                 if (key && key.length > 0) {
                     // 搜索框一直显示搜索词
