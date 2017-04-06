@@ -5,15 +5,25 @@ from database import UserInfo
 from weixin import wx_zb123, wx_bayesian
 from datetime import datetime
 import time
-import sys
+from urllib.parse import urljoin
 
 
-class WelcomeApi(MethodView):
+class BaseView(MethodView):
+    @property
+    def url_auth(self):
+        return urljoin(request.host_url, '/wx/auth')
+
+    @property
+    def url_main(self):
+        return urljoin(request.host_url, '/static/main.html')
+
+    @property
+    def url_subscribe(self):
+        return urljoin(request.host_url, '/static/zb123.html')
+
+
+class WelcomeApi(BaseView):
     """ 网页入口 """
-    url_auth = '/wx/auth'
-    url_main = '/static/main.html'
-    url_subscribe = '/static/zb123.html'
-
     def get(self):
         # 检查Cookie
         uid = request.cookies.get('uid')
@@ -37,14 +47,11 @@ class WelcomeApi(MethodView):
     @property
     def url_wx_auth(self):
         """ 微信认证网址 """
-        host = request.host
-        url_callback = 'http://{0}{1}'.format(host, self.url_auth)      # 微信服务器的回调网址
-        return wx_bayesian.oauth_url(url_callback, state=host)          # 转向微信服务器
+        return wx_bayesian.oauth_url(self.url_auth, state=request.host)          # 转向微信服务器
 
 
-class WxAuthApi(MethodView):
+class WxAuthApi(BaseView):
     """ 微信认证 """
-    url_main = '/static/main.html'
     auth_expires = 365*24*3600      # 认证过期时间（秒）
     wx_app = wx_bayesian           # 使用微信服务号进行认证
 
@@ -53,9 +60,10 @@ class WxAuthApi(MethodView):
         code = request.args.get('code')
         if not code:
             # 非回调，转向微信认证网址
-            host = request.headers['host']
-            url_callback = 'http://{0}{1}'.format(host, request.path)
-            url = self.wx_app.oauth_url(url_callback, state=host)
+            # host = request.headers['host']
+            # url_callback = 'http://{0}{1}'.format(host, request.path)
+            # url = self.wx_app.oauth_url(url_callback, state=host)
+            url = self.wx_app.oauth_url(self.url_auth, state=request.host)
             return redirect(url)
         else:
             # 微信回调，认证成功
@@ -65,9 +73,9 @@ class WxAuthApi(MethodView):
                 self.codes[code] = uid
 
             # 转回入口网址
-            host = request.args.get('state')
-            url = 'http://{0}{1}'.format(host, self.url_main)
-            resp = redirect(url)
+            # host = request.args.get('state')
+            # url = 'http://{0}{1}'.format(host, self.url_main)
+            resp = redirect(self.url_main)
 
             # 设置 cookie，帮助 welcome 判断转向
             resp.set_cookie('uid', value=uid, expires=time.time() + self.auth_expires)

@@ -18,7 +18,7 @@ def before_req():
 def teardown_req(exc):
     try:
         uid = request.cookies.get('uid', '')
-        AccessLog.log_access(uid, request.url, {'ip': request.remote_addr})
+        AccessLog.log_access(uid, request.url, {'ip': request.remote_addr, 'host': request.host, 'root': request.host_url})
     except Exception as ex:
         print('<<< teardown_req >>> ', str(ex))
     Database.close()
