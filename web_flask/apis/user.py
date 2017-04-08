@@ -45,7 +45,10 @@ class UserInfoApi(HTTPMethodView):
                               'order': x.order_no} for x in orders]}
 
         # 日期列表（最近30天）
-        days = [str(date.today() + timedelta(x)) for x in reversed(range(-29, 1))]
+        days = [str(date.today() + timedelta(x)) for x in reversed(range(-30, 1))]
+
+        # 缓存特征值
+        cache = self.calculate_cache_key(uid, rule)
 
         # 返回信息
         return json_response({
@@ -56,6 +59,7 @@ class UserInfoApi(HTTPMethodView):
             },
             'user': user,
             'days': days,
+            'cache': cache,
         })
 
     def load_user_rule(self, uid: str) -> FilterRule:
@@ -76,6 +80,16 @@ class UserInfoApi(HTTPMethodView):
         UserRuleApi.save_user_rule(uid, rule)
         return FilterRule.get_rule(uid)
 
+    @staticmethod
+    def calculate_cache_key(uid: str, rule: FilterRule):
+        """ 计算通用的缓存特征值 """
+        user = UserInfo.get_user(uid)
+        vip = AnnualFee.is_vip(uid)
+        info = {'province': user.info.get('province'), 'vip': vip,
+                'sources': rule.sources, 'subjects': rule.subjects, 'keys': rule.keys}
+        bs = json.dumps(info, ensure_ascii=False, sort_keys=True).encode()
+        return hashlib.md5(bs).hexdigest().lower()
+
 
 class UserRuleApi(HTTPMethodView):
     def __init__(self):
@@ -87,9 +101,9 @@ class UserRuleApi(HTTPMethodView):
         assert uid
 
         # 保存筛选规则
-        self.save_user_rule(uid, request.json)
+        cache = self.save_user_rule(uid, request.json)
 
-        return json_response({'success': True})
+        return json_response({'success': True, 'cache': cache})
 
     @staticmethod
     def save_user_rule(uid: str, rule: dict):
@@ -106,6 +120,8 @@ class UserRuleApi(HTTPMethodView):
             rec.active = True,
             rec.time = datetime.now()
             rec.save()
+
+        return UserInfoApi.calculate_cache_key(uid, rec)
 
 
 class SuggestApi(HTTPMethodView):

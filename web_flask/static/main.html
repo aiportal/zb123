@@ -447,6 +447,7 @@
                     vm.rule = data.rule;
                     vm.user = data.user;
                     vm.days = data.days;
+                    vm.params.cache = data.cache;
                     vm.reload();
                 }, function(){ vm.loading = false; });
             },
@@ -454,7 +455,8 @@
                 var vm = this;
                 vm.view = 'list';
                 vm.loading = true;
-                vm.$http.get('/api/v3/titles', {params: vm.params}).then(function(resp){
+                var params = $.extend({}, vm.params, {'_': Math.random()})
+                vm.$http.get('/api/v3/titles', {params: params}).then(function(resp){
                     vm.loading = false;
                     var data = resp.body;
                     vm.items = data.items;
@@ -470,6 +472,7 @@
                 if (!vm.next) return;
                 if (vm.appending) return;
                 vm.appending = true;
+                vm.next.cache = vm.params.cache;
                 vm.$http.get('/api/v3/titles', {params: vm.next}).then(function(resp){
                     vm.appending = false;
                     var data = resp.body;
@@ -538,6 +541,7 @@
                     $.toast("保存成功", 2000);
                     setTimeout(function () {
                         vm.params.filter = true;
+                        vm.params.cache = resp.body.cache;
                         vm.init();
                     }, 2800);
                 }, function(){ vm.loading = false; });

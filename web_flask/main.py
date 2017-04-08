@@ -83,7 +83,7 @@ def debug():
 
 if __name__ == '__main__':
     if __debug__:
-        app.run('0.0.0.0', 80, debug=True)
+        app.run('0.0.0.0', 81, debug=True)
     else:
         app.run('0.0.0.0', 80, debug=False)
 
