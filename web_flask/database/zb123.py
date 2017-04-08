@@ -80,7 +80,7 @@ class AnnualFee(BaseModel):
     def is_vip(uid: str):
         query = AnnualFee.select().where(AnnualFee.uid == uid).order_by(-AnnualFee.start).limit(1)
         record = query[0] if len(query) > 0 else None
-        return record and datetime.now() < record.end or False
+        return record and date.today() < record.end or False
 
     @staticmethod
     def get_orders(uid: str):

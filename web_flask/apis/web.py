@@ -30,7 +30,7 @@ class DayTitlesApi(HTTPMethodView):
             return json_response({'params': {'day': str(day), 'filter': do_filter}, 'items': []})
 
         # 非VIP用户不显示最近三天的记录
-        is_vip = (AnnualFee.get_orders(uid)) and True or False
+        is_vip = AnnualFee.is_vip(uid)
         if is_vip:
             query_day = day
             tip_items = []
@@ -39,24 +39,29 @@ class DayTitlesApi(HTTPMethodView):
             tip_days = [day - timedelta(x) for x in range(0, (day - query_day).days)]
             tip_items = [{'day': str(x), 'vip': True, 'title': '开通VIP会员可查看近三天信息'} for x in tip_days]
 
-        # 是否应用筛选规则
-        if do_filter:
-            records = self.query_filtered_gathers(uid, query_day, page, size)
-        elif key:
-            records = self.query_search_gathers(uid, query_day, key, page, size)
-            self.add_rule_key(uid, key)
+        if len(tip_items) > 0:
+            records = []
+            items = tip_items
+            query_day += timedelta(1)
         else:
-            records = self.query_ordered_gathers(uid, query_day, page, size)
+            # 是否应用筛选规则
+            if do_filter:
+                records = self.query_filtered_gathers(uid, query_day, page, size)
+            elif key:
+                records = self.query_search_gathers(uid, query_day, key, page, size)
+                self.add_rule_key(uid, key)
+            else:
+                records = self.query_ordered_gathers(uid, query_day, page, size)
 
-        # 要返回的项目列表
-        if len(records) == 0:
-            items = tip_items + [{'day': str(query_day), 'title': '当日无符合筛选条件的信息'}]
-        else:
-            # 每天开始时的日期分隔行
-            day_item = (page == 1) and [{'title': str(query_day)}] or []
-            items = tip_items + day_item + [
-                {'uuid': x.uuid, 'day': str(x.day), 'source': x.source, 'subject': x.subject, 'title': x.title}
-                for x in records]
+            # 要返回的项目列表
+            if len(records) == 0:
+                items = tip_items + [{'day': str(query_day), 'title': '当日无符合筛选条件的信息'}]
+            else:
+                # 每天开始时的日期分隔行
+                day_item = (page == 1) and [{'title': str(query_day)}] or []
+                items = tip_items + day_item + [
+                    {'uuid': x.uuid, 'day': str(x.day), 'source': x.source, 'subject': x.subject, 'title': x.title}
+                    for x in records]
 
         # 下一页的请求参数
         if len(records) == size:
