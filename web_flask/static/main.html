@@ -88,7 +88,10 @@
                                 <div class="weui-media-box weui-media-box_text">
                                     <ul class="weui-media-box__info">
                                       <li class="weui-media-box__info__meta">{{ x.day }}</li>
-                                      <li class="weui-media-box__info__meta">开通VIP会员可查看近三天的信息</li>
+                                      <li class="weui-media-box__info__meta">
+                                        开通VIP会员可查看近三天的信息
+                                        <!--<span class="weui-badge">v</span>-->
+                                      </li>
                                     </ul>
                                 </div>
                             </div>
@@ -146,8 +149,8 @@
       </template>
     </div>
     <div id="rule" class="weui-tab__bd-item">
-        <rule-tab id="rule-page" :sources="rule.sources" :subjects="rule.subjects" :keys="rule.keys"
-                  @submit="rule_submit" @cancel="view='list'"></rule-tab>
+        <rule-tab id="rule-page" :vip="is_vip" :sources="rule.sources" :subjects="rule.subjects" :keys="rule.keys"
+                  @select="rule_select" @submit="rule_submit" @cancel="view='list'"></rule-tab>
     </div>
     <div id="user" class="weui-tab__bd-item">
         <user-tab id="user-page" :vip="is_vip" :end="user.end" :pays="user.pays" @submit="init()" @cancel="view='list'"></user-tab>
@@ -173,14 +176,15 @@
       <p class="weui-tabbar__label">发布日期</p>
     </a>
     <a id="btn_user" href="javascript:;" class="weui-tabbar__item" @click="view='user'">
-      <div class="weui-tabbar__icon">
+        <span v-if="!is_vip" class="weui-badge weui-badge_dot" style="position:absolute; top:0.2em; right:2.2em;"></span>
+        <div class="weui-tabbar__icon">
         <i class="fa fa-user"></i>
       </div>
       <p class="weui-tabbar__label">会员信息</p>
     </a>
   </div>
     <!-- content popup -->
-    <content-pop id="content_popup" :archive="archive" :vip="is_vip"></content-pop>
+    <content-pop id="content_popup" :archive="archive" :vip="is_vip" @original="on_original"></content-pop>
     <!-- date popup -->
     <days-pop id="date-popup" menu="#btn_days" :days="days" @submit="day_submit" ></days-pop>
 </div>
@@ -205,7 +209,9 @@
                 <p v-html="x"></p>
             </section>
             <section v-show="archive.url != ''" >
-                <a href="javascript:;" @click="original(archive.url, archive.source)">查看原文</a>
+                <a href="javascript:;" @click="original(archive.url, archive.source)">查看原文
+                    <span v-if="!vip" class="weui-badge" style="position:relative; top:-0.6em; color:yellow;">vip</span>
+                </a>
             </section>
             <section>
                 <a href="javascript:;" class="weui-btn weui-btn_primary close-popup">关闭</a>
@@ -221,11 +227,7 @@
         props: {id: String, archive: Object, vip: Boolean},
         methods: {
             original: function (url, source) {  // 查看原始信息
-                if (!this.vip) {
-                    $.alert('开通VIP服务后，可查看原文内容。');
-                    return;
-                }
-                window.location.href = url;
+                this.$emit('original', this, url);
             }
         },
         updated: function(){
@@ -305,7 +307,11 @@
         <div class="weui-panel__bd button_sp_area">
             <template v-for="x of subjects">
                 <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_default"
-                   :class="{'weui-btn_primary': x.select}" @click="select(x)" >{{ x.text }}</a>
+                   :class="{'weui-btn_primary': x.select}" @click="select(x)" >{{ x.text }}
+                    <template v-if="(x.text == '预公告') && (!vip)">
+                        <span class="weui-badge weui-badge_dot" style="position:relative; top:-0.6em;"></span>
+                    </template>
+                </a>
             </template>
         </div>
         <div class="weui-panel__hd">信息来源</div>
@@ -327,9 +333,14 @@
 <script>
     Vue.component('rule-tab', {
         template: '#rule-tab',
-        props: {id: String, sources: Array, subjects: Array, keys: Array, key: String},
+        props: {id: String, vip:Boolean, sources: Array, subjects: Array, keys: Array, key: String},
         methods: {
-            select: function(item){ item.select = !item.select; },
+            select: function(item){
+                item.select = !item.select;
+                if (item.select){
+                    this.$emit('select', this, item);
+                }
+            },
             add_key: function () {
                 var vm = this;
                 var key = vm.key;
@@ -495,6 +506,18 @@
                     history.pushState(null, null, document.URL);
                 }, function(){ vm.loading = false; });
             },
+            on_original: function(comp, url){
+                var vm = this;
+                if (vm.is_vip) {
+                    window.location.href = url;
+                }
+                else {
+                    $.confirm('开通VIP服务查看<b>原文信息</b><br/>现在开通?', function(){
+                        $.closePopup();
+                        vm.view = 'user';
+                    });
+                }
+            },
             update_view: function(){
                 var vm = this;
 
@@ -524,6 +547,16 @@
                 var vm = this;
                 vm.params.day = comp.day;
                 vm.reload();
+            },
+            rule_select: function(comp, item){
+                var vm = this;
+                if (vm.is_vip) { return; }
+                if (item.text == '预公告' && item.select) {
+                    item.select = false;
+                    $.confirm('开通VIP服务查看<b>预公告</b>信息<br/>现在开通?', function(){
+                        vm.view = 'user';
+                    });
+                }
             },
             rule_submit: function(comp){
                 var choice = function(vals, invert) {
@@ -568,11 +601,8 @@
             },
             highlight: function(v){
                 var vm = this;
-                var keys = [vm.params.key];
-                if (vm.params.filter) {
-                    keys = vm.rule.keys.filter(function (o) { return o.select; })
-                            .map(function(o){ return o.text;});
-                }
+                var keys = vm.rule.keys.filter(function (o) { return o.select; }).map(function(o){ return o.text;});
+                keys = keys.concat([vm.params.key]);
                 keys.forEach(function(k){
                     var reg = new RegExp(k, 'g');
                     var rep = '<b>' + k + '</b>';
@@ -582,6 +612,10 @@
             }
         },
         filters: {
+        },
+        mounted: function(){
+            // 自定义提示框
+            $.extend($.modal.prototype.defaults, {title: '温馨提示', buttonOK: '好的', buttonCancel: '再看看'});
         }
     });
 

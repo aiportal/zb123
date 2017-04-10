@@ -64,6 +64,8 @@ class WxAuthApi(BaseView):
             # url_callback = 'http://{0}{1}'.format(host, request.path)
             # url = self.wx_app.oauth_url(url_callback, state=host)
             url = self.wx_app.oauth_url(self.url_auth, state=request.host)
+            if request.headers.get('ajax'):
+                return json_response({'redirect': url})
             return redirect(url)
         else:
             # 微信回调，认证成功
