@@ -33,6 +33,7 @@
 .icon-xianggang:before { content: '港' }
 .icon-aomen:before { content: '澳' }
 .icon-taiwan:before { content: '台' }
+.icon-other:before { content: '国' }
 
 /*
 1、北京（京）
