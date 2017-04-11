@@ -206,7 +206,7 @@
         <article class="weui-article" >
             <h1><b>{{ archive.title }}</b></h1>
             <section v-for="x in archive.contents">
-                <p v-html="x"></p>
+                <p v-html="hide(x)"></p>
             </section>
             <section v-show="archive.url != ''" >
                 <a href="javascript:;" @click="original(archive.url, archive.source)">查看原文
@@ -228,6 +228,19 @@
         methods: {
             original: function (url, source) {  // 查看原始信息
                 this.$emit('original', this, url);
+            },
+            hide: function(v){
+                // 隐藏电话号码和邮箱地址
+                var patterns = {
+                    '邮箱': /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/,
+                    '手机': /(1\d{2})(\d{8})/,
+                    '座机': /(0\d{2,3}-)?(\d{6,8})/
+                };
+                Object.values(patterns).forEach(function(p){
+                    var reg = new RegExp(p, 'g');
+                    v = v.replace(reg, '$1******');
+                });
+                return v;
             }
         },
         updated: function(){
