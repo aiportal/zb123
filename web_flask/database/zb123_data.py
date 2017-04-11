@@ -39,7 +39,7 @@ sys_config_data = [
     (171, 'source', 'other',        '其他',   '{"x":0,"y":0}'),
 
     # 公告类型
-    (201, 'subject', '预公告',   '1', None),
+    (201, 'subject', '预公告',   '0', None),
     (202, 'subject', '招标公告', '1', None),
     (203, 'subject', '更正公告', '0', None),
     (204, 'subject', '中标公告', '0', None),

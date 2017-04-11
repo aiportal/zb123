@@ -48,7 +48,6 @@ server {
         proxy_cache_valid           200 1d;
         # proxy_cache_use_stale       error timeout updating http_500 http_502 http_503 http_504;
 
-        # 客户端缓存
         if ($arg_day ~ "^\d{4}-\d{2}-\d{2}$") {
             expires                 3d;
         }
