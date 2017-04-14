@@ -90,7 +90,7 @@
                                       <li class="weui-media-box__info__meta">{{ x.day }}</li>
                                       <li class="weui-media-box__info__meta">
                                         开通VIP会员可查看近三天的信息
-                                        <!--<span class="weui-badge">v</span>-->
+                                        <span v-if="x.count > 0" class="weui-badge" style="color:yellow;">{{ x.count }}</span>
                                       </li>
                                     </ul>
                                 </div>
@@ -486,8 +486,7 @@
                 var vm = this;
                 vm.view = 'list';
                 vm.loading = true;
-                var extend = vm.is_vip ? {'_': Math.random()} : {cache: ''};
-                var params = $.extend({}, vm.params, extend);
+                var params = $.extend({}, vm.params, {'_': Math.random()});
                 vm.$http.get('/api/v3/titles', {params: params}).then(function(resp){
                     vm.loading = false;
                     var data = resp.body;

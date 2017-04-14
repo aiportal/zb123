@@ -5,6 +5,7 @@ from peewee import fn, Func
 from playhouse.shortcuts import case, cast
 import json
 import re
+from typing import List
 
 
 class DayTitlesApi(HTTPMethodView):
@@ -31,14 +32,16 @@ class DayTitlesApi(HTTPMethodView):
             return json_response({'params': {'day': str(day), 'filter': do_filter}, 'items': []})
 
         # 非VIP用户不显示最近三天的记录
+        query_day = day
+        tip_items = []
         is_vip = AnnualFee.is_vip(uid)
-        if is_vip:
-            query_day = day
-            tip_items = []
-        else:
+        if not is_vip:
             query_day = min(day, date.today() - timedelta(3))
             tip_days = [day - timedelta(x) for x in range(0, (day - query_day).days)]
-            tip_items = [{'day': str(x), 'vip': True, 'title': '开通VIP会员可查看近三天信息'} for x in tip_days]
+            if tip_days:
+                tip_counts = self.query_days_count(tip_days, do_filter and uid or None, key)
+                tip_items = [{'day': str(x), 'vip': True, 'title': '开通VIP会员可查看近三天信息',
+                              'count': tip_counts.get(str(x), 0)} for x in tip_days]
 
         if len(tip_items) > 0:
             records = []
@@ -78,6 +81,39 @@ class DayTitlesApi(HTTPMethodView):
         }
 
         return json_response(result)
+
+    @staticmethod
+    def query_days_count(days: List[date], uid: str=None, key=None):
+        """ 查询每天的信息总数
+        全国信息: uid==None, key==None
+        关键词搜索：uid==None, key="..."
+        筛选定制：uid="...", key=None
+        """
+        if len(days) < 1:
+            return {}
+
+        query = GatherInfo.select(GatherInfo.day, fn.COUNT(GatherInfo.uuid).alias('count'))\
+            .where(GatherInfo.day << days)
+
+        if key:
+            query = query.where(GatherInfo.title.contains(key))
+        elif uid:
+            rule = FilterRule.get_rule(uid) or FilterRule()
+            if rule.sources:
+                query = query.where(GatherInfo.source << rule.sources)
+            if rule.subjects:
+                exp = False
+                for subject in rule.subjects:
+                    exp = exp | GatherInfo.subject.startswith(subject)
+                query = query.where(exp)
+            if rule.keys:
+                exp = False
+                for key in rule.keys:
+                    exp = exp | GatherInfo.title.contains(key)
+                query = query.where(exp)
+
+        query = query.group_by(GatherInfo.day)
+        return {str(x.day): x.count for x in query}
 
     def query_filtered_gathers(self, uid: str, day: date, page: int=1, size: int=20):
         """ 查询招标信息，按筛选条件进行筛选 """

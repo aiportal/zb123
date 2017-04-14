@@ -62,7 +62,7 @@ docker save -o docker_python35.tar python35:sanic
 
 
 # zb123
-docker run -dit --name=zb123 --net=host -v /prj:/prj zb123:3.3.5
+docker run -dit --name=zb123 --net=host -v /prj:/prj zb123:3.3.6
 
 # mysql
 docker run -dit --name=r_mysql --restart=always -p 3306:3306 zb123:3.3.1
