@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <!-- WEUI -->
+    <link href="//cdn.bootcss.com/weui/1.1.1/style/weui.min.css" rel="stylesheet">
+    <title>招标123</title>
+</head>
+<body>
+<div id="app">
+    <div id="loading">
+        <div class="weui-mask_transparent"></div>
+        <div class="weui-toast">
+            <i class="weui-loading weui-icon_toast"></i>
+            <p class="weui-toast__content">{{ msg }}</p>
+        </div>
+    </div>
+</div>
+<script src="//cdn.bootcss.com/vue/2.1.10/vue.min.js"></script>
+<script src="//cdn.bootcss.com/vue-resource/1.2.0/vue-resource.min.js"></script>
+<script>
+    var vm_app = new Vue({
+        el: '#app',
+        data: {
+            msg: '页面加载中...'
+        },
+        methods: {
+            init: function(){
+                var vm = this;
+                var opts = {headers: {AJAX: 'json'}};
+                vm.$http.get('/wx/auth', opts).then(function (resp) {
+                    vm.msg = '微信认证：' + resp.body.redirect;
+                    vm.auth(resp.body.redirect);    // 微信认证网址
+                }, function (resp) {
+                    window.location.href = '/welcome';
+                });
+            },
+            auth: function (url) {
+                var vm = this;
+                vm.$http.get(url).then(function (resp) {
+                    vm.msg = '认证成功';
+                    // alert('认证成功: ' + resp.body.length);
+                }, function (resp) {
+                    vm.msg = '认证失败: ';
+                    alert(resp.body);
+                    // window.location.href = '/welcome';
+                });
+            }
+        },
+        mounted: function () {
+            this.init();
+        }
+    });
+</script>
+</body>
+</html>

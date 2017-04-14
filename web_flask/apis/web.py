@@ -1,7 +1,8 @@
 from .core import HTTPMethodView, request, json_response, ServerError
-from database import SysConfig, UserInfo, AnnualFee, FilterRule, GatherInfo, ContentInfo
+from database import SysConfig, UserInfo, AnnualFee, FilterRule, GatherInfo, ContentInfo, UserFeature
 from datetime import datetime, date, timedelta
 from peewee import fn, Func
+from playhouse.shortcuts import case, cast
 import json
 import re
 
@@ -78,44 +79,13 @@ class DayTitlesApi(HTTPMethodView):
 
         return json_response(result)
 
-    def _query_filtered_gathers(self, uid: str, day: date, page: int=1, size: int=20):
-        """ 查询招标信息，按筛选条件进行筛选 """
-        assert size < 100
-
-        # 筛选条件
-        rule = FilterRule.get_rule(uid) or FilterRule()
-
-        # 按天查询
-        query = GatherInfo.select().where(GatherInfo.day == day)
-
-        # 筛选条件
-        if rule.sources:
-            query = query.where(GatherInfo.source << rule.sources)
-        if rule.subjects:
-            exp = False
-            for subject in rule.subjects:
-                exp = exp | GatherInfo.subject.startswith(subject)
-            query = query.where(exp)
-        if rule.keys:
-            exp = False
-            for key in rule.keys:
-                exp = exp | GatherInfo.title.contains(key)
-            query = query.where(exp)
-
-        # 招标来源顺序
-        source_ordered = ','.join(self.get_sources_by_distance(uid))
-        distance = Func('find_in_set', GatherInfo.source, source_ordered)
-
-        query = query.order_by(distance, GatherInfo.subject, GatherInfo.title)
-        query = query.paginate(page, size)
-        return [x for x in query]
-
     def query_filtered_gathers(self, uid: str, day: date, page: int=1, size: int=20):
         """ 查询招标信息，按筛选条件进行筛选 """
         assert size < 100
 
         # 筛选条件
         rule = FilterRule.get_rule(uid) or FilterRule()
+        feature = UserFeature.get_feature(uid) or UserFeature()
 
         # 按天查询
         query = GatherInfo.select().where(GatherInfo.day == day)
@@ -139,11 +109,16 @@ class DayTitlesApi(HTTPMethodView):
         for i, key in enumerate(rule.keys):
             col_key_match += fn.IF(GatherInfo.title.contains(key), 0, 100 - i)
 
+        # 用户特征匹配度
+        col_feature_match = fn.IF(True, 0, 0)
+        for k, v in feature.feature.items():
+            col_feature_match += fn.IF(GatherInfo.title.contains(k), int(v), 0)
+
         # 招标来源顺序
         source_ordered = ','.join(self.get_sources_by_distance(uid))
         distance = Func('find_in_set', GatherInfo.source, source_ordered)
 
-        query = query.order_by(col_key_match, distance, GatherInfo.subject, GatherInfo.title)
+        query = query.order_by(col_key_match, -col_feature_match, distance, GatherInfo.subject, GatherInfo.title)
         query = query.paginate(page, size)
         return [x for x in query]
 
@@ -159,6 +134,7 @@ class DayTitlesApi(HTTPMethodView):
         # order by v_source desc, source, v_subject + v_key, title desc
 
         rule = FilterRule.get_rule(uid) or FilterRule()
+        feature = UserFeature.get_feature(uid) or UserFeature()
 
         # 招标来源匹配度
         source_ordered = ','.join(self.get_sources_by_distance(uid))
@@ -175,6 +151,11 @@ class DayTitlesApi(HTTPMethodView):
         for i, key in enumerate(rule.keys):
             col_key_match += fn.IF(GatherInfo.title.contains(key), 0, 100 - i)
 
+        # 用户特征匹配度
+        col_feature_match = fn.IF(True, 0, 0)
+        for k, v in feature.feature.items():
+            col_feature_match += fn.IF(GatherInfo.title.contains(k), int(v), 0)
+
         # 全国信息的查询，只提供预公告和招标公告
         if AnnualFee.is_vip(uid):
             default_filter = GatherInfo.subject.startswith('预公告') | GatherInfo.subject.startswith('招标公告')
@@ -183,12 +164,15 @@ class DayTitlesApi(HTTPMethodView):
 
         # 查询
         query = GatherInfo.select().where(GatherInfo.day == day).where(default_filter)
-        query = query.order_by(col_key_match, col_subject_match, order_col_source)
+        query = query.order_by(col_key_match, -col_feature_match, col_subject_match, order_col_source)
         query = query.paginate(page, size)
         return [x for x in query]
 
     def query_search_gathers(self, uid: str, day: date, key: str, page: int, size: int):
+        """ 搜索招标信息 """
+
         rule = FilterRule.get_rule(uid) or FilterRule()
+        feature = UserFeature.get_feature(uid) or UserFeature()
 
         # 招标来源匹配度
         source_ordered = ','.join(self.get_sources_by_distance(uid))
@@ -205,6 +189,11 @@ class DayTitlesApi(HTTPMethodView):
         for i, k in enumerate(rule.keys):
             col_key_match += fn.IF(GatherInfo.title.contains(k), 0, 100 - i)
 
+        # 用户特征匹配度
+        col_feature_match = fn.IF(True, 0, 0)
+        for k, v in feature.feature.items():
+            col_feature_match += fn.IF(GatherInfo.title.contains(k), int(v), 0)
+
         # 全国信息的查询，只提供预公告和招标公告
         if AnnualFee.is_vip(uid):
             default_filter = GatherInfo.subject.startswith('预公告') | GatherInfo.subject.startswith('招标公告')
@@ -214,7 +203,7 @@ class DayTitlesApi(HTTPMethodView):
         # 查询
         query = GatherInfo.select().where(GatherInfo.day == day).where(default_filter)\
             .where(GatherInfo.title.contains(key))
-        query = query.order_by(col_key_match, col_subject_match, order_col_source)
+        query = query.order_by(col_key_match, -col_feature_match, col_subject_match, order_col_source)
         query = query.paginate(page, size)
         return [x for x in query]
 

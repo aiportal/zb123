@@ -1,5 +1,5 @@
 from .core import HTTPMethodView, request, json_response
-from database import SysConfig, UserInfo, FilterRule, AnnualFee, SuggestInfo
+from database import SysConfig, UserInfo, FilterRule, AnnualFee, SuggestInfo, UserFeature
 from datetime import datetime, date, timedelta
 import json, hashlib
 
@@ -85,7 +85,8 @@ class UserInfoApi(HTTPMethodView):
         """ 计算通用的缓存特征值 """
         user = UserInfo.get_user(uid)
         vip = AnnualFee.is_vip(uid)
-        info = {'province': user.info.get('province'), 'vip': vip,
+        feature = UserFeature.get_feature(uid).uuid
+        info = {'province': user.info.get('province'), 'vip': vip, 'feature': feature,
                 'sources': rule.sources, 'subjects': rule.subjects, 'keys': rule.keys}
         bs = json.dumps(info, ensure_ascii=False, sort_keys=True).encode()
         return hashlib.md5(bs).hexdigest().lower()

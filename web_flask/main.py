@@ -2,6 +2,7 @@ from flask import Flask, Blueprint, request, make_response, redirect, url_for
 #from flask_restful import Api, output_json
 import apis
 import views
+from cmds import cmd_v3
 from database import Database, UserInfo, AccessLog, RuntimeEvent
 
 
@@ -48,7 +49,6 @@ app.add_url_rule('/wx/sendall', view_func=views.WxPublishApi.as_view('sendall'))
 app.add_url_rule('/wx/preview', view_func=views.WxPublishApi.as_view('preview'))
 app.add_url_rule('/wx/menu', view_func=views.WxMenuApi.as_view('menu'))                     # 初始化微信菜单
 
-
 # API接口
 api_v3 = Blueprint('api_v3', 'api_v3', url_prefix='/api/v3')
 api_v3.add_url_rule('/user', view_func=apis.UserInfoApi.as_view('user'))                    # 用户界面初始化
@@ -69,6 +69,9 @@ def before_api_request():
 
 # 注册API接口
 app.register_blueprint(api_v3)
+
+# 注册Web指令
+app.register_blueprint(cmd_v3)
 
 
 # 调试

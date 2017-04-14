@@ -3,6 +3,7 @@ from playhouse.pool import PooledMySQLDatabase
 from .core import JSONField
 from datetime import datetime, date
 import platform
+from typing import List
 
 
 host = platform.system() == 'Windows' and 'data.ultragis.com' or '127.0.0.1'
@@ -144,12 +145,12 @@ class SysConfig(BaseModel):
     info = peewee.CharField(max_length=2000, null=True, help_text='说明')
 
     @staticmethod
-    def get_items(subject):
+    def get_items(subject: str) -> list:
         query = SysConfig.select().where(SysConfig.subject == subject).order_by(+SysConfig.id)
         return [x for x in query]
 
     @staticmethod
-    def get_item(subject, key):     # type:SysConfig
+    def get_item(subject: str, key: str):     # type:SysConfig
         query = SysConfig.select().where(SysConfig.subject == subject).where(SysConfig.key == key)
         return query[0] if len(query) > 0 else SysConfig(**{'subject': subject, 'key': key})
 

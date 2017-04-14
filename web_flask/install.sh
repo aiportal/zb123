@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # mysql Install
 
 apt-get install mysql-server
@@ -25,11 +26,6 @@ mkdir /env
 cd /env
 virtualenv sanic
 echo "function env(){ source /env/\$1/bin/activate; }" >> ~/.bashrc
-
-
-# sanic
-source /env/sanic/bin/activate
-pip install sanic peewee peewee-async aiomysql requests qrcode Pillow xmltodict
 
 
 # scrapy
@@ -72,12 +68,10 @@ docker run -dit --name=zb123 --net=host -v /prj:/prj zb123:3.3.5
 docker run -dit --name=r_mysql --restart=always -p 3306:3306 zb123:3.3.1
 docker exec r_mysql service mysql start
 
-# sanic
-docker run -dit --name=r_sanic --net=host --restart=always -v /prj:/prj zb123:3.3.1 ~/sanic.sh
-
 # fetch
-docker run -dit --name=r_fetch --net=host -v /prj:/prj zb123:3.3.5 ~/fetch.sh
+docker run -dit --name=r_fetch --net=host -v /prj:/prj zb123:3.3.6 ~/fetch.sh
 
 # flask
-docker run -dit --name=r_flask --net=host -v /prj:/prj zb123:3.3.3 ~/flask.sh
-docker run -dit --name=r_flask --net=host -v /prj:/prj zb123:3.3.4 ~/uwsgi.sh
+docker run -dit --name=r_flask --net=host -v /prj:/prj zb123:3.3.6 ~/flask.sh
+# uwsgi
+docker run -dit --name=r_uwsgi --restart=always --net=host -v /prj:/prj zb123:3.3.6 ~/uwsgi.sh
