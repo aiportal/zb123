@@ -1,8 +1,6 @@
 from flask.views import MethodView
-from flask import request
 import peewee
 from peewee import fn
-from playhouse.kv import JSONKeyStore
 from database import AccessLog, GatherInfo, UserFeature, SysConfig
 from web_funcs import *
 import jieba

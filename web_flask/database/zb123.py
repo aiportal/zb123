@@ -35,6 +35,10 @@ class UserInfo(BaseModel):
     def get_user(uid: str):
         query = UserInfo.select().where(UserInfo.uid == uid)
         return query[0] if len(query) > 0 else None
+
+    @staticmethod
+    def user_exists(uid: str) -> bool:
+        return UserInfo.select().where(UserInfo.uid == uid).exists()
 UserInfo.create_table(True)
 
 

@@ -2,8 +2,10 @@ from flask import Flask, Blueprint, request, make_response, redirect, url_for
 #from flask_restful import Api, output_json
 import apis
 import views
+from api_v4 import api_v4
 from cmds import cmd_v3
 from database import Database, UserInfo, AccessLog, RuntimeEvent
+import gevent
 
 
 app = Flask(__name__)
@@ -16,13 +18,24 @@ def before_req():
 
 
 @app.teardown_request
-def teardown_req(exc):
-    try:
-        uid = request.cookies.get('uid', '')
-        AccessLog.log_access(uid, request.url, {'ip': request.remote_addr, 'host': request.host, 'root': request.host_url})
-    except Exception as ex:
-        print('<<< teardown_req >>> ', str(ex))
-    Database.close()
+def teardown_request(exc):
+    def after(uid, url, ip):
+        try:
+            AccessLog.log_access(uid, url, {'ip': ip, 'ex': str(exc)})
+        except Exception as ex:
+            print('<<< teardown_req >>> ', ex)
+        Database.close()
+    gevent.spawn(after, request.cookies.get('uid'), request.url, request.remote_addr)
+
+# @app.teardown_request
+# def teardown_req(exc):
+#     try:
+#         uid = request.cookies.get('uid', '')
+#         AccessLog.log_access(uid, request.url, {'ip': request.remote_addr, 'host': request.host,
+#               'root': request.host_url})
+#     except Exception as ex:
+#         print('<<< teardown_req >>> ', str(ex))
+#     Database.close()
 
 
 @app.errorhandler
@@ -69,6 +82,7 @@ def before_api_request():
 
 # 注册API接口
 app.register_blueprint(api_v3)
+app.register_blueprint(api_v4)
 
 # 注册Web指令
 app.register_blueprint(cmd_v3)
@@ -85,8 +99,13 @@ def debug():
 
 
 if __name__ == '__main__':
-    if __debug__:
-        app.run('0.0.0.0', 81, debug=True)
-    else:
-        app.run('0.0.0.0', 80, debug=False)
+    from gevent.wsgi import WSGIServer
+    from werkzeug.serving import run_with_reloader
+    from werkzeug.debug import DebuggedApplication
+
+    @run_with_reloader
+    def run_server():
+        http_server = WSGIServer(('', 81), DebuggedApplication(app))
+        http_server.serve_forever()
+    run_server()
 

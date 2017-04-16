@@ -1,6 +1,7 @@
 from .fetch import *
 from .zb123 import *
 from .feature import UserFeature
+from .gather import BidGather, BidContent
 
 
 db_connections = [db_fetch, db_zb123]
