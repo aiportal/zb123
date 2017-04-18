@@ -297,9 +297,23 @@
         </div>
         <div class="weui-panel__hd">信息来源</div>
         <div class="weui-panel__bd button_sp_area">
-            <template v-for="x of sources">
+            <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_default"
+               :class="{'weui-btn_primary': all.length == 0}" @click="global()" >全国</a>
+            <template v-if="expand">
+                <template v-for="x of sources">
+                    <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_default"
+                       :class="{'weui-btn_primary': x.select}" @click="select(x)" >{{ x.text }}</a>
+                </template>
                 <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_default"
-                   :class="{'weui-btn_primary': x.select}" @click="select(x)" >{{ x.text }}</a>
+                   @click="expand=false" >{{ '< 收起' }}</a>
+            </template>
+            <template v-else>
+                <template v-for="x of all">
+                    <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_default"
+                       :class="{'weui-btn_primary': x.select}" @click="select(x)" >{{ x.text }}</a>
+                </template>
+                <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_default"
+                   @click="expand=true" >{{ '更多 >' }}</a>
             </template>
         </div>
         <!-- buttons -->
@@ -315,12 +329,23 @@
     Vue.component('rule-tab', {
         template: '#rule-tab',
         props: {id: String, vip:Boolean, sources: Array, subjects: Array, keys: Array, key: String},
+        data: function(){
+            return { expand: false };
+        },
+        computed: {
+            all: function(){
+                return this.sources.filter(function(x){ return x.select; });
+            }
+        },
         methods: {
             select: function(item){
                 item.select = !item.select;
                 if (item.select){
                     this.$emit('select', this, item);
                 }
+            },
+            global: function(){ // 选中全国
+                this.sources.forEach(function(x){ x.select = false; });
             },
             add_key: function () {
                 var vm = this;
@@ -331,6 +356,7 @@
             },
             submit: function(){
                 this.add_key();
+                this.expand = false;
                 this.$emit('submit', this);
             },
             cancel: function(){ this.$emit('cancel', this); }
