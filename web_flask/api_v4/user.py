@@ -33,14 +33,17 @@ class UserInfoApi(MethodView):
         subjects = [{'text': x.key, 'select': x.key in rule.subjects} for x in self.subjects]
 
         # 关键词
-        keys = [{'text': x, 'select': x in rule.keys} for x in rule.suggests]
+        keys = sorted([{'text': x, 'select': x in rule.keys} for x in rule.suggests],
+                      key=lambda x: x['select'], reverse=True)[:20]
 
         # 会员信息
         orders = AnnualFee.get_orders(uid)    # 付费信息列表
         if not orders:
             user = {'vip': False, 'pays': None, 'end': None}
         else:
-            user = {'vip': True, 'end': str(orders[0].end),
+            u = UserInfo.get_user(uid)
+            photo = u.info and u.info.get('headimgurl')
+            user = {'vip': True, 'end': str(orders[0].end), 'photo': photo,
                     'pays': [{'day': str(x.day), 'fee': x.amount, 'start': str(x.start), 'end': str(x.end),
                               'order': x.order_no} for x in orders]}
 

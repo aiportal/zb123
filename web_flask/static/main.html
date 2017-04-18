@@ -153,7 +153,8 @@
                   @select="rule_select" @submit="rule_submit" @cancel="view='list'"></rule-tab>
     </div>
     <div id="user" class="weui-tab__bd-item">
-        <user-tab id="user-page" :vip="is_vip" :end="user.end" :pays="user.pays" @submit="init()" @cancel="view='list'"></user-tab>
+        <user-tab id="user-page" :vip="is_vip" :end="user.end" :pays="user.pays" :photo="user.photo"
+                  @submit="init()" @cancel="view='list'"></user-tab>
     </div>
   </div>
   <div class="weui-tabbar">
@@ -341,7 +342,10 @@
     <div class="weui-msg" v-if="vip">
       <div class="weui-msg__text-area">
         <h2 class="weui-msg__title">会员信息</h2>
-        <p class="weui-msg__desc">            </p>
+        <p>&nbsp;</p>
+        <p class="weui-msg__desc">
+            <img :src="photo" style="width:200px; height:200px; "></img>
+        </p>
       </div>
         <div class="weui-form-preview" v-for="x of pays">
           <div class="weui-form-preview__hd">
@@ -395,7 +399,7 @@
 <script>
     Vue.component('user-tab', {
         template: '#user-tab',
-        props: {id: String, vip: Boolean, end: String, pays: Array},
+        props: {id: String, vip: Boolean, end: String, pays: Array, photo: String},
         methods: {
             submit: function(){ this.$emit('submit', this); },
             cancel: function(){ this.$emit('cancel', this); }
@@ -455,7 +459,7 @@
         data: {
             view: 'list',
             rule: {sources:[], keys:[]},                        // 筛选规则
-            user: {vip: false, end: '', pays:[]},               // 用户信息(是否vip, 到期时间, 支付记录)
+            user: {vip: false, end: '', pays:[], photo: ''},    // 用户信息(是否vip, 到期时间, 支付记录)
             params: {day: '', filter: true, key:null},            // 请求参数(起始日期，是否过滤，搜索词)
             next: null,                                         // 下一页的请求参数
             items: [],                                          // 标题列表

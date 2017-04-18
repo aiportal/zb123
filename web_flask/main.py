@@ -3,7 +3,9 @@ from flask import Flask, Blueprint, request, make_response, redirect, url_for
 import apis
 import views
 from api_v4 import api_v4
+from svc_v4 import svc_v4
 from cmds import cmd_v3
+
 from database import Database, UserInfo, AccessLog, RuntimeEvent
 import gevent
 
@@ -26,16 +28,6 @@ def teardown_request(exc):
             print('<<< teardown_req >>> ', ex)
         Database.close()
     gevent.spawn(after, request.cookies.get('uid'), request.url, request.remote_addr)
-
-# @app.teardown_request
-# def teardown_req(exc):
-#     try:
-#         uid = request.cookies.get('uid', '')
-#         AccessLog.log_access(uid, request.url, {'ip': request.remote_addr, 'host': request.host,
-#               'root': request.host_url})
-#     except Exception as ex:
-#         print('<<< teardown_req >>> ', str(ex))
-#     Database.close()
 
 
 @app.errorhandler
@@ -87,6 +79,9 @@ app.register_blueprint(api_v4)
 # 注册Web指令
 app.register_blueprint(cmd_v3)
 
+# 注册新版服务
+app.register_blueprint(svc_v4)
+
 
 # 调试
 @app.route('/debug')
@@ -105,7 +100,7 @@ if __name__ == '__main__':
 
     @run_with_reloader
     def run_server():
-        http_server = WSGIServer(('', 81), DebuggedApplication(app))
+        http_server = WSGIServer(('0.0.0.0', 81), DebuggedApplication(app))
         http_server.serve_forever()
     run_server()
 

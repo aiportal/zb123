@@ -27,10 +27,11 @@ class DataUpdateApi(MethodView):
                 select G.uuid, G.`day`, G.title, G.`subject`,
                     G.source, G.area, G.industry, G.pid, G.`end`, G.tender, G.budget, G.tels, G.time
                 from gather_full G
-                where day = %s
-                    and G.uuid not in (select uuid from gather_new)
+                where day = '{}'
+                    and G.uuid not in (select uuid from gather_new where day='{}')
             """
-            db_fetch.execute_sql(sql_update, day)
+            sql = sql_update.format(str(day))
+            db_fetch.execute_sql(sql)
             print('gather updated for ', day)
         except Exception as ex:
             RuntimeEvent.log_event('exception', {'ex': str(ex)})
