@@ -34,7 +34,7 @@ class GuangzhouSpider(scrapy.Spider):
     def parse(self, response):
         links = self.link_extractor.links(response)
         for link in links:
-            link.meta.update(response.meta['data'])
+            link.meta.update(**response.meta['data'])
             yield scrapy.Request(link.url, meta={'data': link.meta}, callback=self.parse_item)
 
         page = self.page_extractor.extract_value(response)

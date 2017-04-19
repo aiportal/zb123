@@ -75,17 +75,23 @@ class SpiderStatsExtension(object):
 
     def send_stat_msg(self):
         # 发送结果统计
-        wx_company = WeChatClient('wx2c67ebb55a4012c3',
-                                  'dFtHnrP3gBqIwj0aEmaRxyTlgQhg1caMWVQXW1HykiaGQ3Qpk-KIOUtF27G1IDQ5')
-        wx_msg = WeChatMessage(wx_company)
+        try:
+            wx_company = WeChatClient('wx2c67ebb55a4012c3',
+                                      'dFtHnrP3gBqIwj0aEmaRxyTlgQhg1caMWVQXW1HykiaGQ3Qpk-KIOUtF27G1IDQ5')
+            wx_msg = WeChatMessage(wx_company)
 
-        head = ['[scrapy] {0}'.format(socket.gethostname()),
-                '{0:%Y-%m-%d %H:%M}'.format(self.start),
-                '{0}'.format((datetime.now()-self.start)),
-                '']
-        items = [(k, v, self.errors.get(k, 0)) for k, v in self.items.items()]
-        items = sorted(items, key=lambda x: x[2] * 10000 + int(x[1]), reverse=True)
-        stat = ['{2:3} err, {1:3} item, {0:>15}'.format(k, v, e)
-                for k, v, e in items]
-        msg = '\n'.join(head + stat)
-        wx_msg.send_text(10, 'bfbd', msg)
+            total = sum(self.items.values())
+            head = ['[scrapy] {}'.format(socket.gethostname()),
+                    '{:%Y-%m-%d %H:%M}'.format(self.start),
+                    '{}'.format((datetime.now()-self.start)),
+                    '{} items'.format(total),
+                    '']
+            items = [(k, v, self.errors.get(k, 0)) for k, v in self.items.items() if self.errors.get(k)]
+            items = sorted(items, key=lambda x: x[2] * 10000 + int(x[1]), reverse=True)
+            stat = ['{2:3} err, {1:3} item, {0:>15}'.format(k, v, e)
+                    for k, v, e in items]
+            msg = '\n'.join(head + stat)
+            wx_msg.send_text(10, 'bfbd', msg)
+        except Exception as ex:
+            print(ex)
+            ExceptionLog.log_exception('weixin', 'WX', '', {'exception': str(ex)})

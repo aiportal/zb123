@@ -77,7 +77,7 @@ EXTENSIONS = {
 
 # 限制内存占用
 MEMUSAGE_ENABLED = False
-MEMUSAGE_LIMIT_MB = 500
+MEMUSAGE_LIMIT_MB = 800
 
 # 队列信息保存在磁盘上
 # JOBDIR = './job'

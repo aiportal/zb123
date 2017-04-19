@@ -8,7 +8,7 @@ import json
 from urllib.parse import urlsplit, parse_qs, urlencode, urlunsplit
 from scrapy.selector import Selector
 from typing import List, Union
-from typing import Union, List
+from typing import Union, List, Iterable
 
 
 class NodesExtractor:
@@ -84,7 +84,7 @@ class MetaLinkExtractor(NodesExtractor):
         self.url_attr = url_attr
         self.url_process = url_process
 
-    def extract_links(self, response) -> MetaLink:
+    def extract_links(self, response) -> Iterable[MetaLink]:
         base_url = response.url.rpartition('/')[0] + '/'
         for node in self._extract_nodes(response):
             attr = node.get(self.url_attr)
@@ -279,14 +279,17 @@ class MoneyExtractor:
                ('陆', '6'), ('柒', '7'), ('捌', '8'), ('玖', '9')]
 
     @classmethod
-    def money_all(cls, selector: scrapy.Selector):
+    def money_all(cls, selector: Union[scrapy.Selector, List[str]]):
         from itertools import chain
         from functools import reduce
         """ 提取文本内容中的金额 """
         money_all = []
 
         try:
-            lns = [s.strip() for s in selector.xpath('.//text()').extract() if s.strip()]
+            if isinstance(selector, scrapy.Selector):
+                lns = [s.strip() for s in selector.xpath('.//text()').extract() if s.strip()]
+            else:
+                lns = selector
             content = ''.join(lns)
             for ln in [content]:
                 values_yuan = [int(s.replace(',', '')) for s in
@@ -351,7 +354,7 @@ class DateExtractor:
 
 class FieldExtractor:
     @classmethod
-    def text(cls, selector: Union[Selector,SelectorList]) -> str:
+    def text(cls, selector: Union[Selector, SelectorList]) -> str:
         """ 解析出文本内容 """
         if isinstance(selector, SelectorList):
             selector = selector[0]
@@ -372,7 +375,7 @@ class FieldExtractor:
         return datetime.strptime(day, '%Y-%m-%d').date()
 
     @classmethod
-    def money(cls, selector: scrapy.Selector):
+    def money(cls, selector: Union[scrapy.Selector, List[str]]):
         """ 解析出金额内容 """
         try:
             return MoneyExtractor.money_max(selector)

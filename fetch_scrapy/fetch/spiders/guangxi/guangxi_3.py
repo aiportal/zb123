@@ -26,7 +26,7 @@ class Guangxi3Spider(scrapy.Spider):
     def parse(self, response):
         links = self.link_extractor.links(response)
         for lnk in links:
-            lnk.meta.update(response.meta['data'])
+            lnk.meta.update(**response.meta['data'])
             yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
 
         pager = self.page_extractor.extract_value(response) or ''

@@ -46,6 +46,26 @@ class GatherItem(scrapy.Item):
         return datetime.strptime(str(self['day']), '%Y-%m-%d').year
 
     @staticmethod
+    def new(url: str, ref: str, source: str, day: date, title: str, contents: List[str], **kwargs):
+        assert source
+        if day == day.min:
+            raise ValueError('day')
+        if not title:
+            raise ValueError('title')
+        if not contents:
+            raise ValueError('contents')
+
+        url_hash = JobIndex.url_hash(url)
+        html = '-full' in sys.argv and kwargs.get('html') or None
+        index_url = ref
+        top_url = None
+        real_url = url
+
+        kwargs.update(source=source, day=str(day), title=title, contents=contents)
+        kwargs.update(uuid=url_hash, url=url, html=html, index_url=index_url, top_url=top_url, real_url=real_url)
+        return GatherItem(kwargs)
+
+    @staticmethod
     def create(response, source: str, day: date, title: str, contents: List[str], **kwargs):
         assert source
         if day == day.min:
@@ -62,7 +82,7 @@ class GatherItem(scrapy.Item):
 
         url = response.meta.get('top_url') or req_url                       # 用户跳转的原文页面
         html = '-full' in sys.argv and response.text or None                # -full模式下保存html
-        index_url = response.request.headers.get('Referer')
+        index_url = response.request.headers.get('Referer', b'').decode()
         real_url = req_url
         top_url = response.meta.get('top_url')                              # 有框架时记录顶层网址
 
