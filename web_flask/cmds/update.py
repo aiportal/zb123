@@ -15,8 +15,9 @@ class DataUpdateApi(MethodView):
 
     def get(self, day: str=None):
         day = day and datetime.strptime(day, '%Y-%m-%d').date() or date.today()
-        gevent.spawn(self.update_gather_data, day)
-        return json_response({'state': 'started'})
+        self.update_gather_data(day)
+        # gevent.spawn(self.update_gather_data, day)
+        return json_response({'success': True})
 
     @staticmethod
     def update_gather_data(day: date):
