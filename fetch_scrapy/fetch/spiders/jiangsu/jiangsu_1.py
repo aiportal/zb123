@@ -41,7 +41,7 @@ class JiangsuSpider(scrapy.Spider):
         page += 1
         if page < count:
             url = urljoin(response.url, 'index_{}.html'.format(page))
-            yield scrapy.Request(url, meta=response.meta)
+            yield scrapy.Request(url, meta=response.meta, dont_filter=True)
 
     def parse_item(self, response):
         """ 解析详情页 """

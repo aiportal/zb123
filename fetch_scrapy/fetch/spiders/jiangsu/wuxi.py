@@ -36,7 +36,7 @@ class WuxiSpider(scrapy.Spider):
         if page < count:
             form = response.meta['form']
             form['currentPage'] = str(page)
-            yield scrapy.FormRequest(response.url, formdata=form, meta=response.meta)
+            yield scrapy.FormRequest(response.url, formdata=form, meta=response.meta, dont_filter=True)
 
     def parse_item(self, response):
         """ 解析详情页 """

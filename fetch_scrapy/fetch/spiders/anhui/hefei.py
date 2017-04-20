@@ -18,7 +18,7 @@ class HefeiSpider(scrapy.Spider):
     def start_requests(self):
         for url, subject in self.start_urls:
             data = dict(subject=subject)
-            yield scrapy.Request(url, meta={'data': data})
+            yield scrapy.Request(url, meta={'data': data}, dont_filter=True)
 
     link_extractor = MetaLinkExtractor(css=('#SearchResult1_DataGrid1 tr > td > a',),
                                        attrs_xpath={'text': './/text()', 'area': '../../td[1]//text()',

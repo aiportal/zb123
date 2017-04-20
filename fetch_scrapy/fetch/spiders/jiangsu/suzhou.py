@@ -24,7 +24,7 @@ class SuzhouSpider(scrapy.Spider):
 
     def start_requests(self):
         form = self.start_form
-        yield scrapy.FormRequest(self.start_url, formdata=form, meta={'data': form})
+        yield scrapy.FormRequest(self.start_url, formdata=form, meta={'data': form}, dont_filter=True)
 
     def parse(self, response):
         pkg = json.loads(response.text)
@@ -43,7 +43,7 @@ class SuzhouSpider(scrapy.Spider):
         total = pkg['total']
         if (page * rows) <= total:
             data.update(page=str(page + 1))
-            yield scrapy.FormRequest(response.url, formdata=data, meta={'data': data})
+            yield scrapy.FormRequest(response.url, formdata=data, meta={'data': data}, dont_filter=True)
 
     def parse_item(self, response):
         """ 解析详情页 """

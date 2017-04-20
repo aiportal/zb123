@@ -29,15 +29,10 @@ class Jaingsu2Spider(scrapy.Spider):
             ('003004003', '更正公告/政府采购'),
         ]
     ]
-    # count_urls = [
-    #     ('http://www.jsggzy.com.cn/services/JsggWebservice/getListByCount'
-    #      '?response=application/json&categorynum={}&city=省级'.format(k), v)
-    #     for k, v in []
-    # ]
 
     def start_requests(self):
         for url, subject in self.start_urls:
-            data = dict(subject=subject, page=1)
+            data = dict(subject=subject, page=1, size=15)
             yield scrapy.Request(url, meta={'data': data}, dont_filter=True)
 
     def parse(self, response):
@@ -47,6 +42,12 @@ class Jaingsu2Spider(scrapy.Spider):
             url = urljoin(response.url, row['href'])
             row.update(**response.meta['data'])
             yield scrapy.Request(url, meta={'data': row}, callback=self.parse_item)
+
+        data = response.meta['data']
+        if pkg['RowCount'] == data['size']:
+            data['page'] += 1
+            url = SpiderTool.url_replace(response.url, pageIndex=data['page'])
+            yield scrapy.Request(url, meta={'data': data}, dont_filter=True)
 
     def parse_item(self, response):
         """ 解析详情页 """
@@ -76,4 +77,5 @@ class Jaingsu2Spider(scrapy.Spider):
         g.set(area=[self.alias, data.get('city')])
         g.set(subject=[data.get('subject'), data.get('jyfl')])
         g.set(budget=FieldExtractor.money(body))
+        g.set(extends=data)
         return [g]

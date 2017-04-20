@@ -26,7 +26,7 @@ class NanjingSpider(scrapy.Spider):
     def start_requests(self):
         for url, subject in self.start_urls:
             data = dict(subject=subject)
-            yield scrapy.Request(url, meta={'data': data})
+            yield scrapy.Request(url, meta={'data': data}, dont_filter=True)
 
     link_extractor = MetaLinkExtractor(css=('div.R_cont_detail > ul > li > a',),
                                        attrs_xpath={'text': './/text()', 'day': '../text()'})
@@ -44,7 +44,7 @@ class NanjingSpider(scrapy.Spider):
             page = int(pager[0][1]) + 1
             url = response.url
             url = '{0}/index_{1}.html'.format(url[:url.rfind('/')], page)
-            yield scrapy.Request(url, meta=response.meta)
+            yield scrapy.Request(url, meta=response.meta, dont_filter=True)
 
     def parse_item(self, response):
         """ 解析详情页 """

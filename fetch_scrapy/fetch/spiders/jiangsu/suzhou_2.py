@@ -29,7 +29,7 @@ class SuZhouSpider(scrapy.Spider):
 
     def start_requests(self):
         for url, subject in self.start_urls:
-            yield scrapy.Request(url, meta={'data': dict(subject=subject)})
+            yield scrapy.Request(url, meta={'data': dict(subject=subject)}, dont_filter=True)
 
     link_extractor = MetaLinkExtractor(css=('#tdcontent tr > td > a, div.mr-content tr > td > a',),
                                        attrs_xpath={'text': './/text()',
@@ -46,7 +46,7 @@ class SuZhouSpider(scrapy.Spider):
         href = SpiderTool.re_text("\.href='(.+)'", pager)
         if href:
             url = urljoin(response.url, href)
-            yield scrapy.Request(url, meta=response.meta)
+            yield scrapy.Request(url, meta=response.meta, dont_filter=True)
 
     def parse_item(self, response):
         # 如果是转向操作，转到实际页面
