@@ -5,10 +5,10 @@ from fetch.items import GatherItem
 import re
 
 
-class NanjingSpider(scrapy.Spider):
+class JaingsuNanjingSpider(scrapy.Spider):
     """
-    @title: 四川省公共资源交易服务平台
-    @href: http://www.scztb.gov.cn/
+    @title: 南京市政府采购网
+    @href: http://www.njgp.gov.cn/
     """
     name = 'jiangsu/nanjing'
     alias = '江苏/南京'
