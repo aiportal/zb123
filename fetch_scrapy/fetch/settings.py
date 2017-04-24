@@ -35,7 +35,7 @@ LOG_LEVEL = __debug__ and 'DEBUG' or 'ERROR'    # DEBUG,INFO,WARNING,ERROR
 
 # 最大爬取深度
 if '-full' not in sys.argv:
-    DEPTH_LIMIT = 6
+    DEPTH_LIMIT = 5
 
 DEFAULT_REQUEST_HEADERS = {
     'Accept': '*/*',

@@ -1,6 +1,6 @@
 import scrapy
-from . import JsonMetaSpider
-from . import DateExtractor, HtmlPlainExtractor, MoneyExtractor
+from .. import JsonMetaSpider
+from .. import DateExtractor, HtmlPlainExtractor, MoneyExtractor
 import json
 import re
 

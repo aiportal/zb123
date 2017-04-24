@@ -47,7 +47,7 @@ class TianjinSpider(HtmlMetaSpider):
             day = DateExtractor.extract(day)
             data = response.meta.get('params', {})
             data.update(title=title, day=day)
-            yield scrapy.Request(url, meta={'data': data})
+            yield scrapy.Request(url, meta={'data': data}, callback=self.parse_item)
             count -= 1
         if count > 0:
             raise ValueError('parse beijing index error: ' + response.url)

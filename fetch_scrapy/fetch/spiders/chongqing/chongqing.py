@@ -1,6 +1,6 @@
 import scrapy
-from . import JsonMetaSpider, GatherItem
-from . import DateExtractor, JsonLinkGenerator, JsonPageGenerator, HtmlContentExtractor
+from .. import JsonMetaSpider, GatherItem
+from .. import DateExtractor, JsonLinkGenerator, JsonPageGenerator, HtmlContentExtractor
 import json
 from datetime import datetime
 

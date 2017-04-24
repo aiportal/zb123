@@ -14,6 +14,9 @@
 # 山西省公共资源交易服务平台
 # http://prec.sxzwfw.gov.cn/Home/IndexDefault
 
+# 中国招标投标公共服务平台
+# http://cebpubservice.com/
+
 """
 @title: 辽宁电子招标投标综合交易平台
 @href: http://www.dzzbw.net/
@@ -123,3 +126,26 @@
 @title: 新疆生产建设兵团公共资源交易信息网
 @href: http://ggzy.xjbt.gov.cn/
 """
+
+
+# <option selected="">--全国招标投标协会--</option>
+# <option value="http://www.ctba.org.cn/">中国招标投标协会</option>
+# <option value="http://www.hbstba.org.cn/">湖北省招标投标协会</option>
+# <option value="http://www.ynzbxh.com/">云南省招标投标协会</option>
+# <option value="http://www.htba.org.cn/">河南省招标投标协会</option>
+# <option value="http://www.hbzhaobiao.com/">河北省招标投标协会</option>
+# <option value="http://www.sxbid.com.cn/">山西省招标投标协会</option>
+# <option value="http://www.lntb.gov.cn/">辽宁省招标投标监管网</option>
+# <option value="http://www.zjtba.org.cn/">浙江省招标投标协会</option>
+# <option value="http://www.hntba.com/">海南省招标投标协会</option>
+# <option value="http://www.gzztbxh.com/">贵州省招标投标协会</option>
+# <option value="http://www.gtba.net.cn/">广东省招标投标协会</option>
+# <option value="http://www.fjbid.gov.cn/zbtbxh/">福建省招标投标协会</option>
+# <option value="http://www.jxtb.org.cn/">江西省招标投标网</option>
+# <option value="http://www.jszb.com.cn/jszb/">江苏建设工程招标网</option>
+# <option value="http://www.cqzb.gov.cn/">重庆市招标投标综合网</option>
+# <option value="http://web.scjst.gov.cn/webSite/Invunion">四川省工程建设招标投标协会</option>
+# <option value="http://www.qhzbtb.gov.cn/">青海省招标投标网</option>
+# <option value="http://www.xjztb.net/">新疆建设工程招标网</option>
+# <option value="http://www.nmgztb.com.cn/">内蒙古招标投标协会</option>
+# </select>

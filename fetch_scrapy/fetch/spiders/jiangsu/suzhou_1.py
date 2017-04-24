@@ -7,6 +7,9 @@ import re
 
 
 class SuzhouSpider(scrapy.Spider):
+    """
+
+    """
     name = 'jiangsu/suzhou'
     alias = '江苏/苏州'
     allowed_domains = ['zfcg.suzhou.gov.cn']
