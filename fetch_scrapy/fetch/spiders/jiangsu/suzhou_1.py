@@ -12,7 +12,7 @@ class SuzhouSpider(scrapy.Spider):
     """
     name = 'jiangsu/suzhou'
     alias = '江苏/苏州'
-    allowed_domains = ['zfcg.suzhou.gov.cn']
+    allowed_domains = ['suzhou.gov.cn']
     start_url = 'http://www.zfcg.suzhou.gov.cn/content/cpContents.action'
     start_form = {
         'type': '',
