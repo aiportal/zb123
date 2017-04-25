@@ -10,7 +10,7 @@ class ${NAME}Spider(scrapy.Spider):
     @title: 
     @href: 
     """
-    name = '$Package_name'
+    name = '${Package_name}'
     alias = ''
     allowed_domains = []
     start_urls = [

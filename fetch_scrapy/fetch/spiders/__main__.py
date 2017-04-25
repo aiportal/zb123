@@ -148,4 +148,12 @@
 # <option value="http://www.qhzbtb.gov.cn/">青海省招标投标网</option>
 # <option value="http://www.xjztb.net/">新疆建设工程招标网</option>
 # <option value="http://www.nmgztb.com.cn/">内蒙古招标投标协会</option>
-# </select>
+# </
+
+
+# 云南
+# yngp.com
+
+# 青岛
+# ccgp-qingdao.gov.cn
+
