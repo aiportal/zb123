@@ -7,7 +7,6 @@ from svc_v4 import svc_v4
 from cmds import cmd_v3
 
 from database import Database, UserInfo, AccessLog, RuntimeEvent
-import gevent
 
 
 app = Flask(__name__)
@@ -21,13 +20,12 @@ def before_req():
 
 @app.teardown_request
 def teardown_request(exc):
-    def after(uid, url, ip):
-        try:
-            AccessLog.log_access(uid, url, {'ip': ip, 'ex': str(exc)})
-        except Exception as ex:
-            print('<<< teardown_req >>> ', ex)
-        Database.close()
-    gevent.spawn(after, request.cookies.get('uid'), request.url, request.remote_addr)
+    try:
+        AccessLog.log_access(request.cookies.get('uid'), request.url, {'ip': request.remote_addr, 'ex': str(exc)})
+    except Exception as ex:
+        print('<<< teardown_req >>> ', ex)
+    Database.close()
+    # gevent.spawn(after, request.cookies.get('uid'), request.url, request.remote_addr)
 
 
 @app.errorhandler

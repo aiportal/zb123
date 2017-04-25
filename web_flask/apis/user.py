@@ -85,7 +85,8 @@ class UserInfoApi(HTTPMethodView):
         """ 计算通用的缓存特征值 """
         user = UserInfo.get_user(uid)
         vip = AnnualFee.is_vip(uid)
-        feature = UserFeature.get_feature(uid).uuid
+        feature = UserFeature.get_feature(uid)
+        feature = feature and feature.uuid or ''
         info = {'province': user.info.get('province'), 'vip': vip, 'feature': feature,
                 'sources': rule.sources, 'subjects': rule.subjects, 'keys': rule.keys}
         bs = json.dumps(info, ensure_ascii=False, sort_keys=True).encode()

@@ -30,7 +30,7 @@ class RangeTitlesApi(MethodView):
 
         # 限制查询天数
         days_limit = is_vip and 90 or 6
-        day = min(day, date.today() - timedelta(days_limit))
+        day = max(day, date.today() - timedelta(days_limit))
 
         # 非VIP用户不显示最近三天
         if is_first and not is_vip:
@@ -56,8 +56,11 @@ class RangeTitlesApi(MethodView):
             self.add_rule_key(uid, key)
         else:
             records = self.query_global_gathers(uid, day, max_day, page, size)
+
         items = [{'uuid': x.uuid, 'day': str(x.day), 'source': x.source, 'subject': x.subject, 'title': x.title}
                  for x in records]
+        if not items and do_filter:
+            items = [{'title': '没有符合您筛选条件的招标信息'}]
 
         # 当前请求参数
         cur_params = {'day': str(day), 'page': page, 'size': size, 'filter': do_filter, 'key': key}

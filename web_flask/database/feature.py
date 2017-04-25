@@ -27,7 +27,7 @@ class UserFeature(BaseModel):
         db_table = 'feature'
     uid = peewee.CharField(primary_key=True, max_length=50, help_text='union_id')
     uuid = peewee.CharField(max_length=50, default=str(uuid.uuid4()).replace('-', ''), help_text='feature字段的md5')
-    feature = JSONField(null=True, default='{}', help_text='用户特征词：{key1:n1, key2:n2, ...}')
+    feature = JSONField(null=True, default={}, help_text='用户特征词：{key1:n1, key2:n2, ...}')
     day_keys = JSONField(null=True)
     week_keys = JSONField(null=True)
     month_keys = JSONField(null=True)
