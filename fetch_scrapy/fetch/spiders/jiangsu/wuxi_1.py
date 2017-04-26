@@ -6,7 +6,11 @@ import json
 
 
 class WuxiSpider(scrapy.Spider):
-    name = 'jiangsu/wuxi'
+    """
+    @title: 无锡政府采购网
+    @href: http://cz.wuxi.gov.cn/ztzl/zfcg/index.shtml
+    """
+    name = 'jiangsu/wuxi/1'
     alias = '江苏/无锡'
     allowed_domains = ['wuxi.gov.cn']
     start_urls = ['http://cz.wuxi.gov.cn/intertidwebapp/docquery/queryDocments']
@@ -30,13 +34,6 @@ class WuxiSpider(scrapy.Spider):
             url = 'http://cz.wuxi.gov.cn/' + row['url']
             row['subject'] = response.meta['data']['chanId']
             yield scrapy.Request(url, meta={'data': row}, callback=self.parse_item)
-
-        count = int(pkg['pageCount'])
-        page = int(pkg['pageIndex']) + 1
-        if page < count:
-            form = response.meta['form']
-            form['currentPage'] = str(page)
-            yield scrapy.FormRequest(response.url, formdata=form, meta=response.meta, dont_filter=True)
 
     def parse_item(self, response):
         """ 解析详情页 """

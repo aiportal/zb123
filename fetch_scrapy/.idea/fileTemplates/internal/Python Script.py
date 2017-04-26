@@ -14,6 +14,12 @@ class ${NAME}Spider(scrapy.Spider):
     alias = ''
     allowed_domains = []
     start_urls = [
+        ('', ''),
+        ('', ''),
+        ('', ''),
+        ('', ''),
+        ('', ''),
+        ('', ''),
     ]
 
     def start_requests(self):
