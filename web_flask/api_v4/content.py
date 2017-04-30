@@ -1,8 +1,9 @@
-from flask.views import MethodView
+from flask.views import MethodView, request
 from web_funcs import json_response, ServerError
 from database import ContentInfo
 import json
 import re
+from urllib.parse import urljoin
 from typing import List
 
 
@@ -24,6 +25,7 @@ class ContentApi(MethodView):
         contents = json.loads(rec.contents or '[]')
         if isinstance(contents, str):
             contents = [contents]
+        contents = self.origin_links(rec.real_url, contents)
         contents = self.highlight(contents)
 
         return json_response({
@@ -48,4 +50,26 @@ class ContentApi(MethodView):
             # ￥6,790.00元    未能识别
 
             contents[i] = ln
+        return contents
+
+    @staticmethod
+    def origin_links(url: str, contents: List[str]):
+        """ 完善链接网址 """
+        root = urljoin(url, '/')
+        parent = urljoin(url, '.')
+
+        for i, ln in enumerate(contents):
+
+            # 绝对路径网址
+            ln = re.sub(r'( href=")/([^"]+")', '\g<1>{0}\g<2>'.format(root), ln)
+            # 相对路径网址
+            ln = re.sub('( href=")(?!http://|https://|/)([^"]+")', '\g<1>{0}\g<2>'.format(parent), ln)
+
+            # iframe 绝对路径
+            ln = re.sub(r'( src=")/([^"]+")', '\g<1>{0}\g<2>'.format(root), ln)
+            # iframe 相对路径
+            ln = re.sub('( src=")(?!http://|https://|/)([^"]+")', '\g<1>{0}\g<2>'.format(parent), ln)
+
+            contents[i] = ln
+
         return contents
