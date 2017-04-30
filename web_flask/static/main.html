@@ -289,9 +289,11 @@
             <template v-for="x of subjects">
                 <a href="javascript:;" class="weui-btn weui-btn_mini weui-btn_default"
                    :class="{'weui-btn_primary': x.select}" @click="select(x)" >{{ x.text }}
+                    <!--
                     <template v-if="(x.text == '预公告') && (!vip)">
                         <span class="weui-badge weui-badge_dot" style="position:relative; top:-0.6em;"></span>
                     </template>
+                    -->
                 </a>
             </template>
         </div>
@@ -341,7 +343,7 @@
             select: function(item){
                 item.select = !item.select;
                 if (item.select){
-                    this.$emit('select', this, item);
+                    // this.$emit('select', this, item);
                 }
             },
             global: function(){ // 选中全国
