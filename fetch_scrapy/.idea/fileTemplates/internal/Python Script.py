@@ -10,23 +10,32 @@ class ${NAME}Spider(scrapy.Spider):
     @title: 
     @href: 
     """
-    name = '${Package_name}'
+    name = '${PACKAGE_NAME}/${NAME}'
     alias = ''
-    allowed_domains = []
+    allowed_domains = ['']
     start_urls = [
-        ('', ''),
-        ('', ''),
-        ('', ''),
-        ('', ''),
+        ('', '招标公告/建设工程'),
+        ('', '中标公告/建设工程'),
+        ('', '招标公告/政府采购'),
+        ('', '中标公告/政府采购'),
         ('', ''),
         ('', ''),
     ]
 
+    link_extractor = MetaLinkExtractor(css='tr > td > a',
+                                       attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})
+
     def start_requests(self):
-        pass
+        for url, subject in self.start_urls:
+            data = dict(subject=subject)
+            yield scrapy.Request(url, meta={'data': data}, dont_filter=True)
 
     def parse(self, response):
-        pass
+        links = self.link_extractor.links(response)
+        assert len(links) > 0
+        for lnk in links:
+            lnk.meta.update(**response.meta['data'])
+            yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
 
     def parse_item(self, response):
         """ 解析详情页 """
@@ -43,7 +52,7 @@ class ${NAME}Spider(scrapy.Spider):
             title=title,
             contents=contents
         )
-        g.set(area=self.alias)
-        g.set(subject=data.get('subject'))
+        g.set(area=[self.alias])
+        g.set(subject=[data.get('subject')])
         g.set(budget=FieldExtractor.money(body))
         return [g]

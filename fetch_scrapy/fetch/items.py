@@ -11,6 +11,7 @@ from database import JobIndex
 from datetime import datetime, date
 import sys
 from typing import List, Union
+from urllib import parse
 
 
 class GatherItem(scrapy.Item):
@@ -75,10 +76,14 @@ class GatherItem(scrapy.Item):
         if not contents:
             raise ValueError('contents')
 
-        assert not isinstance(response.request, scrapy.FormRequest)     # Post网址的hash要加上参数
-        redirects = response.request.meta.get('redirect_urls', [])
-        req_url = redirects and redirects[0] or response.url            # 原始请求网址
-        url_hash = JobIndex.url_hash(req_url)                           # 防止重入的网址hash
+        if isinstance(response.request, scrapy.FormRequest):
+            req_url = '{0}?{1}'.format(response.url, response.request.body.decode())
+            url_hash = JobIndex.url_hash(req_url)
+        else:
+            assert response.request.method == 'GET'
+            redirects = response.request.meta.get('redirect_urls', [])
+            req_url = redirects and redirects[0] or response.url            # 原始请求网址
+            url_hash = JobIndex.url_hash(req_url)                           # 防止重入的网址hash
 
         url = response.meta.get('top_url') or req_url                       # 用户跳转的原文页面
         html = '-full' in sys.argv and response.text or None                # -full模式下保存html

@@ -86,12 +86,6 @@
 @title: 海南省公共资源交易网
 @href: http://www.ggzy.hi.gov.cn/
 """
-
-"""
-@title: 重庆市公共资源交易网
-@href: http://www.cqggzy.com/
-"""
-
 """
 @title: 四川省公共资源交易服务平台
 @href: http://www.scztb.gov.cn/index.html
@@ -143,7 +137,6 @@
 # <option value="http://www.fjbid.gov.cn/zbtbxh/">福建省招标投标协会</option>
 # <option value="http://www.jxtb.org.cn/">江西省招标投标网</option>
 # <option value="http://www.jszb.com.cn/jszb/">江苏建设工程招标网</option>
-# <option value="http://www.cqzb.gov.cn/">重庆市招标投标综合网</option>
 # <option value="http://web.scjst.gov.cn/webSite/Invunion">四川省工程建设招标投标协会</option>
 # <option value="http://www.qhzbtb.gov.cn/">青海省招标投标网</option>
 # <option value="http://www.xjztb.net/">新疆建设工程招标网</option>

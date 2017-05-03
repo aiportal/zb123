@@ -3,34 +3,35 @@ from fetch.extractors import MetaLinkExtractor, NodesExtractor, FieldExtractor
 from fetch.tools import SpiderTool
 from fetch.items import GatherItem
 from urllib.parse import urljoin
+import re
 
 
-class Beijing1Spider(scrapy.Spider):
+class chuzhou_1Spider(scrapy.Spider):
     """
-    @title: 北京市政府采购中心
-    @href: http://www.bgpc.gov.cn/
+    @title: 滁州市公共资源交易中心
+    @href: http://www.czggzy.gov.cn/Front_jyzx/
     """
-    name = 'beijing/1'
-    alias = '北京'
-    allowed_domains = ['bgpc.gov.cn']
+    name = 'anhui/chuzhou/1'
+    alias = '安徽/滁州'
+    allowed_domains = ['czggzy.gov.cn']
     start_urls = [
-        ('http://www.bgpc.gov.cn/news/news/nt_id/97', '预公告/需求公告'),
-        ('http://www.bgpc.gov.cn/news/news/nt_id/29', '招标公告'),
-        ('http://www.bgpc.gov.cn/news/news/nt_id/32', '中标公告'),
-        ('http://www.bgpc.gov.cn/news/news/nt_id/30', '更正公告'),
-        ('http://www.bgpc.gov.cn/news/news/nt_id/33', '其他公告/废标公告'),
+        ('http://www.czggzy.gov.cn/Front_jyzx/jyxx/002005/002005001/', '招标公告/建设工程'),
+        ('http://www.czggzy.gov.cn/Front_jyzx/jyxx/002006/002006001/', '中标公告/建设工程'),
+        ('http://www.czggzy.gov.cn/Front_jyzx/jyxx/002005/002005002/', '招标公告/政府采购'),
+        ('http://www.czggzy.gov.cn/Front_jyzx/jyxx/002006/002006002/', '中标公告/政府采购'),
     ]
+
+    link_extractor = MetaLinkExtractor(css='div.right-wrap tr > td > a[target=_blank]',
+                                       attrs_xpath={'text': './/text()', 'day': '../../td[last()-1]//text()'})
 
     def start_requests(self):
         for url, subject in self.start_urls:
             data = dict(subject=subject)
             yield scrapy.Request(url, meta={'data': data}, dont_filter=True)
 
-    link_extractor = MetaLinkExtractor(css='#newslist ul > li > span > a',
-                                       attrs_xpath={'text': './/text()', 'day': '../../span[last()]//text()'})
-
     def parse(self, response):
         links = self.link_extractor.links(response)
+        assert len(links) > 0
         for lnk in links:
             lnk.meta.update(**response.meta['data'])
             yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
@@ -38,10 +39,14 @@ class Beijing1Spider(scrapy.Spider):
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
-        body = response.css('#news_xx') or response.css('#news_word')
+        body = response.css('#TD1, #tr1') or response.css('div.article-text')
+        prefix = '^\[\w{2,8}\]'
+        suffix = '【\w{1,5}】$'
 
         day = FieldExtractor.date(data.get('day'))
         title = data.get('title') or data.get('text')
+        title = re.sub(prefix, '', title)
+        title = re.sub(suffix, '', title)
         contents = body.extract()
         g = GatherItem.create(
             response,

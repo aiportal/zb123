@@ -31,9 +31,6 @@ class SichuanAba1Spider(scrapy.Spider):
         ]
     ]
 
-    # post_body = r'[0,15,"XXKSSJ DESC","XMMC","","XTType={{0}} AND XXType={{1}} AND FBZT=1 AND XXKSSJ<getdate() ",'\
-    #             r'"[{{\"pvalue\":\"{0[Type]}\"}},{{\"pvalue\":\"{0[SubType]}\"}}]"]'
-
     def start_requests(self):
         url = self.start_urls[0]
         headers = {'Ajax-method': 'GetPageJYXXFB', 'Content-Type': 'text/plain; charset=UTF-8'}

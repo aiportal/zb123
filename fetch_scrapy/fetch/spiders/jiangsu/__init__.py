@@ -1,10 +1,13 @@
 
+
+# 无锡市水利局
+# http://www.wxwater.gov.cn/zfxxgk/gggs/zbxx/index.shtml
+
 # 镇江市公共资源交易公共服务平台
 # http://www.zjggzy.gov.cn/
 
 # 镇江市公共资源交易网-政府采购
 # http://www.zjzc.gov.cn/zjzc/
-
 
 # 常州市武进区公共资源交易中心
 # http://www.wjggzy.com/wjweb/
@@ -60,7 +63,6 @@
 # <option value="http://www.sxggzyjy.cn/">陕西省公共资源交易服务平台</option>
 # <option value="http://ggzy.xjbt.gov.cn/">新疆生产建设兵团公共资源交易中心</option>
 # <option value="http://www.scztb.gov.cn/index.html">四川省公共资源交易服务平台</option>
-# <option value="http://www.cqggzy.com/">重庆市公共资源交易网</option>
 # <option value="http://www.ggzy.hi.gov.cn/">海南省公共资源交易网</option>
 # <option value="http://www.gxzbtb.cn/gxzbw/">广西壮族自治区公共资源交易中心</option>
 # <option value="http://www.hbggzyfwpt.cn/">湖北省公共资源交易服务平台</option>

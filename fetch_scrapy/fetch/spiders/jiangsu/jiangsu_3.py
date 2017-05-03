@@ -52,7 +52,7 @@ class Jiangsu3Spider(scrapy.Spider):
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
-        body = response.css('#Table1') or response.css('#tdContainer')
+        body = response.css('#trzygg, #dlstAttachFile') or response.css('#Table1') or response.css('#tdContainer')
         prefix = '^\[(.+)\]'
 
         day = FieldExtractor.date(data.get('day'))

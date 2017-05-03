@@ -356,6 +356,8 @@ class FieldExtractor:
     @classmethod
     def text(cls, selector: Union[Selector, SelectorList]) -> str:
         """ 解析出文本内容 """
+        if not selector:
+            return None
         if isinstance(selector, SelectorList):
             selector = selector[0]
         if isinstance(selector.root, str):

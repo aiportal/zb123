@@ -7,7 +7,8 @@ from fetch.items import GatherItem
 class GuangAnSpider(scrapy.Spider):
     """
     @title: 广安公共资源交易网
-    @host: http://www.gasggzy.com/
+    @href: http://www.gasggzy.com/
+    @href: http://www.gasggzy.com/gasggzy/zwgk/
     """
     name = 'sichuan/guangan'
     alias = '四川/广安'

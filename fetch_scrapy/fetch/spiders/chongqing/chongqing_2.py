@@ -5,32 +5,37 @@ from fetch.items import GatherItem
 from urllib.parse import urljoin
 
 
-class Beijing1Spider(scrapy.Spider):
+class chongqing_2Spider(scrapy.Spider):
     """
-    @title: 北京市政府采购中心
-    @href: http://www.bgpc.gov.cn/
+    @title: 
+    @href: 
     """
-    name = 'beijing/1'
-    alias = '北京'
-    allowed_domains = ['bgpc.gov.cn']
+    name = '/chongqing_2'
+    alias = ''
+    allowed_domains = ['']
     start_urls = [
-        ('http://www.bgpc.gov.cn/news/news/nt_id/97', '预公告/需求公告'),
-        ('http://www.bgpc.gov.cn/news/news/nt_id/29', '招标公告'),
-        ('http://www.bgpc.gov.cn/news/news/nt_id/32', '中标公告'),
-        ('http://www.bgpc.gov.cn/news/news/nt_id/30', '更正公告'),
-        ('http://www.bgpc.gov.cn/news/news/nt_id/33', '其他公告/废标公告'),
+        ('http://www.cqggzy.com/services/PortalsWebservice/getInfoList?response=application/json'
+         '&pageIndex=1&pageSize=18&siteguid=d7878853-1c74-4913-ab15-1d72b70ff5e7&categorynum={}'
+         '&title=&infoC='.format(k), v)
+        for k, v in [
+            # ('', '招标公告/建设工程'),
+            # ('', '中标公告/建设工程'),
+            # ('', '招标公告/政府采购'),
+            # ('', '中标公告/政府采购'),
+        ]
     ]
+
+    link_extractor = MetaLinkExtractor(css='tr > td > a',
+                                       attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})
 
     def start_requests(self):
         for url, subject in self.start_urls:
             data = dict(subject=subject)
             yield scrapy.Request(url, meta={'data': data}, dont_filter=True)
 
-    link_extractor = MetaLinkExtractor(css='#newslist ul > li > span > a',
-                                       attrs_xpath={'text': './/text()', 'day': '../../span[last()]//text()'})
-
     def parse(self, response):
         links = self.link_extractor.links(response)
+        assert len(links) > 0
         for lnk in links:
             lnk.meta.update(**response.meta['data'])
             yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
@@ -38,7 +43,7 @@ class Beijing1Spider(scrapy.Spider):
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
-        body = response.css('#news_xx') or response.css('#news_word')
+        body = response.css('')
 
         day = FieldExtractor.date(data.get('day'))
         title = data.get('title') or data.get('text')
@@ -50,7 +55,7 @@ class Beijing1Spider(scrapy.Spider):
             title=title,
             contents=contents
         )
-        g.set(area=self.alias)
-        g.set(subject=data.get('subject'))
+        g.set(area=[self.alias])
+        g.set(subject=[data.get('subject')])
         g.set(budget=FieldExtractor.money(body))
         return [g]
