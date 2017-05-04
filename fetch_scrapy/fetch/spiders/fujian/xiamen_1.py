@@ -7,7 +7,11 @@ import re
 
 
 class FujianSpider(scrapy.Spider):
-    name = 'fujian/xiamen'
+    """
+    @title: 厦门政府采购网
+    @href: http://www.xmzfcg.gov.cn/
+    """
+    name = 'fujian/xiamen/1'
     alias = '福建/厦门'
     allowed_domains = ['xmzfcg.gov.cn']
     start_urls = [
@@ -23,7 +27,6 @@ class FujianSpider(scrapy.Spider):
 
     link_extractor = NodesExtractor(css=('td > a[href^="javascript:ShowView"]',),
                                     attrs_xpath={'text': './/text()', 'day': '../../td[last()-1]//text()'})
-    page_extractor = NodeValueExtractor(css=('a[title=下页]',), value_xpath='./@href')
 
     def parse(self, response):
         nodes = self.link_extractor.extract_nodes(response)
@@ -32,12 +35,6 @@ class FujianSpider(scrapy.Spider):
             url = 'http://www.xmzfcg.gov.cn/stockfile/' + href
             node.update(**response.meta['data'])
             yield scrapy.Request(url, meta={'data': node}, callback=self.parse_item)
-
-        pager = self.page_extractor.extract_value(response) or ''
-        page = SpiderTool.re_nums('turnover\((\d+)\)', pager)
-        if page:
-            form = {'curpage': str(page)}
-            yield scrapy.FormRequest(response.url, formdata=form, meta=response.meta)
 
     def parse_item(self, response):
         """ 解析详情页 """
