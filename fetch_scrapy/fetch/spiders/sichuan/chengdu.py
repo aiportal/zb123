@@ -12,7 +12,7 @@ class ChengDuSpider(scrapy.Spider):
     @title: 成都市公共资源交易服务中心
     @href: http://www.cdggzy.com/
     """
-    name = 'sichuan/chengdu'
+    name = 'sichuan/chengdu/1'
     alias = '四川/成都'
     start_urls = [
         ('http://www.cdggzy.com:8081/newsite/Notice/ListHandler.ashx?form=CgList&action=GetGG&{}'.format(k), v)
@@ -51,11 +51,11 @@ class ChengDuSpider(scrapy.Spider):
             }
             yield scrapy.Request(url, meta={'data': data}, callback=self.parse_item)
 
-        page, count = pkg['pageindex'] + 1, pkg['pagesum']
-        if page < count:
-            form = response.meta['form']
-            form.update(pageindex=str(page))
-            yield scrapy.FormRequest(response.url, formdata=form, meta=response.meta)
+        # page, count = pkg['pageindex'] + 1, pkg['pagesum']
+        # if page < count:
+        #     form = response.meta['form']
+        #     form.update(pageindex=str(page))
+        #     yield scrapy.FormRequest(response.url, formdata=form, meta=response.meta)
 
     def parse_item(self, response):
         """ 解析详情页 """

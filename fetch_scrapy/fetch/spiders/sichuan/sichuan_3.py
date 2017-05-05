@@ -43,22 +43,23 @@ class Sichuan3Spider(scrapy.Spider):
             link.meta.update(**response.meta['data'])
             yield scrapy.Request(link.url, meta={'data': link.meta}, callback=self.parse_item)
 
-        pages = self.page_extractor.extract_values(response) + ['']
-        pages = re.findall("__doPostBack\('(.+)','(\d+)'\)", pages[0])
-        if any(pages):
-            form = {
-                '__EVENTTARGET': pages[0][0],
-                '__EVENTARGUMENT': pages[0][1],
-            }
-            yield scrapy.FormRequest.from_response(response, formdata=form, meta=response.meta)
+        # pages = self.page_extractor.extract_values(response) + ['']
+        # pages = re.findall("__doPostBack\('(.+)','(\d+)'\)", pages[0])
+        # if any(pages):
+        #     form = {
+        #         '__EVENTTARGET': pages[0][0],
+        #         '__EVENTARGUMENT': pages[0][1],
+        #     }
+        #     yield scrapy.FormRequest.from_response(response, formdata=form, meta=response.meta)
 
     def parse_item(self, response):
         """ 解析详情页 """
-
         data = response.meta['data']
+        body = response.css('#ivs_content')
+
         day = FieldExtractor.date(data.get('day'), response.css('#tblInfo > tbody > tr:nth-child(3)'))
         title = data.get('title') or data.get('text')
-        contents = response.css('#ivs_content').extract()
+        contents = body.extract()
         g = GatherItem.create(
             response,
             source=self.name.split('/')[0],
@@ -68,6 +69,5 @@ class Sichuan3Spider(scrapy.Spider):
         )
         g.set(area=self.alias)
         g.set(subject=data.get('subject'))
-        g.set(budget=FieldExtractor.money(response.css('#ivs_content')))
-        g.set(extends=data)
+        g.set(budget=FieldExtractor.money(body))
         return [g]

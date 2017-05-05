@@ -19,6 +19,7 @@ class yaan_1Spider(scrapy.Spider):
         (start_base + '?jsgc=0100000&newsid=100&FromUrl=jsgc&showdate=1', '招标公告/建设工程'),
         (start_base + '?jsgc=0000010&newsid=102&FromUrl=jsgc&showdate=1', '中标公告/建设工程'),
     ]
+    custom_settings = {'DOWNLPAD_DELAY': 2.1}
 
     link_extractor = MetaLinkExtractor(css='table.myGVClass tr > td > a[id$=HLinkGcmc]',
                                        attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()',
@@ -38,7 +39,7 @@ class yaan_1Spider(scrapy.Spider):
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
-        body = response.css('table.yygl')
+        body = response.css('table.yygl') or response.css('div.newsImage')
         prefix = '^(\[\w{1,5}\]){1,2}'
 
         day = FieldExtractor.date(data.get('day'))
