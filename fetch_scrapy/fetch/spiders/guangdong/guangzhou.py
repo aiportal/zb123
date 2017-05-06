@@ -6,6 +6,10 @@ import re
 
 
 class GuangzhouSpider(scrapy.Spider):
+    """
+    @title: 广州公共资源交易中心
+    @href: http://www.gzggzy.cn/cms/index.html?siteId=1
+    """
     name = 'guangdong/guangzhou'
     alias = '广东/广州'
     allowed_domains = ['gzggzy.cn']

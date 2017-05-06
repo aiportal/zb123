@@ -134,7 +134,6 @@
 # <option value="http://www.hntba.com/">海南省招标投标协会</option>
 # <option value="http://www.gzztbxh.com/">贵州省招标投标协会</option>
 # <option value="http://www.gtba.net.cn/">广东省招标投标协会</option>
-# <option value="http://www.fjbid.gov.cn/zbtbxh/">福建省招标投标协会</option>
 # <option value="http://www.jxtb.org.cn/">江西省招标投标网</option>
 # <option value="http://www.jszb.com.cn/jszb/">江苏建设工程招标网</option>
 # <option value="http://web.scjst.gov.cn/webSite/Invunion">四川省工程建设招标投标协会</option>

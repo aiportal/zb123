@@ -5,25 +5,27 @@ from fetch.items import GatherItem
 from urllib.parse import urljoin
 
 
-class ${NAME}Spider(scrapy.Spider):
+class gansu_1Spider(scrapy.Spider):
     """
-    @title: 
-    @href: 
+    @title: 甘肃政府采购网
+    @href: http://www.ccgp-gansu.gov.cn/
     """
-    name = '${PACKAGE_NAME}/${NAME}'
-    alias = ''
-    allowed_domains = ['']
+    name = 'gansu/1'
+    alias = '甘肃'
+    allowed_domains = ['ccgp-gansu.gov.cn']
     start_urls = [
-        ('', '招标公告/政府采购'),
-        ('', '中标公告/政府采购'),
-        ('', '招标公告/建设工程'),
-        ('', '中标公告/建设工程'),
-        ('', ''),
-        ('', ''),
+        ('http://www.ccgp-gansu.gov.cn/web/doSearch.action?'
+         'op=%271%27&articleSearchInfoVo.classname={}'.format(k), v)
+        for k, v in [
+            ('1280101', '预公告/询价公告'),
+            ('1280501', '招标公告/公开招标'),
+            ('12802', '中标公告/公开招标'),
+        ]
     ]
 
-    link_extractor = MetaLinkExtractor(css='tr > td > a',
-                                       attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})
+    link_extractor = MetaLinkExtractor(css='ul.Expand_SearchSLisi > li > a[target=_blank]',
+                                       attrs_xpath={'text': './/text()', 'days': '../p[1]//text()',
+                                                    'tags': '../p[2]//text()'})
 
     def start_requests(self):
         for url, subject in self.start_urls:
@@ -40,9 +42,11 @@ class ${NAME}Spider(scrapy.Spider):
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
-        body = response.css('')
+        body = response.css('div.conTxt')
+        tags = [s.strip() for s in data.get('tags', '').split('|')] + ['']
+        day_pub = SpiderTool.re_text('发布时间：([0-9-]+)', data.get('days', ''))
 
-        day = FieldExtractor.date(data.get('day'))
+        day = FieldExtractor.date(day_pub, response.css('div.property'))
         title = data.get('title') or data.get('text')
         contents = body.extract()
         g = GatherItem.create(

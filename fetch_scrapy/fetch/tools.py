@@ -32,6 +32,8 @@ class SpiderTool:
     @staticmethod
     def iter_params(params: dict) -> Iterable[Tuple[dict, dict]]:
         """ 遍历参数组合 """
+        if not params:
+            return []
         params = {k: isinstance(v, dict) and v or {str(v): None} for k, v in params.items()}
         params = [list(zip(itertools.repeat(k), v.items())) for k, v in params.items()]
         for param in [list(i) for i in itertools.product(*params)]:

@@ -5,6 +5,10 @@ from fetch.items import GatherItem
 
 
 class ZhuhaiSpider(scrapy.Spider):
+    """
+    @title: 珠海市公共资源交易中心
+    @href: http://ggzy.zhuhai.gov.cn/
+    """
     name = 'guangdong/zhuhai'
     alias = '广东/珠海'
     allowed_domains = ['zhuhai.gov.cn']

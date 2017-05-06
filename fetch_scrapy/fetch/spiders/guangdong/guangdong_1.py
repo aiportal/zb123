@@ -3,32 +3,34 @@ from fetch.extractors import MetaLinkExtractor, NodesExtractor, FieldExtractor
 from fetch.tools import SpiderTool
 from fetch.items import GatherItem
 from urllib.parse import urljoin
+import re
 
 
-class ${NAME}Spider(scrapy.Spider):
+class guangdong_1Spider(scrapy.Spider):
     """
-    @title: 
-    @href: 
+    @title: 广东省政府采购网
+    @href: http://www.gdgpo.gov.cn/
     """
-    name = '${PACKAGE_NAME}/${NAME}'
-    alias = ''
-    allowed_domains = ['']
-    start_urls = [
-        ('', '招标公告/政府采购'),
-        ('', '中标公告/政府采购'),
-        ('', '招标公告/建设工程'),
-        ('', '中标公告/建设工程'),
-        ('', ''),
-        ('', ''),
-    ]
+    name = 'guangdong/1'
+    alias = '广东'
+    allowed_domains = ['gdgpo.gov.cn']
+    start_urls = ['http://www.gdgpo.gov.cn/queryMoreInfoList.do']
+    start_params = {
+        # 'channelCode': {
+        #     '0005': '招标公告/采购公告',
+        #     '0008': '中标公告',
+        # },
+        # 'pageIndex': 1,
+        # 'pageSize': 15
+    }
 
-    link_extractor = MetaLinkExtractor(css='tr > td > a',
-                                       attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})
+    link_extractor = MetaLinkExtractor(css='ul.m_m_c_list > li > a',
+                                       attrs_xpath={'text': './/text()', 'day': '../em//text()'})
 
     def start_requests(self):
-        for url, subject in self.start_urls:
-            data = dict(subject=subject)
-            yield scrapy.Request(url, meta={'data': data}, dont_filter=True)
+        url = self.start_urls[0]
+        for form, data in SpiderTool.iter_params(self.start_params):
+            yield scrapy.FormRequest(url, formdata=form, meta={'data': data, 'form': form})
 
     def parse(self, response):
         links = self.link_extractor.links(response)
@@ -40,10 +42,12 @@ class ${NAME}Spider(scrapy.Spider):
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
-        body = response.css('')
+        body = response.css('div.zw_c_c_cont')
+        pid = '（[A-Z0-9-]{8,}）'
 
         day = FieldExtractor.date(data.get('day'))
         title = data.get('title') or data.get('text')
+        title = re.sub(pid, '', title)
         contents = body.extract()
         g = GatherItem.create(
             response,
