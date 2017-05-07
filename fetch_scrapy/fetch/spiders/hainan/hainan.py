@@ -24,7 +24,7 @@ class HainanSpider(scrapy.Spider):
     link_extractor = MetaLinkExtractor(css=('table.newtable > tbody > tr > td > a',),
                                        attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()',
                                               'area': '../../td[2]//text()'})
-    page_extractor = NodeValueExtractor(css=('div.pagesite a:contains(下一页)',), value_xpath='./@onclick')
+    # page_extractor = NodeValueExtractor(css=('div.pagesite a:contains(下一页)',), value_xpath='./@onclick')
 
     def parse(self, response):
         links = self.link_extractor.links(response)
@@ -32,12 +32,12 @@ class HainanSpider(scrapy.Spider):
             link.meta.update(**response.meta['data'])
             yield scrapy.Request(link.url, meta={'data': link.meta}, callback=self.parse_item)
 
-        pager = self.page_extractor.extract_value(response) or ''
-        pager = SpiderTool.re_text("encodeURI\('(.+)'\)", pager)
-        if pager:
-            url = response.url
-            url = url[:url.rfind('/')] + '/' + pager
-            yield scrapy.Request(url, meta=response.meta)
+        # pager = self.page_extractor.extract_value(response) or ''
+        # pager = SpiderTool.re_text("encodeURI\('(.+)'\)", pager)
+        # if pager:
+        #     url = response.url
+        #     url = url[:url.rfind('/')] + '/' + pager
+        #     yield scrapy.Request(url, meta=response.meta)
 
     def parse_item(self, response):
         """ 解析详情页 """

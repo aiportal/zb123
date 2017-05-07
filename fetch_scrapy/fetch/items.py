@@ -76,7 +76,7 @@ class GatherItem(scrapy.Item):
         if not contents:
             raise ValueError('contents')
 
-        if isinstance(response.request, scrapy.FormRequest):
+        if isinstance(response.request, scrapy.FormRequest) or response.request.method == 'POST':
             req_url = '{0}?{1}'.format(response.url, response.request.body.decode())
             url_hash = JobIndex.url_hash(req_url)
         else:
