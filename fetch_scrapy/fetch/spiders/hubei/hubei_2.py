@@ -3,23 +3,25 @@ from fetch.extractors import MetaLinkExtractor, NodesExtractor, FieldExtractor
 from fetch.tools import SpiderTool
 from fetch.items import GatherItem
 from urllib.parse import urljoin
+import re
 
 
-class anhui_2Spider(scrapy.Spider):
+class hubei_2Spider(scrapy.Spider):
     """
-    @title: 安徽省建设工程招标投标信息网
-    @href: http://www.act.org.cn/
+    @title: 湖北公共资源交易信息网
+    @href: http://www.hbggzy.cn/hubeizxwz/
     """
-    name = 'anhui/2'
-    alias = '安徽'
-    allowed_domains = ['act.org.cn']
+    name = 'hubei/2'
+    alias = '湖北'
+    allowed_domains = ['hbggzy.cn']
     start_urls = [
-        ('http://www.act.org.cn/news.asp?pid=169', '招标公告/建设工程'),
-        ('http://www.act.org.cn/News.Asp?pid=171', '中标公告/建设工程'),
+        ('http://www.hbggzy.cn/hubeizxwz/jyxx/004001/004001001/', '预公告'),
+        ('http://www.hbggzy.cn/hubeizxwz/jyxx/004001/004001006/', '招标公告'),
+        # ('http://www.hbggzy.cn/hubeizxwz/jyxx/004005/', '中标公告'),
     ]
 
-    link_extractor = MetaLinkExtractor(css='div.sublist_list ul > li > a',
-                                       attrs_xpath={'text': './/text()', 'day': '../span//text()'})
+    link_extractor = MetaLinkExtractor(css='div.content2 tr > td.TDStyle > a[target=_blank]',
+                                       attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})
 
     def start_requests(self):
         for url, subject in self.start_urls:
@@ -28,6 +30,7 @@ class anhui_2Spider(scrapy.Spider):
 
     def parse(self, response):
         links = self.link_extractor.links(response)
+        assert links
         for lnk in links:
             lnk.meta.update(**response.meta['data'])
             yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
@@ -35,19 +38,21 @@ class anhui_2Spider(scrapy.Spider):
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
-        body = response.css('div.subcont_cont')
+        body = response.css('#TDContent, #trAttach')
+        prefix = '^\[\w{2,8}\]|^<font .+</font>'
 
-        day = FieldExtractor.date(data.get('day'), response.css('div.subcont_title div.msg'))
+        day = FieldExtractor.date(data.get('day'))
         title = data.get('title') or data.get('text')
+        title = re.sub(prefix, '', title)
         contents = body.extract()
         g = GatherItem.create(
             response,
-            source=self.name.split('/')[0],
+            source=self.name,
             day=day,
             title=title,
             contents=contents
         )
-        g.set(area=self.alias)
-        g.set(subject=data.get('subject'))
+        g.set(area=[self.alias])
+        g.set(subject=[data.get('subject')])
         g.set(budget=FieldExtractor.money(body))
         return [g]

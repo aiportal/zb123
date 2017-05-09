@@ -40,6 +40,11 @@ class chuzhou_1Spider(scrapy.Spider):
         """ 解析详情页 """
         data = response.meta['data']
         body = response.css('#TD1, #tr1') or response.css('div.article-text')
+        if not body:
+            href = SpiderTool.re_text("window.location='(.+)'", response.text)
+            if href:
+                url = urljoin(response.url, href)
+                body = ['<a href="{}">公告内容</a>'.format(url)]
         prefix = '^\[\w{2,8}\]'
         suffix = '【\w{1,5}】$'
 

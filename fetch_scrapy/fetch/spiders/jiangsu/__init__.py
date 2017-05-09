@@ -82,7 +82,6 @@
 # <option value="http://www.hbggzy.cn/">江西省公共资源交易网</option>
 # <option value="http://www.hngzzx.com/">湖南省公共资源交易中心</option>
 # <option value="http://www.sdzbtb.com/">山东省公共资源交易中心</option>
-# <option value="http://www.hnggzy.com/hnsggzy/">河南省公共资源交易中心</option>
 # <option value="http://new.zmctc.com/zjgcjy/">浙江省公共资源交易中心</option>
 
 

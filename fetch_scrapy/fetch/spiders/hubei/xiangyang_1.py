@@ -5,21 +5,24 @@ from fetch.items import GatherItem
 from urllib.parse import urljoin
 
 
-class anhui_2Spider(scrapy.Spider):
+class xiangyang_1Spider(scrapy.Spider):
     """
-    @title: 安徽省建设工程招标投标信息网
-    @href: http://www.act.org.cn/
+    @title: 襄阳市公共资源交易网
+    @href: http://www.xysztb.gov.cn/xyzbw/
     """
-    name = 'anhui/2'
-    alias = '安徽'
-    allowed_domains = ['act.org.cn']
+    name = 'hubei/xiangyang/1'
+    alias = '湖北/襄阳'
+    allowed_domains = ['xysztb.gov.cn']
     start_urls = [
-        ('http://www.act.org.cn/news.asp?pid=169', '招标公告/建设工程'),
-        ('http://www.act.org.cn/News.Asp?pid=171', '中标公告/建设工程'),
+        ('http://www.xysztb.gov.cn/xyzbw/jyxx/002002/002002001/', '招标公告/政府采购'),
+        ('http://www.xysztb.gov.cn/xyzbw/jyxx/002002/002002003/', '中标公告/政府采购'),
+        ('http://www.xysztb.gov.cn/xyzbw/jyxx/002001/002001001/', '招标公告/建设工程'),
+        ('http://www.xysztb.gov.cn/xyzbw/jyxx/002001/002001004/', '中标公告/建设工程'),
     ]
+    # custom_settings = {'DOWNLOAD_DELAY': 1.0}
 
-    link_extractor = MetaLinkExtractor(css='div.sublist_list ul > li > a',
-                                       attrs_xpath={'text': './/text()', 'day': '../span//text()'})
+    link_extractor = MetaLinkExtractor(css='#moreinfosub tr > td > a[target=_blank]',
+                                       attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})
 
     def start_requests(self):
         for url, subject in self.start_urls:
@@ -28,6 +31,7 @@ class anhui_2Spider(scrapy.Spider):
 
     def parse(self, response):
         links = self.link_extractor.links(response)
+        assert links
         for lnk in links:
             lnk.meta.update(**response.meta['data'])
             yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
@@ -35,9 +39,9 @@ class anhui_2Spider(scrapy.Spider):
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
-        body = response.css('div.subcont_cont')
+        body = response.css('#TDContent, #trAttach')
 
-        day = FieldExtractor.date(data.get('day'), response.css('div.subcont_title div.msg'))
+        day = FieldExtractor.date(data.get('day'))
         title = data.get('title') or data.get('text')
         contents = body.extract()
         g = GatherItem.create(
@@ -47,7 +51,7 @@ class anhui_2Spider(scrapy.Spider):
             title=title,
             contents=contents
         )
-        g.set(area=self.alias)
-        g.set(subject=data.get('subject'))
+        g.set(area=[self.alias])
+        g.set(subject=[data.get('subject')])
         g.set(budget=FieldExtractor.money(body))
         return [g]

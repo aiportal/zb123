@@ -7,16 +7,20 @@ from datetime import date
 
 
 class Hebei2Spider(scrapy.Spider):
+    """
+    @title: 河北省公共资源交易服务平台
+    @href: http://www.hebpr.cn/
+    """
     name = 'hebei/2'
     alias = '河北'
     allowed_domains = ['hebpr.cn']
     start_urls = [
         ('http://www.hebpr.cn/002/002009/002009001/002009001001/1.html', '招标公告/政府采购'),
-        ('http://www.hebpr.cn/002/002009/002009001/002009001006/moreinfo.html', '中标公告/政府采购'),
-        ('http://www.hebpr.cn/002/002009/002009001/002009001002/moreinfo.html', '更正公告/政府采购'),
+        # ('http://www.hebpr.cn/002/002009/002009001/002009001006/moreinfo.html', '中标公告/政府采购'),
+        # ('http://www.hebpr.cn/002/002009/002009001/002009001002/moreinfo.html', '更正公告/政府采购'),
         ('http://www.hebpr.cn/002/002009/002009002/002009002001/moreinfo.html', '招标公告/工程建设'),
         ('http://www.hebpr.cn/002/002009/002009002/002009002005/moreinfo.html', '中标公告/工程建设'),
-        ('http://www.hebpr.cn/002/002009/002009002/002009002002/moreinfo.html', '更正公告/工程建设'),
+        # ('http://www.hebpr.cn/002/002009/002009002/002009002002/moreinfo.html', '更正公告/工程建设'),
     ]
 
     def start_requests(self):
@@ -27,7 +31,7 @@ class Hebei2Spider(scrapy.Spider):
     link_extractor = MetaLinkExtractor(css=('#categorypagingcontent > ul > li > a',),
                                        attrs_xpath={'text': './p[1]//text()',
                                                     'day': './p[2]/span//text()'})
-    page_extractor = MetaLinkExtractor(css=('div.pagemargin a:contains(下页)',))
+    # page_extractor = MetaLinkExtractor(css=('div.pagemargin a:contains(下页)',))
 
     def parse(self, response):
         links = self.link_extractor.links(response)
@@ -35,9 +39,9 @@ class Hebei2Spider(scrapy.Spider):
             lnk.meta.update(**response.meta['data'])
             yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
 
-        pager = self.page_extractor.links(response)
-        if pager:
-            yield scrapy.Request(pager[0].url, meta=response.meta)
+        # pager = self.page_extractor.links(response)
+        # if pager:
+        #     yield scrapy.Request(pager[0].url, meta=response.meta)
 
     def parse_item(self, response):
         """ 解析详情页 """

@@ -5,21 +5,19 @@ from fetch.items import GatherItem
 from urllib.parse import urljoin
 
 
-class anhui_2Spider(scrapy.Spider):
+class henan_1Spider(scrapy.Spider):
     """
-    @title: 安徽省建设工程招标投标信息网
-    @href: http://www.act.org.cn/
+    @title: 河南省政府采购网
+    @href: http://www.hngp.gov.cn/
     """
-    name = 'anhui/2'
-    alias = '安徽'
-    allowed_domains = ['act.org.cn']
+    name = 'henan/1'
+    alias = '河南'
+    allowed_domains = ['hngp.gov.cn']
     start_urls = [
-        ('http://www.act.org.cn/news.asp?pid=169', '招标公告/建设工程'),
-        ('http://www.act.org.cn/News.Asp?pid=171', '中标公告/建设工程'),
     ]
 
-    link_extractor = MetaLinkExtractor(css='div.sublist_list ul > li > a',
-                                       attrs_xpath={'text': './/text()', 'day': '../span//text()'})
+    link_extractor = MetaLinkExtractor(css='tr > td > a',
+                                       attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})
 
     def start_requests(self):
         for url, subject in self.start_urls:
@@ -28,6 +26,7 @@ class anhui_2Spider(scrapy.Spider):
 
     def parse(self, response):
         links = self.link_extractor.links(response)
+        assert links
         for lnk in links:
             lnk.meta.update(**response.meta['data'])
             yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
@@ -35,9 +34,9 @@ class anhui_2Spider(scrapy.Spider):
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
-        body = response.css('div.subcont_cont')
+        body = response.css('')
 
-        day = FieldExtractor.date(data.get('day'), response.css('div.subcont_title div.msg'))
+        day = FieldExtractor.date(data.get('day'))
         title = data.get('title') or data.get('text')
         contents = body.extract()
         g = GatherItem.create(
@@ -47,7 +46,7 @@ class anhui_2Spider(scrapy.Spider):
             title=title,
             contents=contents
         )
-        g.set(area=self.alias)
-        g.set(subject=data.get('subject'))
+        g.set(area=[self.alias])
+        g.set(subject=[data.get('subject')])
         g.set(budget=FieldExtractor.money(body))
         return [g]

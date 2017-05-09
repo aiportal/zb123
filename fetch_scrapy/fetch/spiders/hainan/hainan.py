@@ -6,6 +6,10 @@ import re
 
 
 class HainanSpider(scrapy.Spider):
+    """
+    @title: 海南省公共资源交易网
+    @href: http://www.ggzy.hi.gov.cn/
+    """
     name = 'hainan'
     alias = '海南'
     allowed_domains = ['ggzy.hi.gov.cn']
