@@ -69,7 +69,7 @@ class GatherItem(scrapy.Item):
     @staticmethod
     def create(response, source: str, day: date, title: str, contents: List[str], **kwargs):
         assert source
-        source = source.split('/')[0],
+        source = source.split('/')[0]
         if day == day.min:
             raise ValueError('day')
         if not title:
