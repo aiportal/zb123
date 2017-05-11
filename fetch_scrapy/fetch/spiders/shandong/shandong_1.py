@@ -5,25 +5,28 @@ from fetch.items import GatherItem
 from urllib.parse import urljoin
 
 
-class ${NAME}Spider(scrapy.Spider):
+class shandong_1Spider(scrapy.Spider):
     """
-    @title: 
-    @href: 
+    @title: 山东政府采购网
+    @href: http://www.ccgp-shandong.gov.cn/sdgp2014/site/index.jsp
     """
-    name = '${PACKAGE_NAME}/${NAME}'
-    alias = ''
-    allowed_domains = ['']
+    name = 'shandong/1'
+    alias = '山东'
+    allowed_domains = ['ccgp-shandong.gov.cn']
     start_urls = [
-        ('', '招标公告/政府采购'),
-        ('', '中标公告/政府采购'),
-        ('', '招标公告/建设工程'),
-        ('', '中标公告/建设工程'),
-        ('', ''),
-        ('', ''),
+        ('http://www.ccgp-shandong.gov.cn/sdgp2014/site/channelall.jsp?colcode={}'.format(k), v)
+        for k, v in [
+            ('0301', '招标公告/政府采购/省级'),
+            ('0302', '中标公告/政府采购/省级'),
+            ('0303', '招标公告/政府采购/市县'),
+            ('0304', '中标公告/政府采购/市县'),
+            ('0305', '更正公告/政府采购'),
+            ('0306', '废标公告/政府采购'),
+        ]
     ]
 
-    link_extractor = MetaLinkExtractor(css='tr > td > a',
-                                       attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})
+    link_extractor = MetaLinkExtractor(css='tr > td > a.five',
+                                       attrs_xpath={'text': './/text()', 'day': '../text()'})
 
     def start_requests(self):
         for url, subject in self.start_urls:
@@ -40,7 +43,7 @@ class ${NAME}Spider(scrapy.Spider):
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
-        body = response.css('')
+        body = response.xpath('//td[@class="aa"]/../../*')
 
         day = FieldExtractor.date(data.get('day'))
         title = data.get('title') or data.get('text')

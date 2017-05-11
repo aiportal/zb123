@@ -33,6 +33,7 @@ class ChengDuSpider(scrapy.Spider):
         'pageindex': '1',
         'pagesize': '10',
     }
+    custom_settings = {'DOWNLOAD_DELAY': 3.88}
 
     def start_requests(self):
         for url, subject in self.start_urls:

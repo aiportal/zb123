@@ -1,196 +1,151 @@
-# This package will contain the spiders of your Scrapy project
-#
-# Please refer to the documentation for information on how to create and manage
-# your spiders.
 
-import scrapy
-from scrapy.http.headers import Headers
-from itertools import repeat, product
-from urllib.parse import urlsplit, parse_qs, urlencode, urlunsplit
-import uuid
+# 中国招标投标协会
+# http://www.ctba.org.cn/
 
-from database import JobIndex
-from fetch.items import GatherItem
-from fetch.extractors import *
-import sys
+# 北京市公共资源交易服务平台
+# http://www.bjggzyfw.gov.cn/
 
+# 天津市公共资源交易网
+# http://www.tjwsbs.gov.cn/tjggzy/index.do
 
-class SpiderHelper(object):
-    @staticmethod
-    def replace_url_param(url, **kwargs):
-        scheme, netloc, path, query, fragment = urlsplit(url)
-        params = parse_qs(query)
-        for k, v in kwargs.items():
-            params[k] = str(v)
-        query = urlencode(params, True)
-        return urlunsplit((scheme, netloc, path, query, fragment))
+# 河北省公共资源交易服务平台
+# http://www.hebpr.cn/
 
-    @staticmethod
-    def join_words(*args):
-        values = [str(v).strip() for v in args if v and str(v).strip()]
-        return '/'.join(values)
+# 山西省公共资源交易服务平台
+# http://prec.sxzwfw.gov.cn/Home/IndexDefault
 
-    @staticmethod
-    def url_exists(url):
-        return JobIndex.url_exists(url)
+# 中国招标投标公共服务平台
+# http://cebpubservice.com/
 
-    @staticmethod
-    def iter_params(params: dict):
-        """ 遍历参数组合 """
-        params = {k: isinstance(v, dict) and v or {str(v): None} for k, v in params.items()}
-        params = [list(zip(repeat(k), v.items())) for k, v in params.items()]
-        for param in [list(i) for i in product(*params)]:
-            data = {}
-            meta = {}
-            for k, (v, m) in param:     # key, value, meta in param
-                data[k] = v
-                meta[k] = m or v
-            yield data, meta
+"""
+@title: 辽宁电子招标投标综合交易平台
+@href: http://www.dzzbw.net/
+"""
 
+"""
+@title: 吉林省公共资源交易信息网
+@href: http://ggzyjy.jl.gov.cn/jilinztb/
+"""
 
-class BaseSpider(scrapy.Spider, SpiderHelper):
-    """ 所有Spider的基类"""
+"""
+@title: 黑龙江公共资源交易网
+@href: http://hljggzyjyw.gov.cn/
+"""
 
-    # 索引页的引用页
-    start_referer = None
+"""
+@title: 上海-公共资源交易
+@href: http://222.66.64.149/publicResource/home.html
+"""
 
-    # 索引页的参数组合
-    start_params = {}
+"""
+@title: 浙江政务服务网
+@href: http://www.zjpubservice.com/
+"""
 
-    def start_requests(self):
-        headers = Headers(self.start_referer and {'Referer': self.start_referer} or {})
-        url = self.start_urls[0]
-        for req in self._requests_from_params(url, self.start_params):
-            req.headers = headers
-            self.logger.info('start params: ' + req.url)
-            yield req
-        for url in self.start_urls[1:]:
-            self.logger.info('start url: ' + url)
-            yield scrapy.Request(url, headers=headers, dont_filter=True)
+"""
+@title: 福建省公共资源交易电子公共服务平台
+@href: https://www.fjggfw.gov.cn/
+"""
 
-    # 枚举所有的参数组合，生成Request
-    @staticmethod
-    def _requests_from_params(url, params: dict):
-        url += ('?' not in url and '?' or '&')
-        params = {k: isinstance(v, dict) and v or {str(v): None} for k, v in params.items()}
-        params = [list(zip(repeat(k), v.items())) for k, v in params.items()]
-        for param in [list(i) for i in product(*params)]:
-            data = {}
-            meta = {}
-            for k, (v, m) in param:
-                data[k] = v
-                meta[k] = m or v
-            request_url = url + (data and urlencode(data) or '')
-            yield scrapy.Request(request_url, meta={'params': meta}, dont_filter=True)
+"""
+@title: 江西省公共资源交易平台
+@href: http://ggzy.jiangxi.gov.cn/jxzbw/
+"""
 
-    def parse(self, response):
-        yield from super().parse(response)
+"""
+@title: 山东公共资源交易网
+@href: http://www.sdzbtb.com/
+"""
 
-    def gather_item(self, response) -> GatherItem:
-        """ 解析 GatherItem 对象的基本属性"""
+"""
+@title: 河南省公共资源交易公共服务平台
+@href: http://www.hnsggzyfwpt.cn/
+"""
 
-        # 用请求网址的hash做主键
-        source = self.name.split('/')[0]
-        req_url = self._request_url(response)
-        url_hash = JobIndex.url_hash(req_url)
+"""
+@title: 湖北省公共资源交易电子服务平台
+@href: https://www.hbggzyfwpt.cn/
+"""
 
-        g = GatherItem(source=source, url=req_url, uuid=url_hash)
-        g['html'] = '-full' in sys.argv and response.text or None
-        g['real_url'] = response.url == req_url and None or response.url
-        g['top_url'] = response.meta.get('top_url')
-        g['index_url'] = response.meta.get('index_url') or response.request.headers.get('Referer', '').decode()
-        return g
+"""
+@title: 湖南省公共资源交易服务平台
+@href: http://www.hnsggzy.com/web/indexview.htm
+"""
 
-    def _request_url(self, response):
-        redirects = response.request.meta.get('redirect_urls', [])
-        return redirects and redirects[0] or response.url
+"""
+@title: 广东省公共资源交易中心
+@href: http://210.76.72.85:8080/osh-web/Main/main.do
+"""
 
+"""
+@title: 广西壮族自治区公共资源交易中心
+@href: http://www.gxzbtb.cn/gxzbw/
+"""
 
-class HtmlMetaSpider(BaseSpider):
-    """ extend this class if index page is html.
-    don't override <parse> function if you can implement stop by skip count logic.
-    you can override <link_requests> and <page_requests> functions to custom link and page parse.
-    """
-    # 索引页网址解析（获取详情页网址）
-    link_extractor = None
+"""
+@title: 海南省公共资源交易网
+@href: http://www.ggzy.hi.gov.cn/
+"""
+"""
+@title: 四川省公共资源交易服务平台
+@href: http://www.scztb.gov.cn/index.html
+"""
 
-    # 索引页翻页解析
-    page_extractor = None
+"""
+@title: 云南省公共资源交易电子服务系统
+@href: http://www.ynggzyxx.gov.cn/
+"""
 
-    @property
-    def max_skip(self):
-        return self.crawler.settings.getint('MAX_SKIP')
+"""
+@title: 拉萨公共资源交易网
+@href: http://www.lsggzy.cn/
+"""
 
-    def parse(self, response):
-        for req in self.link_requests(response):
-            if not self.url_exists(req.url):
-                req.callback = self.parse_item
-                yield req
-            else:
-                response.meta['skip_count'] = response.meta.get('skip_count', 0) + 1
-        # check skip count to stop
-        skip_count = response.meta.get('skip_count', 0)
-        self.logger.info('skip count: ' + str(skip_count))
-        if skip_count < self.max_skip:
-            for req in self.page_requests(response):
-                req.headers = Headers(self.start_referer and {'Referer': self.start_referer} or {})
-                self.logger.info('next page: ' + req.url)
-                yield req
+"""
+@title: 甘肃省公共资源交易网
+@href: http://www.gsggzyjy.cn/
+"""
 
-    def link_requests(self, response):
-        for link in self.link_extractor.extract_links(response):
-            data = dict(link.meta, **response.meta['params'])
-            yield scrapy.Request(link.url, meta={'data': data})
+"""
+@title: 青海人民政府行政服务和公共资源交易中心
+@href: http://www.qhwszwdt.gov.cn/front/default.aspx
+"""
 
-    def page_requests(self, response):
-        next_page = [p for p in self.page_extractor.extract_links(response)]
-        if next_page:
-            yield scrapy.Request(next_page[0].url, meta=response.meta)
+"""
+@title: 宁夏回族自治区公共资源交易网
+@href: http://www.nxggzyjy.org/ningxiaweb/
+"""
 
-    def parse_item(self, response):
-        raise NotImplementedError()
+"""
+@title: 新疆生产建设兵团公共资源交易信息网
+@href: http://ggzy.xjbt.gov.cn/
+"""
 
 
-class JsonMetaSpider(BaseSpider):
-    """ extend this class if index data is json.
-    """
-    # 详情页网址生成器
-    link_generator = None
+# <option selected="">--全国招标投标协会--</option>
+# <option value="http://www.ctba.org.cn/">中国招标投标协会</option>
+# <option value="http://www.hbstba.org.cn/">湖北省招标投标协会</option>
+# <option value="http://www.ynzbxh.com/">云南省招标投标协会</option>
+# <option value="http://www.htba.org.cn/">河南省招标投标协会</option>
+# <option value="http://www.hbzhaobiao.com/">河北省招标投标协会</option>
+# <option value="http://www.sxbid.com.cn/">山西省招标投标协会</option>
+# <option value="http://www.lntb.gov.cn/">辽宁省招标投标监管网</option>
+# <option value="http://www.zjtba.org.cn/">浙江省招标投标协会</option>
+# <option value="http://www.hntba.com/">海南省招标投标协会</option>
+# <option value="http://www.gzztbxh.com/">贵州省招标投标协会</option>
+# <option value="http://www.gtba.net.cn/">广东省招标投标协会</option>
+# <option value="http://www.jxtb.org.cn/">江西省招标投标网</option>
+# <option value="http://www.jszb.com.cn/jszb/">江苏建设工程招标网</option>
+# <option value="http://web.scjst.gov.cn/webSite/Invunion">四川省工程建设招标投标协会</option>
+# <option value="http://www.qhzbtb.gov.cn/">青海省招标投标网</option>
+# <option value="http://www.xjztb.net/">新疆建设工程招标网</option>
+# <option value="http://www.nmgztb.com.cn/">内蒙古招标投标协会</option>
+# </
 
-    # 翻页网址生成器
-    page_generator = None
 
-    @property
-    def max_skip(self):
-        return self.crawler.settings.getint('MAX_SKIP')
+# 云南
+# yngp.com
 
-    def parse(self, response):
-        for req in self.link_requests(response):
-            if not self.url_exists(req.url):
-                req.callback = self.parse_item
-                yield req
-            else:
-                response.meta['skip_count'] = response.meta.get('skip_count', 0) + 1
-                self.logger.info('skip: ' + req.url)
-        # check skip_count to stop.
-        skip_count = response.meta.get('skip_count', 0)
-        self.logger.info('skip count: ' + str(skip_count))
-        if skip_count < self.max_skip:
-            for req in self.page_requests(response):
-                req.headers = Headers(self.start_referer and {'Referer': self.start_referer} or {})
-                self.logger.info('next page: ' + req.url)
-                yield req
+# 青岛
+# ccgp-qingdao.gov.cn
 
-    def link_requests(self, response):
-        for link in self.link_generator.generate_links(response):
-            meta = {'data': dict(link.data, **response.meta['params']), 'top_url': link.ref_url, 'index_url': link.index_url}
-            headers = {'Referer': link.ref_url or link.index_url}
-            yield scrapy.Request(link.url, meta=meta, headers=headers, callback=self.parse_item)
-
-    def page_requests(self, response):
-        page_url = self.page_generator.generate_page(response)
-        if page_url:
-            yield scrapy.Request(page_url, meta={'params': response.meta['params']})
-
-    def parse_item(self, response):
-        raise NotImplementedError()

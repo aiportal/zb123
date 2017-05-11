@@ -5,24 +5,36 @@ from fetch.items import GatherItem
 from urllib.parse import urljoin
 
 
-class ${NAME}Spider(scrapy.Spider):
+class shaanxi_1Spider(scrapy.Spider):
     """
-    @title: 
-    @href: 
+    @title: 陕西省政府采购
+    @href: http://www.ccgp-shaanxi.gov.cn/index.jsp
     """
-    name = '${PACKAGE_NAME}/${NAME}'
-    alias = ''
-    allowed_domains = ['']
+    name = 'shaanxi/1'
+    alias = '陕西'
+    allowed_domains = ['ccgp-shaanxi.gov.cn']
     start_urls = [
-        ('', '招标公告/政府采购'),
-        ('', '中标公告/政府采购'),
-        ('', '招标公告/建设工程'),
-        ('', '中标公告/建设工程'),
-        ('', ''),
-        ('', ''),
+        ('http://www.ccgp-shaanxi.gov.cn/saveData.jsp?ClassBID={}&type=AllView'.format(k), v)
+        for k, v in [
+            ('C0001', '招标公告/政府采购/省级'),
+            ('C0002', '中标公告/政府采购/省级'),
+            ('D0003', '预公告/询价公告/政府采购/省级'),
+            ('FB001', '废标公告/政府采购/省级'),
+            ('E0001', '更正公告/政府采购/省级'),
+        ]
+    ] + [
+        ('http://www.ccgp-shaanxi.gov.cn/saveDataDq.jsp?ClassBID={}&type=AllViewDq'.format(k), v)
+        for k, v in [
+            ('C0001', '招标公告/政府采购/市县'),
+            ('C0002', '中标公告/政府采购/市县'),
+            ('D0003', '预公告/询价公告/政府采购/市县'),
+            ('FB001', '废标公告/政府采购/市县'),
+            ('E0001', '更正公告/政府采购/市县'),
+        ]
     ]
+    custom_settings = {'COOKIES_ENABLED': True}
 
-    link_extractor = MetaLinkExtractor(css='tr > td > a',
+    link_extractor = MetaLinkExtractor(css='table.tab tr > td > a.b',
                                        attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})
 
     def start_requests(self):
@@ -40,7 +52,8 @@ class ${NAME}Spider(scrapy.Spider):
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
-        body = response.css('')
+        body = response.css('td.SaleT01')
+        # detail_title = FieldExtractor.text(response.css('table.td span.SaleT01'))
 
         day = FieldExtractor.date(data.get('day'))
         title = data.get('title') or data.get('text')

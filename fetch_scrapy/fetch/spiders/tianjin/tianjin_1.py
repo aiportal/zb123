@@ -3,26 +3,28 @@ from fetch.extractors import MetaLinkExtractor, NodesExtractor, FieldExtractor
 from fetch.tools import SpiderTool
 from fetch.items import GatherItem
 from urllib.parse import urljoin
+import re
 
 
-class ${NAME}Spider(scrapy.Spider):
+class tianjin_1Spider(scrapy.Spider):
     """
-    @title: 
-    @href: 
+    @title: 天津市政府采购中心
+    @href: http://www.tjgpc.gov.cn/
     """
-    name = '${PACKAGE_NAME}/${NAME}'
-    alias = ''
-    allowed_domains = ['']
+    name = 'tianjin/1'
+    alias = '天津'
+    allowed_domains = ['tjgpc.gov.cn']
     start_urls = [
-        ('', '招标公告/政府采购'),
-        ('', '中标公告/政府采购'),
-        ('', '招标公告/建设工程'),
-        ('', '中标公告/建设工程'),
-        ('', ''),
-        ('', ''),
+        ('http://www.tjgpc.gov.cn/webInfo/getWebInfoListForwebInfoClass.do?fkWebInfoclassId={}'.format(k,), v)
+        for k, v in [
+            ('W005_001', '预公告/政府采购'),
+            ('W001_001', '招标公告/政府采购'),
+            ('W004_004', '更正公告/政府采购'),
+            ('W004_001', '中标公告/政府采购'),
+        ]
     ]
 
-    link_extractor = MetaLinkExtractor(css='tr > td > a',
+    link_extractor = MetaLinkExtractor(css='div.cur tr > td > a.project_title',
                                        attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})
 
     def start_requests(self):
@@ -40,14 +42,19 @@ class ${NAME}Spider(scrapy.Spider):
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
-        body = response.css('')
+        body = response.css('td.xx')
+        pid = '（\w{2,5}编号：[A-Z0-9-]+）'
+        ignore = '^我中心本周无\w+信息发布$'
 
         day = FieldExtractor.date(data.get('day'))
         title = data.get('title') or data.get('text')
+        if re.match(ignore, title):
+            return []
+        title = re.sub(pid, '', title)
         contents = body.extract()
         g = GatherItem.create(
             response,
-            source=self.name,
+            source=self.name.split('/')[0],
             day=day,
             title=title,
             contents=contents

@@ -17,6 +17,7 @@ class Sichuan2Spider(scrapy.Spider):
         ('http://www.scztb.gov.cn/Home/GetTradeList?tradeName=Purchase&tradeType=PurchaseTermination', '更正公告/政府采购'),
         ('http://www.scztb.gov.cn/Home/GetTradeList?tradeName=Purchase&tradeType=PurchaseBid', '更正公告/政府采购'),
     ]
+    custom_settings = {'DOWNLOAD_DELAY': 1.88}
 
     def start_requests(self):
         for url, subject in self.start_urls:
