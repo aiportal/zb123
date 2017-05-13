@@ -8,23 +8,6 @@ from wechatpy.enterprise.client.api import WeChatMessage
 import socket
 
 
-# Spider 运行异常日志
-class ExceptionLogExtension(object):
-
-    @classmethod
-    def from_crawler(cls, crawler):
-        ext = cls()
-        crawler.signals.connect(ext.spider_error, signal=signals.spider_error)
-        return ext
-
-    def spider_error(self, failure, response, spider):
-        ExceptionLog.log_exception(spider.name, 'ERROR', response.url,
-                                   info={'meta': response.meta, 'exception': str(failure)})
-        spider.logger.error('failure at: ' + response.url)
-        spider.logger.error('failure info: ' + str(failure))
-
-
-# Spider 运行统计日志
 class SpiderStatsExtension(object):
     def __init__(self):
         self.start = datetime.now()

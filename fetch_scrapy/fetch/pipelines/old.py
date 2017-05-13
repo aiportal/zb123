@@ -1,4 +1,4 @@
-from .items import GatherItem
+from fetch.items import GatherItem
 from database import GatherInfo, ContentInfo, SysConfig
 import json
 import zipfile
@@ -86,18 +86,3 @@ class CsvPipeline(object):
             csv.writer(f, lineterminator='\n').writerow(values)
         return item
 
-
-# class AttachmentsPipeline(object):
-#     def process_item(self, item, spider):
-#         # 如果有附件属性，记录附件下载后的本地网址
-#         if isinstance(item, GatherItem) and item.get('attachments'):
-#             attachments = item.get('attachments') or []
-#             files = item.get('files') or []
-#             for a in attachments:
-#                 fs = [f for f in files if f['url'] == a['url']]
-#                 a['file'] = fs and next(iter(fs))['path'] or None
-#         if 'file_urls' in item:
-#             del item['file_urls']
-#         if 'files' in item:
-#             del item['files']
-#         return item

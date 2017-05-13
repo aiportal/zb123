@@ -6,19 +6,19 @@ from database import EventLog
 import os
 
 
-# 设置工作目录
+# Set the current directory as the working directory
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
-# 设置peewee的日志级别
+# Set the log level for peewee
 logging.getLogger('peewee').setLevel(logging.ERROR)
 
 
-# log startup
+# log startup event
 EventLog.log_event('main', 'START', ' '.join(sys.argv), info={'pid': os.getpid()})
 
 
-# 启动spiders
+# start spiders
 process = CrawlerProcess(get_project_settings())
 spiders = process.spider_loader.list()
 args = sys.argv[1:]
@@ -31,6 +31,6 @@ for spider in spiders:
 process.start()
 
 
-# log stopped
+# log stopped event
 EventLog.log_event('main', 'STOP', ' '.join(sys.argv), info={'pid': os.getpid()})
 
