@@ -504,7 +504,7 @@
             init: function(){
                 var vm = this;
                 vm.loading = true;
-                vm.$http.get('/api/v3_1/user').then(function(resp){
+                vm.$http.get('/api/v3/user').then(function(resp){
                     vm.loading = false;
                     var data = resp.body;
                     vm.rule = data.rule;
@@ -519,7 +519,7 @@
                 vm.view = 'list';
                 vm.loading = true;
                 var params = $.extend({}, vm.params, {'_': Math.random()});
-                vm.$http.get('/api/v3_1/titles', {params: params}).then(function(resp){
+                vm.$http.get('/api/v3/titles', {params: params}).then(function(resp){
                     vm.loading = false;
                     var data = resp.body;
                     vm.items = data.items;
@@ -536,7 +536,7 @@
                 if (vm.appending) return;
                 vm.appending = true;
                 vm.next.cache = vm.params.cache;
-                vm.$http.get('/api/v3_1/titles', {params: vm.next}).then(function(resp){
+                vm.$http.get('/api/v3/titles', {params: vm.next}).then(function(resp){
                     vm.appending = false;
                     var data = resp.body;
                     vm.next = data.next;
@@ -550,7 +550,7 @@
                 var vm = this;
                 vm.archive.uuid = x.uuid;
                 vm.loading = true;
-                vm.$http.get('/api/v3_1/content/'+x.uuid).then(function(resp){
+                vm.$http.get('/api/v3/content/'+x.uuid).then(function(resp){
                     vm.loading = false;
                     vm.archive = resp.body;
                     vm.archive.title = x.title;
@@ -622,7 +622,7 @@
                     keys: choice(comp.keys),
                     suggests: comp.keys.map(function(o){ return o.text; })
                 };
-                vm.$http.post('/api/v3_1/user', data).then(function(resp){
+                vm.$http.post('/api/v4/user', data).then(function(resp){
                     $.toast("保存成功", 2000);
                     setTimeout(function () {
                         vm.params.filter = true;

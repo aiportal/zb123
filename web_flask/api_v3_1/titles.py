@@ -1,82 +1,85 @@
-from flask import request
-from flask.views import MethodView
-from web_funcs import json_response, ServerError
-from database import SysConfig, UserInfo, AnnualFee, FilterRule, BidGather as GatherInfo, UserFeature
+from .common import MethodView, request, json_response, ServerError
+from database import SysConfig, UserInfo, AnnualFee, FilterRule, GatherInfo, ContentInfo, UserFeature
 from datetime import datetime, date, timedelta
 from peewee import fn, Func
 import json
+import re
 from typing import List
 
 
-class RangeTitlesApi(MethodView):
+class DayTitlesApi(MethodView):
+
+    def __init__(self):
+        self.sources = SysConfig.get_items('source')
+
     """ 招标信息列表 """
-
-    sources = SysConfig.get_items('source')
-    columns = (GatherInfo.uuid, GatherInfo.day, GatherInfo.source, GatherInfo.subject, GatherInfo.title)
-
     def get(self):
-        # 请求参数
-        day, page, size, do_filter, key = [request.args.get(x) for x in ('day', 'page', 'size', 'filter', 'key')]
-        day = day and datetime.strptime(day, '%Y-%m-%d').date() or (date.today() - timedelta(days=6))
-        page = int(page or 1)
-        size = min(int(size or 20), 50)
-        do_filter = (do_filter == 'true')           # 是否应用筛选规则
-        is_first = not request.args.get('day')      # 是否首次请求
 
         # 用户ID
         uid = request.cookies.get('uid')
         assert uid
+
+        # 请求参数
+        day = request.args.get('day') and datetime.strptime(request.args.get('day'), '%Y-%m-%d').date() or date.today()
+        page = int(request.args.get('page', '1'))
+        size = min(int(request.args.get('size', 20)), 50)
+        do_filter = request.args.get('filter') == 'true'
+        key = request.args.get('key')
+
+        # 只提供30天内的信息，超出范围时直接返回
+        if day < (date.today() - timedelta(30)) or date.today() < day:
+            return json_response({'params': {'day': str(day), 'filter': do_filter}, 'items': []})
+
+        # 非VIP用户不显示最近三天的记录
+        query_day = day
+        tip_items = []
         is_vip = AnnualFee.is_vip(uid)
+        if not is_vip:
+            query_day = min(day, date.today() - timedelta(3))
+            tip_days = [day - timedelta(x) for x in range(0, (day - query_day).days)]
+            if tip_days:
+                tip_counts = self.query_days_count(tip_days, do_filter and uid or None, key)
+                tip_items = [{'day': str(x), 'vip': True, 'title': '开通VIP会员可查看近三天信息',
+                              'count': tip_counts.get(str(x), 0)} for x in tip_days]
 
-        # 限制查询天数
-        days_limit = is_vip and 90 or 6
-        day = min(day, date.today() - timedelta(days_limit))
-
-        # 非VIP用户不显示最近三天
-        if is_first and not is_vip:
-            tip_days = [date.today() - timedelta(x) for x in range(0, 3)]
-            tip_counts = self.query_days_count(tip_days, (do_filter and uid or None), key)
-            tip_items = [{'day': str(x), 'vip': True, 'title': '开通VIP会员可查看近三天信息',
-                          'count': tip_counts.get(str(x), 0)} for x in tip_days]
-            # 首次请求时直接返回
-            result = {
-                'items': tip_items,
-                'params': {'day': str(day), 'page': page, 'size': size, 'filter': do_filter, 'key': key},
-                'next': {'day': str(day), 'page': 1, 'size': size, 'filter': do_filter, 'key': key}
-            }
-            return json_response(result)
-
-        max_day = (not is_vip) and date.today() - timedelta(3) or None
-
-        # 是否应用筛选规则
-        if do_filter:
-            records = self.query_filtered_gathers(uid, day, max_day, page, size)
-        elif key:
-            records = self.query_search_gathers(uid, key, day, max_day, page, size)
-            self.add_rule_key(uid, key)
+        if len(tip_items) > 0:
+            records = []
+            items = tip_items
+            query_day += timedelta(1)
         else:
-            records = self.query_global_gathers(uid, day, max_day, page, size)
+            # 是否应用筛选规则
+            if do_filter:
+                records = self.query_filtered_gathers(uid, query_day, page, size)
+            elif key:
+                records = self.query_search_gathers(uid, query_day, key, page, size)
+                self.add_rule_key(uid, key)
+            else:
+                records = self.query_ordered_gathers(uid, query_day, page, size)
 
-        items = [{'uuid': x.uuid, 'day': str(x.day), 'source': x.source, 'subject': x.subject, 'title': x.title}
-                 for x in records]
-        if not items and do_filter:
-            items = [{'title': '没有符合您筛选条件的招标信息'}]
+            # 要返回的项目列表
+            if len(records) == 0:
+                items = tip_items + [{'day': str(query_day), 'title': '当日无符合筛选条件的信息'}]
+            else:
+                # 每天开始时的日期分隔行
+                day_item = (page == 1) and [{'title': str(query_day)}] or []
+                items = tip_items + day_item + [
+                    {'uuid': x.uuid, 'day': str(x.day), 'source': x.source, 'subject': x.subject, 'title': x.title}
+                    for x in records]
 
-        # 当前请求参数
-        cur_params = {'day': str(day), 'page': page, 'size': size, 'filter': do_filter, 'key': key}
-
-        # 下一页请求参数
+        # 下一页的请求参数
         if len(records) == size:
-            next_params = {'day': str(day), 'page': page + 1, 'size': size, 'filter': do_filter, 'key': key}
+            next_params = {'day': str(query_day), 'page': page + 1, 'size': size, 'filter': do_filter, 'key': key}
         else:
-            next_params = None
+            next_params = {'day': str(query_day - timedelta(1)), 'page': 1, 'size': size, 'filter': do_filter, 'key': key}
 
         # 返回查询结果
-        return json_response({
+        result = {
+            'params': {'day': str(day), 'page': page, 'size': size, 'filter': do_filter, 'key': key},    # 当前请求的参数
             'items': items,
-            'params': cur_params,
             'next': next_params
-        })
+        }
+
+        return json_response(result)
 
     @staticmethod
     def query_days_count(days: List[date], uid: str=None, key=None):
@@ -111,21 +114,18 @@ class RangeTitlesApi(MethodView):
         query = query.group_by(GatherInfo.day)
         return {str(x.day): x.count for x in query}
 
-    def query_filtered_gathers(self, uid: str, min_day: date, max_day: date=None, page: int=1, size: int=20):
+    def query_filtered_gathers(self, uid: str, day: date, page: int=1, size: int=20):
         """ 查询招标信息，按筛选条件进行筛选 """
         assert size < 100
 
+        # 筛选条件
         rule = FilterRule.get_rule(uid) or FilterRule()
         feature = UserFeature.get_feature(uid) or UserFeature()
-        query = GatherInfo.select(*self.columns)
 
-        # 日期区间
-        if max_day:
-            query = query.where(GatherInfo.day.between(min_day, max_day))
-        else:
-            query = query.where(GatherInfo.day > min_day)
+        # 按天查询
+        query = GatherInfo.select().where(GatherInfo.day == day)
 
-        # 条件筛选
+        # 筛选条件
         if rule.sources:
             query = query.where(GatherInfo.source << rule.sources)
         if rule.subjects:
@@ -153,60 +153,12 @@ class RangeTitlesApi(MethodView):
         source_ordered = ','.join(self.get_sources_by_distance(uid))
         distance = Func('find_in_set', GatherInfo.source, source_ordered)
 
-        query = query.order_by(col_key_match, -col_feature_match, distance,
-                               -GatherInfo.day, GatherInfo.subject, GatherInfo.title)
+        query = query.order_by(col_key_match, -col_feature_match, distance, GatherInfo.subject, GatherInfo.title)
         query = query.paginate(page, size)
         return [x for x in query]
 
-    def query_search_gathers(self, uid: str, key: str, min_day: date, max_day: date=None, page: int=1, size: int=20):
-        """ 搜索招标信息 """
-        assert size < 100
-
-        rule = FilterRule.get_rule(uid) or FilterRule()
-        feature = UserFeature.get_feature(uid) or UserFeature()
-        query = GatherInfo.select(*self.columns)
-
-        # 日期区间
-        if max_day:
-            query = query.where(GatherInfo.day.between(min_day, max_day))
-        else:
-            query = query.where(GatherInfo.day > min_day)
-
-        # 全国信息的查询，只提供预公告和招标公告
-        if AnnualFee.is_vip(uid):
-            query = query.where(GatherInfo.subject.startswith('预公告') | GatherInfo.subject.startswith('招标公告'))
-        else:
-            query = query.where(GatherInfo.subject.startswith('招标公告'))
-
-        # 关键词
-        query = query.where(GatherInfo.title.contains(key))
-
-        # 招标来源匹配度
-        source_ordered = ','.join(self.get_sources_by_distance(uid))
-        distance = Func('find_in_set', GatherInfo.source, source_ordered)
-        order_col_source = fn.IF(GatherInfo.source << rule.sources, distance, 10000 + distance)
-
-        # 招标类型匹配度
-        col_subject_match = fn.IF(True, 0, 0)
-        for i, subject in enumerate(rule.subjects):
-            col_subject_match += fn.IF(GatherInfo.subject.startswith(subject), 0, 1000 * (i+1))
-
-        # 关键词匹配度
-        col_key_match = fn.IF(True, 0, 0)
-        for i, k in enumerate(rule.keys):
-            col_key_match += fn.IF(GatherInfo.title.contains(k), 0, 100 - i)
-
-        # 用户特征匹配度
-        col_feature_match = fn.IF(True, 0, 0)
-        for k, v in feature.feature.items():
-            col_feature_match += fn.IF(GatherInfo.title.contains(k), int(v), 0)
-
-        query = query.order_by(col_key_match, -col_feature_match, -GatherInfo.day, col_subject_match, order_col_source)
-        query = query.paginate(page, size)
-        return [x for x in query]
-
-    def query_global_gathers(self, uid: str, min_day: date, max_day: date=None, page: int=1, size: int=20):
-        """ 全国招标信息 """
+    def query_ordered_gathers(self, uid: str, day: date, page: int=1, size: int=20):
+        """ 查询招标信息，按筛选条件和省份距离排序 """
         assert size < 100
 
         # select uuid, source, subject, title,
@@ -218,19 +170,6 @@ class RangeTitlesApi(MethodView):
 
         rule = FilterRule.get_rule(uid) or FilterRule()
         feature = UserFeature.get_feature(uid) or UserFeature()
-        query = GatherInfo.select(*self.columns)
-
-        # 日期区间
-        if max_day:
-            query = query.where(GatherInfo.day.between(min_day, max_day))
-        else:
-            query = query.where(GatherInfo.day > min_day)
-
-        # 全国信息的查询，只提供预公告和招标公告
-        if AnnualFee.is_vip(uid):
-            query = query.where(GatherInfo.subject.startswith('预公告') | GatherInfo.subject.startswith('招标公告'))
-        else:
-            query = query.where(GatherInfo.subject.startswith('招标公告'))
 
         # 招标来源匹配度
         source_ordered = ','.join(self.get_sources_by_distance(uid))
@@ -252,8 +191,54 @@ class RangeTitlesApi(MethodView):
         for k, v in feature.feature.items():
             col_feature_match += fn.IF(GatherInfo.title.contains(k), int(v), 0)
 
+        # 全国信息的查询，只提供预公告和招标公告
+        if AnnualFee.is_vip(uid):
+            default_filter = GatherInfo.subject.startswith('预公告') | GatherInfo.subject.startswith('招标公告')
+        else:
+            default_filter = GatherInfo.subject.startswith('招标公告')
+
         # 查询
-        query = query.order_by(col_key_match, -col_feature_match, -GatherInfo.day, col_subject_match, order_col_source)
+        query = GatherInfo.select().where(GatherInfo.day == day).where(default_filter)
+        query = query.order_by(col_key_match, -col_feature_match, col_subject_match, order_col_source)
+        query = query.paginate(page, size)
+        return [x for x in query]
+
+    def query_search_gathers(self, uid: str, day: date, key: str, page: int, size: int):
+        """ 搜索招标信息 """
+
+        rule = FilterRule.get_rule(uid) or FilterRule()
+        feature = UserFeature.get_feature(uid) or UserFeature()
+
+        # 招标来源匹配度
+        source_ordered = ','.join(self.get_sources_by_distance(uid))
+        distance = Func('find_in_set', GatherInfo.source, source_ordered)
+        order_col_source = fn.IF(GatherInfo.source << rule.sources, distance, 10000 + distance)
+
+        # 招标类型匹配度
+        col_subject_match = fn.IF(True, 0, 0)
+        for i, subject in enumerate(rule.subjects):
+            col_subject_match += fn.IF(GatherInfo.subject.startswith(subject), 0, 1000 * (i+1))
+
+        # 关键词匹配度
+        col_key_match = fn.IF(True, 0, 0)
+        for i, k in enumerate(rule.keys):
+            col_key_match += fn.IF(GatherInfo.title.contains(k), 0, 100 - i)
+
+        # 用户特征匹配度
+        col_feature_match = fn.IF(True, 0, 0)
+        for k, v in feature.feature.items():
+            col_feature_match += fn.IF(GatherInfo.title.contains(k), int(v), 0)
+
+        # 全国信息的查询，只提供预公告和招标公告
+        if AnnualFee.is_vip(uid):
+            default_filter = GatherInfo.subject.startswith('预公告') | GatherInfo.subject.startswith('招标公告')
+        else:
+            default_filter = GatherInfo.subject.startswith('招标公告')
+
+        # 查询
+        query = GatherInfo.select().where(GatherInfo.day == day).where(default_filter)\
+            .where(GatherInfo.title.contains(key))
+        query = query.order_by(col_key_match, -col_feature_match, col_subject_match, order_col_source)
         query = query.paginate(page, size)
         return [x for x in query]
 
@@ -306,3 +291,5 @@ class RangeTitlesApi(MethodView):
                 rule.save()
         except Exception as ex:
             print(ex)
+
+

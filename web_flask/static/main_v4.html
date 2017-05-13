@@ -170,7 +170,7 @@
       </div>
       <p class="weui-tabbar__label">筛选定制</p>
     </a>
-    <a id="btn_days" href="javascript:;" class="weui-tabbar__item">
+    <a id="btn_day" href="javascript:;" class="weui-tabbar__item" @click="day_pop">
       <div class="weui-tabbar__icon">
         <i class="fa fa-calendar"></i>
       </div>
@@ -186,8 +186,6 @@
   </div>
     <!-- content popup -->
     <content-pop id="content_popup" :archive="archive" :vip="is_vip" @original="on_original"></content-pop>
-    <!-- date popup -->
-    <days-pop id="date-popup" menu="#btn_days" :days="days" @submit="day_submit" ></days-pop>
 </div>
 
 </div>
@@ -257,44 +255,6 @@
                 var selector = '#' + vm.id + ' > div.weui-popup__modal';
                 $(selector).scrollTop(0);
             }, 0);
-        }
-    });
-</script>
-
-<template id="days-pop">
-    <input :id='id' type="text" style="display: none;"/>
-</template>
-<script>
-    Vue.component('days-pop', {
-        template: '#days-pop',
-        props: {id: String, menu: String, days: Array, day: String},
-        watch: {
-            days: function(val){
-                var vm = this;
-                //if (!val || val.length < 1) return;
-                $(vm.$el).picker({
-                    title: "请选择发布日期",
-                    toolbarCloseText: "确定",
-                    cols: [{
-                      textAlign: 'center',
-                      values: val
-                    }],
-                    onClose: function(){
-                        setTimeout(function () {
-                            vm.day = $(vm.$el).val();
-                            vm.$emit('submit', vm);
-                        }, 0);
-                    }
-                });
-            }
-        },
-        mounted: function () {
-            var vm = this;
-            $(vm.menu).on('click', function(){
-                setTimeout(function(){
-                    $(vm.$el).picker('open');
-                });
-            });
         }
     });
 </script>
@@ -475,6 +435,50 @@
     });
 </script>
 
+<template id="period-pop">
+    <div :id="id" @class>
+        <div class="weui-mask weui-actions_mask weui-mask--visible" style="opacity: 0.8; z-index:800;"></div>
+        <div class="weui-actionsheet__title">请选择日期区间</div>
+        <div class="weui-actionsheet weui-actionsheet_toggle">
+            <div class="weui-actionsheet__menu">
+                <div class="weui-actionsheet__cell" :class="{'bg-primary': select=='week'}" @click="submit(week)">最近一周</div>
+                <div class="weui-actionsheet__cell" @click="submit(month)">最近一个月</div>
+                <div class="weui-actionsheet__cell" @click="submit(three)">最近三个月</div>
+            </div>
+            <div class="weui-actionsheet__action">
+                <div class="weui-actionsheet__cell" @click="cancel()">取消</div>
+            </div>
+        </div>
+    </div>
+</template>
+<script>
+    Vue.component('period-pop', {
+        template: '#period-pop',
+        props: {id: String, vip: Boolean},
+        data: function(){
+            month = new Date(); month.setDate(new Date().getDate() - 30);
+            three = new Date(); three.setDate(new Date().getDate() - 90);
+            return {
+                visible: false,
+                select: 'week',
+                week: '',
+                month: month.toISOString().substring(0, 10),
+                three: three.toISOString().substring(0, 10)
+            }
+        },
+        methods: {
+            show: function(){
+                $('#' + this.id).show();
+            },
+            submit: function(day){
+                this.$emit('submit', this, day);
+            },
+            cancel: function(){
+                $('#' + this.id).hide();
+            }
+        }
+    });
+</script>
 <!------------------------------------------END VUE COMPONENTS -------------------------------------------------------->
 
 <script>
@@ -482,7 +486,6 @@
         el: '#app',
         data: {
             view: 'list',
-            days: [],
             rule: {sources:[], keys:[]},                        // 筛选规则
             user: {vip: false, end: '', pays:[], photo: ''},    // 用户信息(是否vip, 到期时间, 支付记录)
             params: {day: '', filter: true, key:null},            // 请求参数(起始日期，是否过滤，搜索词)
@@ -504,12 +507,11 @@
             init: function(){
                 var vm = this;
                 vm.loading = true;
-                vm.$http.get('/api/v3_1/user').then(function(resp){
+                vm.$http.get('/api/v4/user').then(function(resp){
                     vm.loading = false;
                     var data = resp.body;
                     vm.rule = data.rule;
                     vm.user = data.user;
-                    vm.days = data.days;
                     vm.params.cache = data.cache;
                     vm.reload();
                 }, function(){ vm.loading = false; });
@@ -519,7 +521,7 @@
                 vm.view = 'list';
                 vm.loading = true;
                 var params = $.extend({}, vm.params, {'_': Math.random()});
-                vm.$http.get('/api/v3_1/titles', {params: params}).then(function(resp){
+                vm.$http.get('/api/v4/titles', {params: params}).then(function(resp){
                     vm.loading = false;
                     var data = resp.body;
                     vm.items = data.items;
@@ -536,7 +538,7 @@
                 if (vm.appending) return;
                 vm.appending = true;
                 vm.next.cache = vm.params.cache;
-                vm.$http.get('/api/v3_1/titles', {params: vm.next}).then(function(resp){
+                vm.$http.get('/api/v4/titles', {params: vm.next}).then(function(resp){
                     vm.appending = false;
                     var data = resp.body;
                     vm.next = data.next;
@@ -550,7 +552,7 @@
                 var vm = this;
                 vm.archive.uuid = x.uuid;
                 vm.loading = true;
-                vm.$http.get('/api/v3_1/content/'+x.uuid).then(function(resp){
+                vm.$http.get('/api/v4/content/'+x.uuid).then(function(resp){
                     vm.loading = false;
                     vm.archive = resp.body;
                     vm.archive.title = x.title;
@@ -595,6 +597,60 @@
                 vm.params.filter = false;
                 vm.reload();
             },
+            day_pop: function(){
+                var vm = this;
+
+                var badge = '<span class="weui-badge weui-badge_dot" style="position:relative; top:-0.6em;"></span>';
+                if (vm.is_vip) { badge = ''; }
+                if (!vm.action){ vm.action = 'week'; }
+
+                $.actions({
+                    title: '请选择发布日期',
+                    actions: [{
+                        text: "最近一周",
+                        className: vm.action == 'week' ? 'bg-primary' : '',
+                        onClick: function() {
+                            setTimeout(function () {
+                                vm.params.day = '';
+                                vm.reload();
+                                vm.action = 'week';
+                            },0);
+                        }
+                    },{
+                        text: "最近一个月" + badge,
+                        className: vm.action == 'month' ? 'bg-primary' : '',
+                        onClick: function() {
+                            setTimeout(function () {
+                                if (vm.is_vip) {
+                                    var dt = new Date(); dt.setDate(new Date().getDate() - 30);
+                                    vm.params.day = dt.toISOString().substring(0, 10);
+                                    vm.reload();
+                                    vm.action = 'month';
+                                }
+                                else {
+                                    confirm_vip();
+                                }
+                            },0);
+                        }
+                    },{
+                        text: "最近三个月" + badge,
+                        className: vm.action == 'three' ? 'bg-primary' : '',
+                        onClick: function() {
+                            setTimeout(function () {
+                                if (vm.is_vip) {
+                                    var dt = new Date(); dt.setDate(new Date().getDate() - 90);
+                                    vm.params.day = dt.toISOString().substring(0, 10);
+                                    vm.reload();
+                                    vm.action = 'three';
+                                }
+                                else {
+                                    confirm_vip();
+                                }
+                            },0);
+                        }
+                    }]
+                });
+            },
             day_submit: function(comp){
                 var vm = this;
                 vm.params.day = comp.day;
@@ -622,7 +678,7 @@
                     keys: choice(comp.keys),
                     suggests: comp.keys.map(function(o){ return o.text; })
                 };
-                vm.$http.post('/api/v3_1/user', data).then(function(resp){
+                vm.$http.post('/api/v4/user', data).then(function(resp){
                     $.toast("保存成功", 2000);
                     setTimeout(function () {
                         vm.params.filter = true;

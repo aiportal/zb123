@@ -1,10 +1,10 @@
 from flask import Flask, Blueprint, request, make_response, redirect, url_for
 #from flask_restful import Api, output_json
-import apis
-import views
+import svc_v3
+from api_v3 import api_v3
+from api_v3_1 import api_v3_1
 from api_v4 import api_v4
-from svc_v4 import svc_v4
-from cmds import cmd_v3
+from cmd_v3 import cmd_v3
 
 from database import Database, UserInfo, AccessLog, RuntimeEvent
 
@@ -42,43 +42,26 @@ root = Blueprint('static', 'static', static_folder='static', static_url_path='',
 app.register_blueprint(root)
 
 
-app.add_url_rule('/welcome', view_func=views.WelcomeApi.as_view('welcome'))                 # 网页入口
-app.add_url_rule('/wx/auth', view_func=views.WxAuthApi.as_view('auth'))                     # 微信认证服务
-app.add_url_rule('/wx/pay', view_func=views.WxPayApi.as_view('pay'))                        # 微信支付
-app.add_url_rule('/wx/accounts', view_func=views.WxAccountsApi.as_view('accounts'))         # 微信账号同步
-app.add_url_rule('/wx/svc', view_func=views.WxServiceApi.as_view('svc'))                    # 微信公众号消息服务
-app.add_url_rule('/wx/publish', view_func=views.WxPublishApi.as_view('publish'))            # 微信每日推送/预览
-app.add_url_rule('/wx/sendall', view_func=views.WxPublishApi.as_view('sendall'))            # 微信每日推送/预览
-app.add_url_rule('/wx/preview', view_func=views.WxPublishApi.as_view('preview'))
-app.add_url_rule('/wx/menu', view_func=views.WxMenuApi.as_view('menu'))                     # 初始化微信菜单
-
-# API接口
-api_v3 = Blueprint('api_v3', 'api_v3', url_prefix='/api/v3')
-api_v3.add_url_rule('/user', view_func=apis.UserInfoApi.as_view('user'))                    # 用户界面初始化
-api_v3.add_url_rule('/rule', view_func=apis.UserRuleApi.as_view('rule'))                    # 设置筛选规则
-api_v3.add_url_rule('/titles', view_func=apis.DayTitlesApi.as_view('titles'))               # 获取招标信息
-api_v3.add_url_rule('/content/<uuid>', view_func=apis.ContentApi.as_view('content'))        # 招标信息详情
-api_v3.add_url_rule('/suggest', view_func=apis.SuggestApi.as_view('suggest'))               # 意见反馈
-
-
-@api_v3.before_request
-def before_api_request():
-    """ 检查访问权限 """
-    Database.connect()
-    uid = request.cookies.get('uid')
-    user = UserInfo.get_user(uid)
-    if not user:
-        return make_response('Invalid usage.')
+app.add_url_rule('/welcome', view_func=svc_v3.WelcomeApi.as_view('welcome'))                 # 网页入口
+app.add_url_rule('/wx/auth', view_func=svc_v3.WxAuthApi.as_view('auth'))                     # 微信认证服务
+app.add_url_rule('/wx/pay', view_func=svc_v3.WxPayApi.as_view('pay'))                        # 微信支付
+app.add_url_rule('/wx/accounts', view_func=svc_v3.WxAccountsApi.as_view('accounts'))         # 微信账号同步
+app.add_url_rule('/wx/svc', view_func=svc_v3.WxServiceApi.as_view('svc'))                    # 微信公众号消息服务
+app.add_url_rule('/wx/publish', view_func=svc_v3.WxPublishApi.as_view('publish'))            # 微信每日推送/预览
+app.add_url_rule('/wx/sendall', view_func=svc_v3.WxPublishApi.as_view('sendall'))            # 微信每日推送/预览
+app.add_url_rule('/wx/preview', view_func=svc_v3.WxPublishApi.as_view('preview'))
+app.add_url_rule('/wx/menu', view_func=svc_v3.WxMenuApi.as_view('menu'))                     # 初始化微信菜单
 
 # 注册API接口
 app.register_blueprint(api_v3)
+app.register_blueprint(api_v3_1)
 app.register_blueprint(api_v4)
 
 # 注册Web指令
 app.register_blueprint(cmd_v3)
 
 # 注册新版服务
-app.register_blueprint(svc_v4)
+# app.register_blueprint(svc_v4)
 
 
 # 调试

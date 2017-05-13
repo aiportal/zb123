@@ -60,7 +60,7 @@
                     $.toptip('请输入反馈内容', 'error');
                     return;
                 }
-                vm.$http.post('/api/v3/suggest', data).then(function(){
+                vm.$http.post('/api/v3_1/suggest', data).then(function(){
                     $.toast('感謝您的反馈');
                     setTimeout(function () {
                         window.location.href = '/welcome';
