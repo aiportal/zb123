@@ -38,7 +38,7 @@ class puyang_1Spider(scrapy.Spider):
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
-        body = response.css('.ShowText')
+        body = response.css('.ShowText') or response.css('div.lm_c')
 
         day = FieldExtractor.date(data.get('day'))
         title = data.get('title') or data.get('text')

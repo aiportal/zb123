@@ -6,10 +6,13 @@ import peewee
 import uuid
 from datetime import datetime, date, timedelta
 from ..common import JSONObjectField, JSONArrayField
+import os
 
 
-db_uuid = str(uuid.uuid1())
-db_store = peewee.SqliteDatabase('{}.db'.format(db_uuid))
+if not os.path.exists('../data'):
+    os.mkdir('../data')
+db_uuid = '{0:%Y%m%d-%H%M}'.format(datetime.now())
+db_store = peewee.SqliteDatabase('../data/{}.db'.format(db_uuid))
 
 
 class StoreModel(peewee.Model):

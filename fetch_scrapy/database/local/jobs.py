@@ -7,7 +7,7 @@ import uuid
 from datetime import datetime, date, timedelta
 
 
-db_jobs = peewee.SqliteDatabase('jobs.db')
+db_jobs = peewee.SqliteDatabase('../jobs.db')
 
 
 class JobsModel(peewee.Model):

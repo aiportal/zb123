@@ -3,6 +3,7 @@ from fetch.extractors import MetaLinkExtractor, NodesExtractor, FieldExtractor
 from fetch.tools import SpiderTool
 from fetch.items import GatherItem
 from urllib.parse import urljoin
+import re
 
 
 class huzhou_1Spider(scrapy.Spider):
@@ -20,6 +21,7 @@ class huzhou_1Spider(scrapy.Spider):
         ('http://ggzy.huzhou.gov.cn/HZfront/jcjs/021002/021002002/', '中标公告/交通'),
         ('http://ggzy.huzhou.gov.cn/HZfront/jcjs/021003/021003001/', '招标公告/水利'),
         ('http://ggzy.huzhou.gov.cn/HZfront/jcjs/021003/021003002/', '中标公告/水利'),
+
         ('http://ggzy.huzhou.gov.cn/HZfront/zfcg/024001/024001003/', '预公告/政府采购/集中'),
         ('http://ggzy.huzhou.gov.cn/HZfront/zfcg/024001/024001001/', '招标公告/政府采购/集中'),
         ('http://ggzy.huzhou.gov.cn/HZfront/zfcg/024001/024001002/', '中标公告/政府采购/集中'),
@@ -50,9 +52,11 @@ class huzhou_1Spider(scrapy.Spider):
         """ 解析详情页 """
         data = response.meta['data']
         body = response.css('#TDContent, .infodetail')
+        prefix = '^\[\w{2,8}\]'
 
         day = FieldExtractor.date(data.get('day'))
         title = data.get('title') or data.get('text')
+        title = re.sub(prefix, '', title)
         contents = body.extract()
         g = GatherItem.create(
             response,

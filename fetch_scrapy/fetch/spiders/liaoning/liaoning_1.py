@@ -51,9 +51,11 @@ class liaoning_1Spider(scrapy.Spider):
         body = response.css('#zfcg_zbgs1_TDContent') or response.css('#jsgc_zbgs1_TDContent') \
             or response.css('#zfcg_zbgg1_TDContent, #zfcg_zbgg1_spnAttach') \
             or response.css('#jsgc_zbgg1_TDContent, #jsgc_zbgg1_spnAttach')
+        pid = '\([A-Za-z0-9-]{10,18}\)'
 
         day = FieldExtractor.date(data.get('day'))
         title = data.get('title') or data.get('text')
+        title = re.sub(pid, '', title)
         contents = body.extract()
         g = GatherItem.create(
             response,

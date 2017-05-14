@@ -16,26 +16,13 @@ SPIDER_MODULES = ['fetch.spiders']
 NEWSPIDER_MODULE = 'fetch.spiders'
 # COMMANDS_MODULE = 'fetch.commands'
 
-# 压缩文件和CSV文件的保存路径
-PACKAGE_FOLDER = '/prj/zb123/data'
-
-# 附件存储路径
-FILES_STORE = '/prj/zb123/data'
-
-# 服务器返回空值时的重试次数
-RETRY_TIMES = 3
-
-# 索引页跳过重复网址的最大次数
-MAX_SKIP = 5
-
-# 日志
+# log level
 LOG_ENABLED = True
 LOG_ENCODING = 'UTF-8'
 LOG_LEVEL = __debug__ and 'DEBUG' or 'ERROR'    # DEBUG,INFO,WARNING,ERROR
 
-# 最大爬取深度
-if '-full' not in sys.argv:
-    DEPTH_LIMIT = 5
+# max depth
+DEPTH_LIMIT = 5
 
 DEFAULT_REQUEST_HEADERS = {
     'Accept': '*/*',
@@ -54,25 +41,20 @@ DUPEFILTER_DEBUG = __debug__
 
 ITEM_PIPELINES = {
     'fetch.pipelines.SQLitePipeline': __debug__ and 100 or None,
-    # 'scrapy.pipelines.files.FilesPipeline': 1,
-    # 'fetch.pipelines.AttachmentsPipeline': 10,
     'fetch.pipelines.MysqlPipeline': (not __debug__) and 200 or None,
-    'fetch.pipelines.ZipPackagePipeline': '-full' in sys.argv and 300 or None,
-    'fetch.pipelines.CsvPipeline': None,
 }
 
 DOWNLOADER_MIDDLEWARES = {
-    'fetch.middlewares.EmptyRetryMiddleware': 200,
-    'fetch.middlewares.HttpExceptionMiddleware': 300,
+    'fetch.middlewares.ExceptionMiddleware': 300,
 }
 
 SPIDER_MIDDLEWARES = {
-    'fetch.middlewares.SpiderExceptionMiddleware': 300,
+    'fetch.middlewares.ExceptionMiddleware': 300,
 }
 
 EXTENSIONS = {
     'fetch.extensions.ExceptionLogExtension': 300,
-    'fetch.extensions.SpiderStatsExtension': 500,
+    'fetch.extensions.CrawlerStatisticExtension': 500,
     'scrapy.extensions.memusage.MemoryUsage': 800,
 }
 
@@ -129,8 +111,10 @@ TELNETCONSOLE_ENABLED = False
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 
-if True:
-    import platform
-    if platform.system() == 'Windows':
-        PACKAGE_FOLDER = r'C:\Download\zb123'
-        FILES_STORE = r'C:\Download\zb123'
+
+
+# 压缩文件和CSV文件的保存路径
+PACKAGE_FOLDER = '/prj/zb123/data'
+
+# 服务器返回空值时的重试次数
+RETRY_TIMES = 3

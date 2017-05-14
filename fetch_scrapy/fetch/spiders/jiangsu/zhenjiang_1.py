@@ -54,11 +54,14 @@ class JiangsuZhenjiang1Spider(scrapy.Spider):
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
-        body = response.css('div.article-content, #attach') or response.css('div.article-block')
+        if response.body[:4] == b'%PDF':
+            contents = ['<a href="{}" target="_blank">招标公告</a>'.format(response.url)]
+        else:
+            body = response.css('div.article-content, #attach') or response.css('div.article-block')
+            contents = body.extract()
 
-        day = FieldExtractor.date(data.get('infodate'), response.css('div.info-sources'))
+        day = FieldExtractor.date(data.get('infodate'))
         title = data.get('title') or data.get('text')
-        contents = body.extract()
         g = GatherItem.create(
             response,
             source=self.name.split('/')[0],
@@ -68,5 +71,5 @@ class JiangsuZhenjiang1Spider(scrapy.Spider):
         )
         g.set(area=self.alias)
         g.set(subject=data.get('subject'))
-        g.set(budget=FieldExtractor.money(body))
+        g.set(budget=FieldExtractor.money(contents))
         return [g]

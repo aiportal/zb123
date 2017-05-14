@@ -24,8 +24,6 @@ spiders = process.spider_loader.list()
 args = sys.argv[1:]
 if args:
     spiders = [x for x in spiders if x in args or x.split('/')[0] in args]
-if '-full' in args:
-    process.settings['MAX_SKIP'] = sys.maxsize
 for spider in spiders:
     process.crawl(process.spider_loader.load(spider))
 process.start()

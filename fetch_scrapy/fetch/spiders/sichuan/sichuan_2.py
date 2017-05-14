@@ -33,13 +33,6 @@ class Sichuan2Spider(scrapy.Spider):
             row.update(**data)
             yield scrapy.Request(url, meta={'data': row}, callback=self.parse_item)
 
-        # count = pkg['pageCount']
-        # page = int(response.meta['data']['page']) + 1
-        # if page < count:
-        #     url = SpiderTool.url_replace(response.url, page=page)
-        #     response.meta['data']['page'] = page
-        #     yield scrapy.Request(url, meta=response.meta)
-
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']

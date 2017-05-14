@@ -39,11 +39,13 @@ class liaoning_2Spider(scrapy.Spider):
         """ 解析详情页 """
         data = response.meta['data']
         body = response.css('div.article')
+        pid = '\([A-Z0-9-]{10,18}\)'
         suffix = '\([A-Z0-9-]+\)$'
 
         day = FieldExtractor.date(data.get('day'), response.css('div.subinfo'))
         title = data.get('title') or data.get('text')
         title = re.sub(suffix, '', title)
+        title = re.sub(pid, '', title)
         contents = body.extract()
         g = GatherItem.create(
             response,

@@ -22,7 +22,7 @@ class SQLitePipeline(object):
             c = ContentTemp(**obj)
             c.html = None
             c.save(force_insert=True)
-        except peewee.IntegrityError:
+        except peewee.IntegrityError as ex:
             EventLog.log_exception(spider.name, level='IntegrityError', url=obj['url'], info={'uuid': obj['uuid']})
         except Exception as ex:
             EventLog.log_exception(spider.name, level='PIPELINE', url=obj['url'], exception=ex)

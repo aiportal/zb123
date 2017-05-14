@@ -46,26 +46,26 @@ class ChengDuSpider(scrapy.Spider):
         dom = etree.HTML(pkg['showinfo'])
         for elem in dom.xpath('.//a'):
             url = elem.get('href')
-            data = {
+            row = {
                 'text': (elem.xpath('.//text()') + [''])[0],
                 'day': elem.findtext('../span[1]'),
             }
-            yield scrapy.Request(url, meta={'data': data}, callback=self.parse_item)
-
-        # page, count = pkg['pageindex'] + 1, pkg['pagesum']
-        # if page < count:
-        #     form = response.meta['form']
-        #     form.update(pageindex=str(page))
-        #     yield scrapy.FormRequest(response.url, formdata=form, meta=response.meta)
+            row.update(**response.meta['data'])
+            yield scrapy.Request(url, meta={'data': row}, callback=self.parse_item)
 
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
         body = response.css('#ctl00_ContentPlaceHolder1_table') or response.css('div.content')
+        prefix = '^\[(.+)\]\s*'
 
         day = FieldExtractor.date(data.get('day'))
         title = data.get('title') or data.get('text')
-        title = re.sub('^\[(.+)\]\s*', '', title)
+        title = re.sub(prefix, '', title)
+        if title.endswith('...'):
+            title1 = FieldExtractor.text(response.css('td.header:contains(采购公告标题)+td'))
+            title2 = FieldExtractor.text(response.css('td.header:contains(项目名称)+td'))
+            title = title1 or title2 or title
         contents = body.extract()
         g = GatherItem.create(
             response,

@@ -101,7 +101,8 @@ class EventLog(BaseModel):
     time = peewee.DateTimeField(default=datetime.now)           # 时间戳
 
     @staticmethod
-    def log_event(source: str, level: str, msg: str='', info: dict={}):
+    def log_event(source: str, level: str, msg: str='', info: dict=None):
+        info = info or {'type': 'Event'}
         EventLog.create(source=source, level=level, url=msg, info=info)
 
 EventLog.create_table(True)

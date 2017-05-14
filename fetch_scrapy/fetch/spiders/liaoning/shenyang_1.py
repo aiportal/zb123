@@ -3,6 +3,7 @@ from fetch.extractors import MetaLinkExtractor, NodesExtractor, FieldExtractor
 from fetch.tools import SpiderTool
 from fetch.items import GatherItem
 from urllib.parse import urljoin
+import re
 
 
 class shenyang_1Spider(scrapy.Spider):
@@ -45,9 +46,14 @@ class shenyang_1Spider(scrapy.Spider):
         """ 解析详情页 """
         data = response.meta['data']
         body = response.css('#Zoom')
+        prefix = '^【\w{2,8}】'
 
         day = FieldExtractor.date(data.get('day'), response.css('div.more_annotation'))
         title = data.get('title') or data.get('text')
+        title = re.sub(prefix, '', title)
+        if title.endswith('...'):
+            title1 = FieldExtractor.text(response.css('div.more_title'))
+            title = title1 or title
         contents = body.extract()
         g = GatherItem.create(
             response,

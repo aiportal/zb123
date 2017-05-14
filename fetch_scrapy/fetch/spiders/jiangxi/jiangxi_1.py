@@ -3,6 +3,7 @@ from fetch.extractors import MetaLinkExtractor, NodesExtractor, FieldExtractor
 from fetch.tools import SpiderTool
 from fetch.items import GatherItem
 from urllib.parse import urljoin
+import re
 
 
 class Jiangxi1Spider(scrapy.Spider):
@@ -41,6 +42,7 @@ class Jiangxi1Spider(scrapy.Spider):
 
     def parse(self, response):
         links = self.link_extractor.links(response)
+        assert links
         for lnk in links:
             lnk.meta.update(**response.meta['data'])
             yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
@@ -48,11 +50,18 @@ class Jiangxi1Spider(scrapy.Spider):
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
-        body = response.css('#TDContent') or response.css('.infodetail')
+        pid1 = '（\w{1,5}编号：[A-Z0-9-－# ]+）'
+        pid2 = '【.+】'
+        if response.body[:4] == b'%PDF':
+            contents = ['<a href="{}" target="_blank">招标公告</a>'.format(response.url)]
+        else:
+            body = response.css('#TDContent') or response.css('.infodetail')
+            contents = body.extract()
 
         day = FieldExtractor.date(data.get('day'))
         title = data.get('title') or data.get('text')
-        contents = body.extract()
+        title = re.sub(pid1, '', title)
+        title = re.sub(pid2, '', title)
         g = GatherItem.create(
             response,
             source=self.name.split('/')[0],
