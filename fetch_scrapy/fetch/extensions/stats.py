@@ -60,7 +60,7 @@ class CrawlerStatisticExtension(object):
         if cls.running_count() > 0:
             return
 
-        items = sorted(cls.stats.values(), key=lambda x: x.errors * 10000 - int(x.items), reverse=True)
+        items = sorted(cls.stats.values(), key=lambda x: x.errors * 10000 + int(x.items), reverse=True)
         start = min([x.start for x in items])
         delta = str(datetime.now() - start)[:4]
         count = sum([x.items for x in items])
@@ -78,10 +78,10 @@ class CrawlerStatisticExtension(object):
         items = cls.stats.values()
 
         start = min([x.start for x in items])
-        exceptions = EventLog.select(EventLog.source, peewee.fn.COUNT(EventLog.ID).alias('count'))\
-            .where(EventLog.time > start)\
-            .where(EventLog.level << ['ERROR', 'SPIDER', 'HTTP'])\
-            .group_by(EventLog.source)
+        exceptions = EventLog.select(ExceptionLog.source, peewee.fn.COUNT(ExceptionLog.ID).alias('count'))\
+            .where(ExceptionLog.time >= start)\
+            .where(ExceptionLog.level != 'main')\
+            .group_by(ExceptionLog.source)
         count = sum([x.count for x in exceptions])
 
         errors = [x for x in items if x.reason != 'finished']

@@ -1,10 +1,7 @@
 import scrapy
 from scrapy.dupefilters import BaseDupeFilter
 import json
-if __debug__:
-    from database.local import JobIndex
-else:
-    from database import JobIndex
+from database import JobIndex
 
 
 class UrlFilterMiddleware(BaseDupeFilter):

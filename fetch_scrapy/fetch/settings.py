@@ -40,7 +40,7 @@ DUPEFILTER_DEBUG = __debug__
 
 
 ITEM_PIPELINES = {
-    'fetch.pipelines.SQLitePipeline': __debug__ and 100 or None,
+    # 'fetch.pipelines.SQLitePipeline': __debug__ and 100 or None,
     'fetch.pipelines.MysqlPipeline': (not __debug__) and 200 or None,
 }
 

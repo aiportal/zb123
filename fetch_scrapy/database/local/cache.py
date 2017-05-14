@@ -9,18 +9,36 @@ from ..common import JSONObjectField, JSONArrayField
 import os
 
 
-if not os.path.exists('../data'):
-    os.mkdir('../data')
-db_uuid = '{0:%Y%m%d-%H%M}'.format(datetime.now())
-db_store = peewee.SqliteDatabase('../data/{}.db'.format(db_uuid))
+# if not os.path.exists('../data'):
+#     os.mkdir('../data')
+# db_uuid = '{0:%Y%m%d-%H%M}'.format(datetime.now())
+# db_store = peewee.SqliteDatabase('../data/{}.db'.format(db_uuid))
+db_store = peewee.SqliteDatabase('../cache.db')
 
 
-class StoreModel(peewee.Model):
+class CacheModel(peewee.Model):
     class Meta:
         database = db_store
 
 
-class GatherTemp(StoreModel):
+class CacheItem(CacheModel):
+    class Meta:
+        db_table = 'item_temp'
+        indexes = (
+            (('source', 'title', 'subject'), False),
+        )
+
+    uuid = peewee.UUIDField(primary_key=True, help_text='url的hash值')
+    day = peewee.DateField(help_text='招标日期')
+    source = peewee.CharField(max_length=50, help_text='招标来源')
+    title = peewee.CharField(help_text='标题')
+    subject = peewee.CharField(help_text='分类')
+    completed = peewee.BooleanField(default=False, help_text='是否已上传成功')
+
+    data = peewee.BlobField(help_text='Item对象压缩存储')
+
+
+class _GatherTemp(CacheModel):
     class Meta:
         db_table = 'gather_temp'
         indexes = (
@@ -46,7 +64,7 @@ class GatherTemp(StoreModel):
     time = peewee.DateTimeField(default=datetime.now, help_text='时间戳')
 
 
-class ContentTemp(StoreModel):
+class _ContentTemp(CacheModel):
     class Meta:
         db_table = 'content_temp'
     uuid = peewee.UUIDField(primary_key=True, help_text='url的hash值')
@@ -66,7 +84,7 @@ class ContentTemp(StoreModel):
     time = peewee.DateTimeField(default=datetime.now, help_text='时间戳')
 
 
-class EventLog(StoreModel):
+class EventLog(CacheModel):
     class Meta:
         db_table = 'log_temp'
     ID = peewee.PrimaryKeyField()
@@ -77,13 +95,10 @@ class EventLog(StoreModel):
     time = peewee.DateTimeField(default=datetime.now, help_text='时间戳')
 
     @staticmethod
-    def log_event(source: str, level: str, msg: str=''):
-        EventLog.create(source=source, level=level, url=msg)
-
-    @staticmethod
-    def log_exception(source: str, level: str, url: str, info: dict=None, exception: Exception=None):
+    def log_exception(source: str, level: str, url: str, exception: Exception=None, addition: dict=None):
+        info = addition or {}
         info['exception'] = str(exception)
         EventLog.create(source=source, level=level, url=url, info=info)
 
 
-db_store.create_tables([GatherTemp, ContentTemp, EventLog], True)
+db_store.create_tables([CacheItem, EventLog], True)
