@@ -23,7 +23,7 @@ class LiantongSpider(scrapy.Spider):
     link_extractor = MetaLinkExtractor(css=('span[onclick^="window.open("]',),
                                        attrs_xpath={'text': './/text()', 'day': '../../td[2]//text()',
                                                     'area': '../../td[3]//text()'})
-    page_extractor = NodeValueExtractor(css=('#nowPage',), value_xpath='..//text()')
+    # page_extractor = NodeValueExtractor(css=('#nowPage',), value_xpath='..//text()')
 
     def parse(self, response):
         nodes = self.link_extractor.extract_nodes(response)
@@ -33,12 +33,12 @@ class LiantongSpider(scrapy.Spider):
             node.update(**response.meta['data'])
             yield scrapy.Request(url, meta={'data': node}, callback=self.parse_item)
 
-        pager = self.page_extractor.extract_value(response) or ''
-        page, count = SpiderTool.re_nums('第\s*(\d+)\s*页\s*共\s*(\d+)\s*页', pager)
-        page += 1
-        if page < count:
-            url = SpiderTool.url_replace(response.url, page=page)
-            yield scrapy.Request(url, meta=response.meta)
+        # pager = self.page_extractor.extract_value(response) or ''
+        # page, count = SpiderTool.re_nums('第\s*(\d+)\s*页\s*共\s*(\d+)\s*页', pager)
+        # page += 1
+        # if page < count:
+        #     url = SpiderTool.url_replace(response.url, page=page)
+        #     yield scrapy.Request(url, meta=response.meta)
 
     def parse_item(self, response):
         """ 解析详情页 """

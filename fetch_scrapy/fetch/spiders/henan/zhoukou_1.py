@@ -22,7 +22,7 @@ class zhoukou_1Spider(scrapy.Spider):
             ('002001003', '中标公告/建设工程'),
         ]
     ]
-    custom_settings = {'DOWNLOAD_DELAY': 2.8}
+    custom_settings = {'DOWNLOAD_DELAY': 3.88}
 
     link_extractor = MetaLinkExtractor(css='#form1 tr > td > a[target=_blank]',
                                        attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})

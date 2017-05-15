@@ -29,8 +29,8 @@ class Jiangsu3Spider(scrapy.Spider):
     link_extractor = NodesExtractor(css='#MoreInfoList1_DataGrid1 tr > td > a',
                                     attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()',
                                                  'industry': '../../td[last()-1]//text()'})
-    page_extractor = NodeValueExtractor(css='#MoreInfoList1_Pager tr > td > a > img[src$="nextn.gif"]',
-                                        value_xpath='../@href')
+    # page_extractor = NodeValueExtractor(css='#MoreInfoList1_Pager tr > td > a > img[src$="nextn.gif"]',
+    #                                     value_xpath='../@href')
 
     def parse(self, response):
         links = self.link_extractor.extract_nodes(response)
@@ -40,14 +40,14 @@ class Jiangsu3Spider(scrapy.Spider):
             lnk.update(**response.meta['data'])
             yield scrapy.Request(url, meta={'data': lnk}, callback=self.parse_item)
 
-        pager = self.page_extractor.extract_value(response) or ''
-        arg, num = SpiderTool.re_text("__doPostBack\('(.+)','(\d+)'\)", pager)
-        if arg and num:
-            form = {
-                '__EVENTTARGET': arg,
-                '__EVENTARGUMENT': num
-            }
-            yield scrapy.FormRequest.from_response(response, formdata=form, meta=response.meta, dont_filter=True)
+        # pager = self.page_extractor.extract_value(response) or ''
+        # arg, num = SpiderTool.re_text("__doPostBack\('(.+)','(\d+)'\)", pager)
+        # if arg and num:
+        #     form = {
+        #         '__EVENTTARGET': arg,
+        #         '__EVENTARGUMENT': num
+        #     }
+        #     yield scrapy.FormRequest.from_response(response, formdata=form, meta=response.meta, dont_filter=True)
 
     def parse_item(self, response):
         """ 解析详情页 """

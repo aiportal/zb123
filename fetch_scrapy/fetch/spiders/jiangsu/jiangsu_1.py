@@ -28,7 +28,7 @@ class JiangsuSpider(scrapy.Spider):
 
     link_extractor = MetaLinkExtractor(css='div.list_list ul > li > a',
                                        attrs_xpath={'text': './/text()', 'day': '../text()'})
-    page_extractor = NodeValueExtractor(css='div.fanye script', value_xpath='.//text()')
+    # page_extractor = NodeValueExtractor(css='div.fanye script', value_xpath='.//text()')
 
     def parse(self, response):
         links = self.link_extractor.links(response)
@@ -36,12 +36,12 @@ class JiangsuSpider(scrapy.Spider):
             lnk.meta.update(**response.meta['data'])
             yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
 
-        pager = self.page_extractor.extract_value(response)
-        count, page = SpiderTool.re_nums('createPageHTML\((\d+), (\d+), "index", "html"\);', pager)
-        page += 1
-        if page < count:
-            url = urljoin(response.url, 'index_{}.html'.format(page))
-            yield scrapy.Request(url, meta=response.meta, dont_filter=True)
+        # pager = self.page_extractor.extract_value(response)
+        # count, page = SpiderTool.re_nums('createPageHTML\((\d+), (\d+), "index", "html"\);', pager)
+        # page += 1
+        # if page < count:
+        #     url = urljoin(response.url, 'index_{}.html'.format(page))
+        #     yield scrapy.Request(url, meta=response.meta, dont_filter=True)
 
     def parse_item(self, response):
         """ 解析详情页 """

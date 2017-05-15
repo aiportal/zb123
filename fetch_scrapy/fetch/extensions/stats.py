@@ -60,7 +60,7 @@ class CrawlerStatisticExtension(object):
         if cls.running_count() > 0:
             return
 
-        items = sorted(cls.stats.values(), key=lambda x: x.errors * 10000 + int(x.items), reverse=True)
+        items = sorted(cls.stats.values(), key=lambda x: '{0.errors:3}/{0.items:3}/{0.name}'.format(x), reverse=True)
         start = min([x.start for x in items])
         delta = str(datetime.now() - start)[:4]
         count = sum([x.items for x in items])
@@ -110,12 +110,13 @@ class CrawlerStatisticExtension(object):
             wx_msg.send_text(10, 'bfbd', msg)
             return
 
+        title = '[scrapy] {}'.format(socket.gethostname())
         digest = '\n'.join(head)
         content = '<br/>'.join(head + [''] + body)
         wx_msg.send_mp_articles(10, 'bfbd', [{
             'thumb_media_id': thumb_media_id,
             'author': None,
-            'title': '[scrapy]',
+            'title': title,
             'content': content,
             'content_source_url': None,
             'digest': digest,

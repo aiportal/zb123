@@ -33,7 +33,7 @@ class Tianjin2Spider(scrapy.Spider):
 
     link_extractor = MetaLinkExtractor(css=('ul.dataList > li > a',),
                                        attrs_xpath={'text': './/text()', 'day': '../span//text()'})
-    page_extractor = NodeValueExtractor(css=('span.selectPage > a:contains(">")',), value_xpath='./@onclick')
+    # page_extractor = NodeValueExtractor(css=('span.selectPage > a:contains(">")',), value_xpath='./@onclick')
 
     def parse(self, response):
         links = self.link_extractor.links(response)
@@ -41,12 +41,12 @@ class Tianjin2Spider(scrapy.Spider):
             lnk.meta.update(**response.meta['data'])
             yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
 
-        pager = self.page_extractor.extract_value(response) or ''
-        page = SpiderTool.re_nums('findGoodsAndRef\((\d+),\d+\);', pager)
-        if page:
-            form = response.meta['form']
-            form.update(page=str(page))
-            yield scrapy.FormRequest(response.url, formdata=form, meta=response.meta)
+        # pager = self.page_extractor.extract_value(response) or ''
+        # page = SpiderTool.re_nums('findGoodsAndRef\((\d+),\d+\);', pager)
+        # if page:
+        #     form = response.meta['form']
+        #     form.update(page=str(page))
+        #     yield scrapy.FormRequest(response.url, formdata=form, meta=response.meta)
 
     def parse_item(self, response):
         """ 解析详情页 """

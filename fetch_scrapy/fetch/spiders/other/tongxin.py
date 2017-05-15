@@ -30,7 +30,7 @@ class TongxinSpider(scrapy.Spider):
             yield scrapy.Request(url, meta={'data': data}, dont_filter=True)
 
     link_extractor = MetaLinkExtractor(css='#newsItem tr > td > a', attrs_xpath={'text': './/text()'})
-    page_extractor = NodeValueExtractor(css='#pageFrm td:contains(下一页)', value_xpath='./@page')
+    # page_extractor = NodeValueExtractor(css='#pageFrm td:contains(下一页)', value_xpath='./@page')
 
     def parse(self, response):
         links = self.link_extractor.links(response)
@@ -38,10 +38,10 @@ class TongxinSpider(scrapy.Spider):
             lnk.meta.update(**response.meta['data'])
             yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
 
-        pager = self.page_extractor.extract_value(response) or ''
-        if pager:
-            form = {'page': pager}
-            yield scrapy.FormRequest.from_response(response, formdata=form, meta=response.meta)
+        # pager = self.page_extractor.extract_value(response) or ''
+        # if pager:
+        #     form = {'page': pager}
+        #     yield scrapy.FormRequest.from_response(response, formdata=form, meta=response.meta)
 
     def parse_item(self, response):
         """ 解析详情页 """

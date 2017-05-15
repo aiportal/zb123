@@ -24,7 +24,7 @@ class YiwuSpider(scrapy.Spider):
 
     link_extractor = MetaLinkExtractor(css=('div.news ul > li > a',),
                                        attrs_xpath={'text': './/text()', 'day': '../span//text()'})
-    page_extractor = NodeValueExtractor(css=('div.fx > script',), value_xpath='.//text()')
+    # page_extractor = NodeValueExtractor(css=('div.fx > script',), value_xpath='.//text()')
 
     def parse(self, response):
         links = self.link_extractor.links(response)
@@ -32,13 +32,13 @@ class YiwuSpider(scrapy.Spider):
             lnk.meta.update(**response.meta['data'])
             yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
 
-        pager = self.page_extractor.extract_value(response) or ''
-        count, page = SpiderTool.re_nums('I\.com\(\)\.pager\((\d+),(\d+),', pager)
-        page += 1
-        if page < count:
-            url = response.url
-            url = url[:url.rfind('/')] + '/index_{}.shtml'.format(page)
-            yield scrapy.Request(url, meta=response.meta)
+        # pager = self.page_extractor.extract_value(response) or ''
+        # count, page = SpiderTool.re_nums('I\.com\(\)\.pager\((\d+),(\d+),', pager)
+        # page += 1
+        # if page < count:
+        #     url = response.url
+        #     url = url[:url.rfind('/')] + '/index_{}.shtml'.format(page)
+        #     yield scrapy.Request(url, meta=response.meta)
 
     def parse_item(self, response):
         """ 解析详情页 """

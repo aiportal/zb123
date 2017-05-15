@@ -22,6 +22,14 @@
           </mappings>
         </serverdata>
       </paths>
+      <paths name="zb123.bid">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/v3/fetch" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/3/web" local="$PROJECT_DIR$/../web_flask" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
     </serverData>
     <option name="myAutoUpload" value="ALWAYS" />
   </component>

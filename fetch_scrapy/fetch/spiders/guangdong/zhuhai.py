@@ -25,7 +25,7 @@ class ZhuhaiSpider(scrapy.Spider):
 
     link_extractor = MetaLinkExtractor(css=('ul.news > li > a:not([href$="/GPC"])',),
                                        attrs_xpath={'text': './/text()', 'day': '../span//text()'})
-    page_extractor = NodeValueExtractor(css=('div.page a:contains(下一页)',), value_xpath='./@href')
+    # page_extractor = NodeValueExtractor(css=('div.page a:contains(下一页)',), value_xpath='./@href')
 
     def parse(self, response):
         links = self.link_extractor.links(response)
@@ -33,9 +33,9 @@ class ZhuhaiSpider(scrapy.Spider):
             lnk.meta.update(**response.meta['data'])
             yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
 
-        url = self.page_extractor.extract_value(response)
-        if url:
-            yield scrapy.Request(url, meta=response.meta)
+        # url = self.page_extractor.extract_value(response)
+        # if url:
+        #     yield scrapy.Request(url, meta=response.meta)
 
     def parse_item(self, response):
         """ 解析详情页 """

@@ -32,10 +32,10 @@ class JiangsuXuzhouBuildSpider(scrapy.Spider):
         MetaLinkExtractor(css='#moreinfoListZB1_DataGrid1 tr > td > a',
                           attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'}),
     ]
-    page_extractors = [
-         NodeValueExtractor(css='#MoreinfoListJyxx1_Pager a > img[src$="nextn.gif"]', value_xpath='../@href'),
-         NodeValueExtractor(css='#moreinfoListZB1_moreinfo a:contains(下一页)', value_xpath='./@href'),
-    ]
+    # page_extractors = [
+    #      NodeValueExtractor(css='#MoreinfoListJyxx1_Pager a > img[src$="nextn.gif"]', value_xpath='../@href'),
+    #      NodeValueExtractor(css='#moreinfoListZB1_moreinfo a:contains(下一页)', value_xpath='./@href'),
+    # ]
 
     def parse(self, response):
         seq = int(response.meta['data']['seq'])
@@ -45,14 +45,14 @@ class JiangsuXuzhouBuildSpider(scrapy.Spider):
             lnk.meta.update(**response.meta['data'])
             yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
 
-        pager = self.page_extractors[seq].extract_value(response) or ''
-        target, argument = SpiderTool.re_text("__doPostBack\('(.+)','(\d*)'\)", pager)
-        if target:
-            form = {
-                '__EVENTTARGET': target,
-                '__EVENTARGUMENT': argument,
-            }
-            yield scrapy.FormRequest.from_response(response, formdata=form, meta=response.meta, dont_filter=True)
+        # pager = self.page_extractors[seq].extract_value(response) or ''
+        # target, argument = SpiderTool.re_text("__doPostBack\('(.+)','(\d*)'\)", pager)
+        # if target:
+        #     form = {
+        #         '__EVENTTARGET': target,
+        #         '__EVENTARGUMENT': argument,
+        #     }
+        #     yield scrapy.FormRequest.from_response(response, formdata=form, meta=response.meta, dont_filter=True)
 
     def parse_item(self, response):
         """ 解析详情页 """

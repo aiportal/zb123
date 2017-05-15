@@ -23,7 +23,7 @@ class Ningxia2Spider(scrapy.Spider):
     link_extractor = MetaLinkExtractor(css=('table.list_table tr > td > a', ),
                                        attrs_xpath={'text': './/text()', 'title': '../@title',
                                                     'day': '../../td[last()]//text()'})
-    page_extractor = NodeValueExtractor(css=('div.page-html > a:contains(下一页)',), value_xpath='./@onclick')
+    # page_extractor = NodeValueExtractor(css=('div.page-html > a:contains(下一页)',), value_xpath='./@onclick')
 
     def parse(self, response):
         links = self.link_extractor.links(response)
@@ -32,12 +32,12 @@ class Ningxia2Spider(scrapy.Spider):
             lnk.meta.update(subject=response.meta['data']['type'])
             yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
 
-        pager = self.page_extractor.extract_value(response) or ''
-        page = SpiderTool.re_nums('doQuery\((\d+)\)', pager)
-        if page:
-            form = response.meta['form']
-            form.update(page=str(page))
-            yield scrapy.FormRequest(response.url, formdata=form,  meta=response.meta)
+        # pager = self.page_extractor.extract_value(response) or ''
+        # page = SpiderTool.re_nums('doQuery\((\d+)\)', pager)
+        # if page:
+        #     form = response.meta['form']
+        #     form.update(page=str(page))
+        #     yield scrapy.FormRequest(response.url, formdata=form,  meta=response.meta)
 
     def parse_item(self, response):
         """ 解析详情页 """

@@ -26,7 +26,7 @@ class JiangsuWaterSpider(scrapy.Spider):
 
     link_extractor = NodesExtractor(css='#div dl > dd > a',
                                     attrs_xpath={'text': './/text()', 'day': '../span//text()'})
-    page_extractor = NodeValueExtractor(css='#InfoPager a:contains(下一页)', value_xpath='./@href')
+    # page_extractor = NodeValueExtractor(css='#InfoPager a:contains(下一页)', value_xpath='./@href')
 
     def parse(self, response):
         links = self.link_extractor.extract_nodes(response)
@@ -40,14 +40,14 @@ class JiangsuWaterSpider(scrapy.Spider):
             yield scrapy.FormRequest.from_response(response, formdata=form, meta={'data': lnk},
                                                    callback=self.parse_item, dont_filter=True)
 
-        pager = self.page_extractor.extract_value(response) or ''
-        target, argument = SpiderTool.re_text("__doPostBack\('(.+)','(\d+)'\)", pager)
-        if target and argument:
-            form = {
-                '__EVENTTARGET': target,
-                '__EVENTARGUMENT': argument
-            }
-            yield scrapy.FormRequest.from_response(response, formdata=form, meta=response.meta, dont_filter=True)
+        # pager = self.page_extractor.extract_value(response) or ''
+        # target, argument = SpiderTool.re_text("__doPostBack\('(.+)','(\d+)'\)", pager)
+        # if target and argument:
+        #     form = {
+        #         '__EVENTTARGET': target,
+        #         '__EVENTARGUMENT': argument
+        #     }
+        #     yield scrapy.FormRequest.from_response(response, formdata=form, meta=response.meta, dont_filter=True)
 
     def parse_item(self, response):
         """ 解析详情页 """

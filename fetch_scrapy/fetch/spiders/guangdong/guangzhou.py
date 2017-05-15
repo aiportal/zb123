@@ -33,7 +33,7 @@ class GuangzhouSpider(scrapy.Spider):
 
     link_extractor = MetaLinkExtractor(css=('table.wsbs-table > tr > td > a',),
                                        attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})
-    page_extractor = NodeValueExtractor(css=('div.pagination a:contains(下一页)',), value_xpath='./@onclick')
+    # page_extractor = NodeValueExtractor(css=('div.pagination a:contains(下一页)',), value_xpath='./@onclick')
 
     def parse(self, response):
         links = self.link_extractor.links(response)
@@ -41,11 +41,11 @@ class GuangzhouSpider(scrapy.Spider):
             link.meta.update(**response.meta['data'])
             yield scrapy.Request(link.url, meta={'data': link.meta}, callback=self.parse_item)
 
-        page = self.page_extractor.extract_value(response)
-        page = re.findall('goPage\((\d+)\)', page or '')
-        if page:
-            url = SpiderTool.url_replace(response.url, page=page[0])
-            yield scrapy.Request(url, meta=response.meta)
+        # page = self.page_extractor.extract_value(response)
+        # page = re.findall('goPage\((\d+)\)', page or '')
+        # if page:
+        #     url = SpiderTool.url_replace(response.url, page=page[0])
+        #     yield scrapy.Request(url, meta=response.meta)
 
     def parse_item(self, response):
         """ 解析详情页 """

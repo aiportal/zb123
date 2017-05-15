@@ -38,13 +38,13 @@ class JaingsuNanjingSpider(scrapy.Spider):
             link.meta.update(subject=response.meta['data']['subject'])
             yield scrapy.Request(link.url, meta={'data': link.meta}, callback=self.parse_item)
 
-        pager = response.css('div.page_turn script:nth-child(2)').xpath('./text()').extract() + ['']
-        pager = re.findall('createPageHTML\((\d+), (\d+)', pager[0].strip())
-        if pager:
-            page = int(pager[0][1]) + 1
-            url = response.url
-            url = '{0}/index_{1}.html'.format(url[:url.rfind('/')], page)
-            yield scrapy.Request(url, meta=response.meta, dont_filter=True)
+        # pager = response.css('div.page_turn script:nth-child(2)').xpath('./text()').extract() + ['']
+        # pager = re.findall('createPageHTML\((\d+), (\d+)', pager[0].strip())
+        # if pager:
+        #     page = int(pager[0][1]) + 1
+        #     url = response.url
+        #     url = '{0}/index_{1}.html'.format(url[:url.rfind('/')], page)
+        #     yield scrapy.Request(url, meta=response.meta, dont_filter=True)
 
     def parse_item(self, response):
         """ 解析详情页 """

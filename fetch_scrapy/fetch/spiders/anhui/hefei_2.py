@@ -44,13 +44,13 @@ class Hefei2Spider(scrapy.Spider):
             yield self._parse_item(response, r)
             # yield scrapy.Request(r['link'], meta={'data': r}, callback=self.jump_detail)
 
-        page = int(response.meta['data']['page']) + 1
-        size = int(response.meta['data']['size'])
-        count = int(pkg['result']['totalcount'])
-        if page * size < count:
-            url = SpiderTool.url_replace(response.url, pn=page)
-            response.meta['data']['page'] = str(page)
-            yield scrapy.Request(url, meta=response.meta)
+        # page = int(response.meta['data']['page']) + 1
+        # size = int(response.meta['data']['size'])
+        # count = int(pkg['result']['totalcount'])
+        # if page * size < count:
+        #     url = SpiderTool.url_replace(response.url, pn=page)
+        #     response.meta['data']['page'] = str(page)
+        #     yield scrapy.Request(url, meta=response.meta)
 
     def _parse_item(self, response, data):
         """ 解析详情项 """

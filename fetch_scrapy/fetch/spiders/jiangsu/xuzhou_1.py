@@ -48,10 +48,10 @@ class JiangsuXuzhouSpider(scrapy.Spider):
             row.update(link=url)
             yield self._parse_contents(response, data=row)
 
-        page, total = pkg['page'], pkg['total']
-        if page < total:
-            url = SpiderTool.url_replace(response.url, page=page+1)
-            yield scrapy.Request(url, meta=response.meta, dont_filter=True)
+        # page, total = pkg['page'], pkg['total']
+        # if page < total:
+        #     url = SpiderTool.url_replace(response.url, page=page+1)
+        #     yield scrapy.Request(url, meta=response.meta, dont_filter=True)
 
     def _parse_contents(self, response, data):
         """ 解析详情项 """

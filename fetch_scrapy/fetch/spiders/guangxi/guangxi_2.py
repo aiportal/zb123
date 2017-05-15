@@ -33,7 +33,7 @@ class Guangxi2Spider(scrapy.Spider):
     link_extractor = MetaLinkExtractor(css=('div.infoLink > ul > li > a',),
                                        attrs_xpath={'text': './text()', 'area': './span//text()',
                                                     'day': '../span[@class="date"]//text()'})
-    page_extractor = NodeValueExtractor(css=('#QuotaList_paginate > span:nth-child(1)',), value_xpath='.//text()')
+    # page_extractor = NodeValueExtractor(css=('#QuotaList_paginate > span:nth-child(1)',), value_xpath='.//text()')
 
     def parse(self, response):
         links = self.link_extractor.links(response)
@@ -41,12 +41,12 @@ class Guangxi2Spider(scrapy.Spider):
             link.meta.update(**response.meta['data'])
             yield scrapy.Request(link.url, meta={'data': link.meta}, callback=self.parse_item)
 
-        pager = self.page_extractor.extract_value(response) or ''
-        page, count = SpiderTool.re_nums('页次：(\d+)/(\d+)页', pager)
-        page += 1
-        if page < count:
-            url = re.sub('page_\d+\.html$', 'page_{}.html'.format(page), response.url)
-            yield scrapy.Request(url, meta=response.meta)
+        # pager = self.page_extractor.extract_value(response) or ''
+        # page, count = SpiderTool.re_nums('页次：(\d+)/(\d+)页', pager)
+        # page += 1
+        # if page < count:
+        #     url = re.sub('page_\d+\.html$', 'page_{}.html'.format(page), response.url)
+        #     yield scrapy.Request(url, meta=response.meta)
 
     def parse_item(self, response):
         """ 解析详情页 """

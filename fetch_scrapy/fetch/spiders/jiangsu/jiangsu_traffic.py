@@ -42,11 +42,11 @@ class jiangsuTrafficSpider(scrapy.Spider):
             row.update(**response.meta['data'])
             yield scrapy.Request(url, meta={'data': row}, callback=self.parse_item)
 
-        form = response.meta['form']
-        page, size = int(form['page']) + 1, int(form['rows'])
-        if page * size < pkg['total']:
-            form['page'] = str(page)
-            yield scrapy.FormRequest(response.url, formdata=form, meta=response.meta, dont_filter=True)
+        # form = response.meta['form']
+        # page, size = int(form['page']) + 1, int(form['rows'])
+        # if page * size < pkg['total']:
+        #     form['page'] = str(page)
+        #     yield scrapy.FormRequest(response.url, formdata=form, meta=response.meta, dont_filter=True)
 
     def parse_item(self, response):
         """ 解析详情页 """

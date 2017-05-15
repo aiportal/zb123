@@ -23,8 +23,8 @@ class HefeiSpider(scrapy.Spider):
     link_extractor = MetaLinkExtractor(css=('#SearchResult1_DataGrid1 tr > td > a',),
                                        attrs_xpath={'text': './/text()', 'area': '../../td[1]//text()',
                                                     'day': '../../td[last()]//text()'})
-    page_extractor = NodeValueExtractor(css=('#SearchResult1_Pager a > img[src$="nextn.gif"]',),
-                                        value_xpath='../@href')
+    # page_extractor = NodeValueExtractor(css=('#SearchResult1_Pager a > img[src$="nextn.gif"]',),
+    #                                     value_xpath='../@href')
 
     def parse(self, response):
         links = self.link_extractor.links(response)
@@ -32,14 +32,14 @@ class HefeiSpider(scrapy.Spider):
             lnk.meta.update(**response.meta['data'])
             yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
 
-        pager = self.page_extractor.extract_value(response) or ''
-        target, arg = SpiderTool.re_text("__doPostBack\('(.+)','(\d+)'\)", pager)
-        if target and arg:
-            form = {
-                '__EVENTTARGET': target,
-                '__EVENTARGUMENT': arg,
-            }
-            yield scrapy.FormRequest.from_response(response, formdata=form, meta=response.meta)
+        # pager = self.page_extractor.extract_value(response) or ''
+        # target, arg = SpiderTool.re_text("__doPostBack\('(.+)','(\d+)'\)", pager)
+        # if target and arg:
+        #     form = {
+        #         '__EVENTTARGET': target,
+        #         '__EVENTARGUMENT': arg,
+        #     }
+        #     yield scrapy.FormRequest.from_response(response, formdata=form, meta=response.meta)
 
     def parse_item(self, response):
         """ 解析详情页 """

@@ -34,7 +34,7 @@ class SuZhouSpider(scrapy.Spider):
     link_extractor = MetaLinkExtractor(css=('#tdcontent tr > td > a, div.mr-content tr > td > a',),
                                        attrs_xpath={'text': './/text()',
                                                     'day': '../../td[last()]//text() | ../../td[last()-1]//text()'})
-    page_extractor = NodeValueExtractor(css=('div.pagemargin td:contains(下页)',), value_xpath='./@onclick')
+    # page_extractor = NodeValueExtractor(css=('div.pagemargin td:contains(下页)',), value_xpath='./@onclick')
 
     def parse(self, response):
         links = self.link_extractor.links(response)
@@ -42,11 +42,11 @@ class SuZhouSpider(scrapy.Spider):
             lnk.meta.update(**response.meta['data'])
             yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
 
-        pager = self.page_extractor.extract_value(response) or ''
-        href = SpiderTool.re_text("\.href='(.+)'", pager)
-        if href:
-            url = urljoin(response.url, href)
-            yield scrapy.Request(url, meta=response.meta, dont_filter=True)
+        # pager = self.page_extractor.extract_value(response) or ''
+        # href = SpiderTool.re_text("\.href='(.+)'", pager)
+        # if href:
+        #     url = urljoin(response.url, href)
+        #     yield scrapy.Request(url, meta=response.meta, dont_filter=True)
 
     def parse_item(self, response):
         # 如果是转向操作，转到实际页面

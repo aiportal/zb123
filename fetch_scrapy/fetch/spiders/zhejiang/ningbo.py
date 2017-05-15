@@ -24,8 +24,8 @@ class NingboSpider(scrapy.Spider):
         css=('#ctl00_ContentPlaceHolder3_gdvNotice3 tr > td > a[href^="Notice_view.aspx"]',),
         attrs_xpath={'text': './/text()', 'area': '../../td[1]//text()', 'tender': '../../td[2]//text()',
                      'pid': '../../td[4]//text()', 'end': '../../td[last()]//text()'})
-    page_extractor = NodeValueExtractor(
-        css=('#ctl00_ContentPlaceHolder3_gdvNotice3_ctl18_AspNetPager1 a:contains(下页)',), value_xpath='./@href')
+    # page_extractor = NodeValueExtractor(
+    #     css=('#ctl00_ContentPlaceHolder3_gdvNotice3_ctl18_AspNetPager1 a:contains(下页)',), value_xpath='./@href')
 
     def parse(self, response):
         links = self.link_extractor.links(response)
@@ -33,14 +33,14 @@ class NingboSpider(scrapy.Spider):
             lnk.meta.update(**response.meta['data'])
             yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
 
-        pager = self.page_extractor.extract_value(response) or ''
-        target, arg = SpiderTool.re_text("__doPostBack\('(.+)','(\d+)'\)", pager)
-        if target and arg:
-            form = {
-                '__EVENTTARGET': target,
-                '__EVENTARGUMENT': arg,
-            }
-            yield scrapy.FormRequest.from_response(response, formdata=form, meta=response.meta)
+        # pager = self.page_extractor.extract_value(response) or ''
+        # target, arg = SpiderTool.re_text("__doPostBack\('(.+)','(\d+)'\)", pager)
+        # if target and arg:
+        #     form = {
+        #         '__EVENTTARGET': target,
+        #         '__EVENTARGUMENT': arg,
+        #     }
+        #     yield scrapy.FormRequest.from_response(response, formdata=form, meta=response.meta)
 
     def parse_item(self, response):
         """ 解析详情页 """

@@ -20,7 +20,7 @@ class DatongSpider(scrapy.Spider):
 
     link_extractor = MetaLinkExtractor(css=('tr > td > a[href^="zfcg/zbgg.aspx"]',),
                                        attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})
-    page_extractor = MetaLinkExtractor(css=('#netpager > a:contains(下一页)',))
+    # page_extractor = MetaLinkExtractor(css=('#netpager > a:contains(下一页)',))
 
     def parse(self, response):
         links = self.link_extractor.links(response)
@@ -28,9 +28,9 @@ class DatongSpider(scrapy.Spider):
             lnk.meta.update(**response.meta['data'])
             yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
 
-        pages = self.page_extractor.links(response)
-        if pages:
-            yield scrapy.Request(pages[0].url, meta=response.meta)
+        # pages = self.page_extractor.links(response)
+        # if pages:
+        #     yield scrapy.Request(pages[0].url, meta=response.meta)
 
     def parse_item(self, response):
         """ 解析详情页 """

@@ -23,7 +23,7 @@ class ZhoushanSpider(scrapy.Spider):
 
     link_extractor = MetaLinkExtractor(css=('ul.weblist > li a',),
                                        attrs_xpath={'text': './/text()', 'day': '../../h2//text()'})
-    page_extractor = MetaLinkExtractor(css=('div.page a:contains(下一页)',))
+    # page_extractor = MetaLinkExtractor(css=('div.page a:contains(下一页)',))
 
     def parse(self, response):
         links = self.link_extractor.extract_links(response)
@@ -32,9 +32,9 @@ class ZhoushanSpider(scrapy.Spider):
             link.meta.update(**response.meta['data'])
             yield scrapy.Request(link.url, meta={'data': link.meta}, callback=self.parse_item)
 
-        pager = [x.url for x in self.page_extractor.extract_links(response)]
-        if pager:
-            yield scrapy.Request(pager[0], meta=response.meta)
+        # pager = [x.url for x in self.page_extractor.extract_links(response)]
+        # if pager:
+        #     yield scrapy.Request(pager[0], meta=response.meta)
 
     def parse_item(self, response):
         """ 解析详情页 """

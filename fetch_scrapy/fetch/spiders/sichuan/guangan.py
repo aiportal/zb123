@@ -48,7 +48,7 @@ class GuangAnSpider(scrapy.Spider):
 
     link_extractor = MetaLinkExtractor(css=('#MoreInfoList1_DataGrid1 tr > td > a',),
                                        attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})
-    page_extractor = NodeValueExtractor(css=('#MoreInfoList1_Pager a > img[src$="nextn.gif"]',), value_xpath='../@href')
+    # page_extractor = NodeValueExtractor(css=('#MoreInfoList1_Pager a > img[src$="nextn.gif"]',), value_xpath='../@href')
 
     def parse(self, response):
         links = self.link_extractor.links(response)

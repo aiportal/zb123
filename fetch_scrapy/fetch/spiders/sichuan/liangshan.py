@@ -21,7 +21,7 @@ class LiangShanSpider(scrapy.Spider):
 
     link_extractor = MetaLinkExtractor(css=('ul.artlist > li > a',),
                                        attrs_xpath={'text': './/text()', 'day': '../span//text()'})
-    page_extractor = MetaLinkExtractor(css=('ul.pagelist a:contains(下一页)',),)
+    # page_extractor = MetaLinkExtractor(css=('ul.pagelist a:contains(下一页)',),)
 
     def parse(self, response):
         links = self.link_extractor.links(response)
@@ -29,9 +29,9 @@ class LiangShanSpider(scrapy.Spider):
             lnk.meta.update(**response.meta['data'])
             yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
 
-        pages = self.page_extractor.links(response)
-        if pages:
-            yield scrapy.Request(pages[0].url, meta=response.meta)
+        # pages = self.page_extractor.links(response)
+        # if pages:
+        #     yield scrapy.Request(pages[0].url, meta=response.meta)
 
     def parse_item(self, response):
         """ 解析详情页 """

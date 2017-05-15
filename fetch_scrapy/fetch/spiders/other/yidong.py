@@ -35,7 +35,7 @@ class YidongSpider(scrapy.Spider):
     link_extractor = NodesExtractor(css=('table tr[onclick^=selectResult] > td > a',),
                                     attrs_xpath={'text': './/text()', 'value': '../../@onclick',
                                                  'area': '../../td[1]//text()', 'day': '../../td[last()]//text()'})
-    page_extractor = NodeValueExtractor(css=('#pageid2 a:contains(下一页)',), value_xpath='./@onclick')
+    # page_extractor = NodeValueExtractor(css=('#pageid2 a:contains(下一页)',), value_xpath='./@onclick')
 
     def parse(self, response):
         nodes = self.link_extractor.extract_nodes(response)
@@ -45,12 +45,12 @@ class YidongSpider(scrapy.Spider):
             node.update(**response.meta['data'])
             yield scrapy.Request(url, meta={'data': node}, callback=self.parse_item)
 
-        pager = self.page_extractor.extract_value(response) or ''
-        page = SpiderTool.re_nums('gotoPage\((\d+)\)', pager)
-        if page:
-            form = response.meta['form']
-            form.update(**{'page.currentPage': str(page)})
-            yield scrapy.FormRequest(response.url, formdata=form, meta=response.meta)
+        # pager = self.page_extractor.extract_value(response) or ''
+        # page = SpiderTool.re_nums('gotoPage\((\d+)\)', pager)
+        # if page:
+        #     form = response.meta['form']
+        #     form.update(**{'page.currentPage': str(page)})
+        #     yield scrapy.FormRequest(response.url, formdata=form, meta=response.meta)
 
     def parse_item(self, response):
         """ 解析详情页 """

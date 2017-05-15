@@ -24,7 +24,7 @@ class LeShanSpider(scrapy.Spider):
 
     link_extractor = MetaLinkExtractor(css=('div.list tr > td > a',),
                                        attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})
-    page_extractor = NodeValueExtractor(css=('div.pagemargin td:contains(下页)',), value_xpath='./@onclick')
+    # page_extractor = NodeValueExtractor(css=('div.pagemargin td:contains(下页)',), value_xpath='./@onclick')
 
     def parse(self, response):
         links = self.link_extractor.links(response)
@@ -32,11 +32,11 @@ class LeShanSpider(scrapy.Spider):
             lnk.meta.update(**response.meta['data'])
             yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
 
-        pager = self.page_extractor.extract_value(response) or ''
-        href = SpiderTool.re_text("ShowNewPage\('(.+)'\)", pager)
-        if href:
-            url = urljoin(response.url, href)
-            yield scrapy.Request(url, meta=response.meta)
+        # pager = self.page_extractor.extract_value(response) or ''
+        # href = SpiderTool.re_text("ShowNewPage\('(.+)'\)", pager)
+        # if href:
+        #     url = urljoin(response.url, href)
+        #     yield scrapy.Request(url, meta=response.meta)
 
     def parse_item(self, response):
         """ 解析详情页 """

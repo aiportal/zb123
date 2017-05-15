@@ -6,6 +6,10 @@ import re
 
 
 class HhhtSpider(scrapy.Spider):
+    """
+    @title: 呼和浩特市公共资源交易中心
+    @href: http://www.ggzyjy.com.cn/hsweb/
+    """
     name = 'neimenggu/hhht'
     alias = '内蒙古/呼和浩特'
     allowed_domains = ['ggzyjy.com.cn']
@@ -15,7 +19,7 @@ class HhhtSpider(scrapy.Spider):
         ('http://www.ggzyjy.com.cn/hsweb/004/004002/004002001/MoreInfo.aspx?CategoryNum=004002001', '招标公告/政府采购'),
         ('http://www.ggzyjy.com.cn/hsweb/004/004002/004002003/MoreInfo.aspx?CategoryNum=004002003', '中标公告/政府采购'),
         ('http://www.ggzyjy.com.cn/hsweb/004/004002/004002004/MoreInfo.aspx?CategoryNum=004002004', '更正公告/政府采购'),
-        ('http://www.ggzyjy.com.cn/hsweb/004/004002/004002007/MoreInfo.aspx?CategoryNum=004002007', '其他公告/废标公告/政府采购'),
+        # ('http://www.ggzyjy.com.cn/hsweb/004/004002/004002007/MoreInfo.aspx?CategoryNum=004002007', '其他公告/废标公告/政府采购'),
         # 建设工程
         ('http://www.ggzyjy.com.cn/hsweb/004/004001/004001001/MoreInfo.aspx?CategoryNum=004001001', '招标公告/建设工程'),
         ('http://www.ggzyjy.com.cn/hsweb/004/004001/004001002/MoreInfo.aspx?CategoryNum=004001002', '更正公告/建设工程'),
@@ -34,19 +38,15 @@ class HhhtSpider(scrapy.Spider):
         ('http://www.ggzyjy.com.cn/hsweb/004/004012/004012003/MoreInfo.aspx?CategoryNum=004012003', '中标公告/电力工程'),
     ]
 
-    custom_settings = {
-        'COOKIES_ENABLED': True
-    }
+    custom_settings = {'COOKIES_ENABLED': True, 'DOWNLOAD_DELAY': 3.88}
 
     def start_requests(self):
-        for url, subject in self.start_urls:
-            yield scrapy.Request(url, meta={'data': {'subject': subject}}, dont_filter=True)
+        for i, (url, subject) in enumerate(self.start_urls):
+            data = dict(subject=subject)
+            yield scrapy.Request(url, meta={'data': data, 'cookiejar': i}, dont_filter=True)
 
     link_extractor = MetaLinkExtractor(css=('#MoreInfoList1_DataGrid1 > tr > td > a',),
                                        attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})
-    page_extractor = NodeValueExtractor(css=('#MoreInfoList1_Pager img[src$="/nextn.gif"]',),
-                                        value_xpath='../@href')
-    page_regex = re.compile("__doPostBack\('(.+)','(\d+)'\)")
 
     def parse(self, response):
         links = self.link_extractor.extract_links(response)
@@ -54,15 +54,6 @@ class HhhtSpider(scrapy.Spider):
         for link in links:
             link.meta.update(response.meta['data'])
             yield scrapy.Request(link.url, meta={'data': link.meta}, callback=self.parse_item)
-
-        pager = self.page_extractor.extract_value(response)
-        if pager and self.page_regex.search(pager):
-            page_name, page_num = self.page_regex.findall(pager)[0]
-            form = {
-                '__EVENTTARGET': page_name,
-                '__EVENTARGUMENT': page_num,
-            }
-            yield scrapy.FormRequest.from_response(response, formdata=form, meta=response.meta)
 
     def parse_item(self, response):
         """ 解析详情页 """
