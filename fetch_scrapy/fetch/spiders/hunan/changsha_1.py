@@ -5,24 +5,24 @@ from fetch.items import GatherItem
 from urllib.parse import urljoin
 
 
-class ${NAME}Spider(scrapy.Spider):
+class changsha_1Spider(scrapy.Spider):
     """
-    @title: 
-    @href: 
+    @title: 长沙公共资源交易监管网
+    @href: http://csggzy.gov.cn/front.aspx/Index
     """
-    name = '${SOURCE}'
-    alias = '${ALIAS}'
-    allowed_domains = ['']
+    name = 'hunan/changsha/1'
+    alias = '湖南/长沙'
+    allowed_domains = ['csggzy.gov.cn']
     start_urls = [
-        ('', '招标公告/政府采购'),
-        ('', '中标公告/政府采购'),
-        ('', '招标公告/建设工程'),
-        ('', '中标公告/建设工程'),
-        ('', ''),
-        ('', ''),
+        ('https://csggzy.gov.cn/NoticeFile/Index?type=101&Sm=房建市政&Ptype=工程建设&Sm2=招标公告', '招标公告/工程建设'),
+        ('https://csggzy.gov.cn/NoticeFile/Index?type=101&Sm=房建市政&Ptype=工程建设&Sm2=中标候选人公示', '中标公告/工程建设'),
+        ('https://csggzy.gov.cn/NoticeFile/Index?type=102&Sm=政府采购&Ptype=政府采购&Sm2=招标公告', '招标公告/政府采购'),
+        ('https://csggzy.gov.cn/NoticeFile/Index?type=102&Sm=政府采购&Ptype=政府采购&Sm2=结果公告', '中标公告/政府采购'),
+        ('https://csggzy.gov.cn/NoticeFile/Index?type=104&Sm=医药采购&Ptype=医药采购&Sm2=招标公告', '招标公告/医药采购'),
+        ('https://csggzy.gov.cn/NoticeFile/Index?type=104&Sm=医药采购&Ptype=医药采购&Sm2=结果公告', '中标公告/医药采购'),
     ]
 
-    link_extractor = MetaLinkExtractor(css='tr > td > a',
+    link_extractor = MetaLinkExtractor(css='#formSearch + div tr > td > a[target=_blank]',
                                        attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})
 
     def start_requests(self):
@@ -40,7 +40,7 @@ class ${NAME}Spider(scrapy.Spider):
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
-        body = response.css('')
+        body = response.css('#cont')
 
         day = FieldExtractor.date(data.get('day'))
         title = data.get('title') or data.get('text')

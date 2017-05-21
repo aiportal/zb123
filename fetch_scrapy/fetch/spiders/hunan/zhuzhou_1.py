@@ -3,27 +3,24 @@ from fetch.extractors import MetaLinkExtractor, NodesExtractor, FieldExtractor
 from fetch.tools import SpiderTool
 from fetch.items import GatherItem
 from urllib.parse import urljoin
+from datetime import date
 
 
-class ${NAME}Spider(scrapy.Spider):
+class zhuzhou_1Spider(scrapy.Spider):
     """
-    @title: 
-    @href: 
+    @title: 株洲市公共资源交易中心
+    @href: http://www.zzztb.net/zzweb/Default.aspx
     """
-    name = '${SOURCE}'
-    alias = '${ALIAS}'
-    allowed_domains = ['']
+    name = 'hunan/zhuzhou/1'
+    alias = '湖南/株洲'
+    allowed_domains = ['zzztb.net']
     start_urls = [
-        ('', '招标公告/政府采购'),
-        ('', '中标公告/政府采购'),
-        ('', '招标公告/建设工程'),
-        ('', '中标公告/建设工程'),
-        ('', ''),
-        ('', ''),
+        ('http://www.zzztb.net/zzweb/ZtbInfo/zbxx_ZBGG_List.aspx', '招标公告'),
+        # ('http://www.zzztb.net/zzweb/ZtbInfo/zbxx_ZBGS_List.aspx', '中标公告'),
     ]
 
-    link_extractor = MetaLinkExtractor(css='tr > td > a',
-                                       attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})
+    link_extractor = MetaLinkExtractor(css='#tdcontent tr > td > a',
+                                       attrs_xpath={'text': './/text()'})
 
     def start_requests(self):
         for url, subject in self.start_urls:
@@ -40,11 +37,11 @@ class ${NAME}Spider(scrapy.Spider):
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
-        body = response.css('')
+        body = response.css('table[border="1"]')
 
-        day = FieldExtractor.date(data.get('day'))
+        day = FieldExtractor.date(data.get('day') or str(date.today()))
         title = data.get('title') or data.get('text')
-        contents = body.extract()
+        contents = [body.extract_first()]
         g = GatherItem.create(
             response,
             source=self.name,

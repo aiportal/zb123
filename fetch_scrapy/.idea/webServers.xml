@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="8e8a2b2e-d017-4057-9873-aaf39cddc7a0" name="zb123.bid" url="http://www.zb123.bid">
+        <fileTransfer host="www.zb123.bid" port="22" privateKey="A:\Programs\putty\keys\bayesian-remote-ssh.key" rootFolder="/prj/zb123" accessType="SFTP" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

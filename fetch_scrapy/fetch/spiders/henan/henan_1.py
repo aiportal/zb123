@@ -5,25 +5,23 @@ from fetch.items import GatherItem
 from urllib.parse import urljoin
 
 
-class ${NAME}Spider(scrapy.Spider):
+class henan_1Spider(scrapy.Spider):
     """
-    @title: 
-    @href: 
+    @title: 河南省政府采购网
+    @href: http://www.hngp.gov.cn/
     """
-    name = '${SOURCE}'
-    alias = '${ALIAS}'
-    allowed_domains = ['']
+    name = 'henan/1'
+    alias = '河南'
+    allowed_domains = ['hngp.gov.cn']
     start_urls = [
-        ('', '招标公告/政府采购'),
-        ('', '中标公告/政府采购'),
-        ('', '招标公告/建设工程'),
-        ('', '中标公告/建设工程'),
-        ('', ''),
-        ('', ''),
+        ('http://www.hngp.gov.cn/henan/ggcx?appCode=H60&channelCode=0101&bz=1&pageSize=16', '招标公告/政府采购/省级'),
+        ('http://www.hngp.gov.cn/henan/ggcx?appCode=H60&channelCode=0101&bz=2&pageSize=16', '招标公告/政府采购/市县'),
+        ('http://www.hngp.gov.cn/henan/ggcx?appCode=H60&channelCode=0102&bz=1&pageSize=16', '中标公告/政府采购/省级'),
+        ('http://www.hngp.gov.cn/henan/ggcx?appCode=H60&channelCode=0102&bz=2&pageSize=16', '中标公告/政府采购/市县'),
     ]
 
-    link_extractor = MetaLinkExtractor(css='tr > td > a',
-                                       attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})
+    link_extractor = MetaLinkExtractor(css='div.List2 ul > li > a',
+                                       attrs_xpath={'text': './/text()', 'day': '../span//text()'})
 
     def start_requests(self):
         for url, subject in self.start_urls:
@@ -40,14 +38,14 @@ class ${NAME}Spider(scrapy.Spider):
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
-        body = response.css('')
+        body = response.css('#content')
 
-        day = FieldExtractor.date(data.get('day'))
+        day = FieldExtractor.date(data.get('day'), response.css('span.Blue:contains("2017")'))
         title = data.get('title') or data.get('text')
         contents = body.extract()
         g = GatherItem.create(
             response,
-            source=self.name,
+            source=self.name.split('/')[0],
             day=day,
             title=title,
             contents=contents

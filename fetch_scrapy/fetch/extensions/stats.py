@@ -78,7 +78,7 @@ class CrawlerStatisticExtension(object):
         items = cls.stats.values()
 
         start = min([x.start for x in items])
-        exceptions = EventLog.select(ExceptionLog.source, peewee.fn.COUNT(ExceptionLog.ID).alias('count'))\
+        exceptions = ExceptionLog.select(ExceptionLog.source, peewee.fn.COUNT(ExceptionLog.ID).alias('count'))\
             .where(ExceptionLog.time >= start)\
             .where(ExceptionLog.level != 'main')\
             .group_by(ExceptionLog.source)

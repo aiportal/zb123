@@ -5,18 +5,25 @@ from fetch.items import GatherItem
 from urllib.parse import urljoin
 
 
-class henan_1Spider(scrapy.Spider):
+class changde_1Spider(scrapy.Spider):
     """
-    @title: 河南省政府采购网
-    @href: http://www.hngp.gov.cn/
+    @title: 常德市公共资源交易网
+    @href: http://www.cdggzy.net/cdweb/
     """
-    name = 'henan/1'
-    alias = '河南'
-    allowed_domains = ['hngp.gov.cn']
+    name = 'hunan/changde/1'
+    alias = '湖南/常德'
+    allowed_domains = ['cdggzy.net']
     start_urls = [
+        ('http://www.cdggzy.net/cdweb/jyxx/004002/004002001/', '招标公告/政府采购'),
+        ('http://www.cdggzy.net/cdweb/jyxx/004002/004002002/', '中标公告/政府采购'),
+        ('http://www.cdggzy.net/cdweb/jyxx/004002/004002003/', '更正公告/政府采购'),
+        ('http://www.cdggzy.net/cdweb/jyxx/004001/004001001/', '招标公告/建设工程'),
+        ('http://www.cdggzy.net/cdweb/jyxx/004001/004001002/', '中标公告/建设工程'),
+        ('http://www.cdggzy.net/cdweb/jyxx/004001/004001003/', '更正公告/建设工程'),
     ]
+    custom_settings = {'DOWNLOAD_DELAY': 3.88}
 
-    link_extractor = MetaLinkExtractor(css='tr > td > a',
+    link_extractor = MetaLinkExtractor(css='tr[height="22"] > td > a[target=_blank]',
                                        attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})
 
     def start_requests(self):
@@ -34,14 +41,14 @@ class henan_1Spider(scrapy.Spider):
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
-        body = response.css('')
+        body = response.css('#InfoDetail_spnContent')
 
-        day = FieldExtractor.date(data.get('day'))
+        day = FieldExtractor.date(data.get('day') or response.css('#InfoDetail_lblDate'))
         title = data.get('title') or data.get('text')
         contents = body.extract()
         g = GatherItem.create(
             response,
-            source=self.name.split('/')[0],
+            source=self.name,
             day=day,
             title=title,
             contents=contents

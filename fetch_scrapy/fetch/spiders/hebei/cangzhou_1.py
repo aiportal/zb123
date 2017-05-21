@@ -5,25 +5,23 @@ from fetch.items import GatherItem
 from urllib.parse import urljoin
 
 
-class ${NAME}Spider(scrapy.Spider):
+class cangzhou_1Spider(scrapy.Spider):
     """
-    @title: 
-    @href: 
+    @title: 沧州市公共资源交易大厅
+    @href: http://xzsp.cangzhou.gov.cn/ggzyjy/index.shtml
     """
-    name = '${SOURCE}'
-    alias = '${ALIAS}'
-    allowed_domains = ['']
+    name = 'hebei/cangzhou/1'
+    alias = '河北/沧州'
+    allowed_domains = ['cangzhou.gov.cn']
     start_urls = [
-        ('', '招标公告/政府采购'),
-        ('', '中标公告/政府采购'),
-        ('', '招标公告/建设工程'),
-        ('', '中标公告/建设工程'),
-        ('', ''),
-        ('', ''),
+        ('http://xzsp.cangzhou.gov.cn/HBSC/Services/zwfwzx/a_list.jsp?key=018002001', '招标公告/政府采购'),
+        ('http://xzsp.cangzhou.gov.cn/HBSC/Services/zwfwzx/a_list.jsp?key=018002005', '中标公告/政府采购'),
+        ('http://xzsp.cangzhou.gov.cn/HBSC/Services/zwfwzx/a_list.jsp?key=018001001', '招标公告/建设工程'),
+        ('http://xzsp.cangzhou.gov.cn/HBSC/Services/zwfwzx/a_list.jsp?key=018001004', '中标公告/建设工程'),
     ]
 
-    link_extractor = MetaLinkExtractor(css='tr > td > a',
-                                       attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})
+    link_extractor = MetaLinkExtractor(css='ul.ul_list > li > a',
+                                       attrs_xpath={'text': './/text()', 'day': '../span//text()'})
 
     def start_requests(self):
         for url, subject in self.start_urls:
@@ -40,10 +38,10 @@ class ${NAME}Spider(scrapy.Spider):
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
-        body = response.css('')
+        body = response.css('#content')
 
-        day = FieldExtractor.date(data.get('day'))
-        title = data.get('title') or data.get('text')
+        day = FieldExtractor.date(data.get('day'), response.css('div.time'))
+        title = data.get('title') or data.get('text') or FieldExtractor.text(response.css('div.title'))
         contents = body.extract()
         g = GatherItem.create(
             response,
