@@ -3,6 +3,7 @@ from fetch.extractors import MetaLinkExtractor, NodesExtractor, FieldExtractor
 from fetch.tools import SpiderTool
 from fetch.items import GatherItem
 from urllib.parse import urljoin
+import re
 
 
 class qinghai_1Spider(scrapy.Spider):
@@ -23,6 +24,7 @@ class qinghai_1Spider(scrapy.Spider):
             ('F', '废标公告/政府采购'),
         ]
     ]
+    custom_settings = {'DOWNLOAD_DELAY': 3.81}
 
     link_extractor = MetaLinkExtractor(css='div.m_list_3 ul > li a[target=_blank]',
                                        attrs_xpath={'text': './/text()',
@@ -46,9 +48,17 @@ class qinghai_1Spider(scrapy.Spider):
         """ 解析详情页 """
         data = response.meta['data']
         body = response.css('body')
+        title_wrap = '^.+\s+\w+\s+[(](.+)[)]?'
 
         day = FieldExtractor.date(data.get('day'))
         title = data.get('title') or data.get('text')
+        if re.match(title_wrap, title):
+            title = SpiderTool.re_text(title_wrap, title).strip('()')
+        if title.endswith('......'):
+            title1 = FieldExtractor.text(response.css('span[style*="font-size: 22pt;"]')) or ''
+            if len(title)-6 < len(title1) < 200:
+                title = title1 or title
+
         contents = body.extract()
         g = GatherItem.create(
             response,

@@ -17,23 +17,23 @@ class ChengDuSpider(scrapy.Spider):
     start_urls = [
         ('http://www.cdggzy.com:8081/newsite/Notice/ListHandler.ashx?form=CgList&action=GetGG&{}'.format(k), v)
         for k, v in [
-            ('classid=2&typeid=1', '招标公告/政府采购/成都'),
-            ('classid=4&typeid=1', '中标公告/政府采购/成都'),
-            ('classid=5&typeid=1', '更正公告/政府采购/成都'),
+            ('classid=2&typeid=1&QX=', '招标公告/政府采购/市级'),
+            ('classid=4&typeid=1&QX=', '中标公告/政府采购/市级'),
+            ('classid=5&typeid=1&QX=', '更正公告/政府采购/市级'),
         ]
     ] + [
         ('http://www.cdggzy.com:8081/newsite/QXNotice/ListHandler.ashx?form=CgList&action=GetGG&{}'.format(k), v)
         for k, v in [
-            ('classid=2&typeid=2', '招标公告/政府采购/成都'),
-            ('classid=3&typeid=2', '中标公告/政府采购/成都'),
-            ('classid=4&typeid=2', '更正公告/政府采购/成都'),
+            ('classid=2&typeid=2', '招标公告/政府采购/区县'),
+            ('classid=3&typeid=2', '中标公告/政府采购/区县'),
+            ('classid=4&typeid=2', '更正公告/政府采购/区县'),
         ]
     ]
     start_params = {
         'pageindex': '1',
         'pagesize': '10',
     }
-    custom_settings = {'DOWNLOAD_DELAY': 3.88}
+    custom_settings = {'DOWNLOAD_DELAY': 5.88}
 
     def start_requests(self):
         for url, subject in self.start_urls:

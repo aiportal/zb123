@@ -57,11 +57,12 @@ class JiangsuZhenjiang1Spider(scrapy.Spider):
         if response.body[:4] == b'%PDF':
             contents = ['<a href="{}" target="_blank">招标公告</a>'.format(response.url)]
         else:
-            body = response.css('div.article-content, #attach') or response.css('div.article-block')
+            body = response.css('div.article-content, #attach') or response.css('div.article-block') \
+                   or response.css('table.table2') or response.css('#body')
             contents = body.extract()
 
         day = FieldExtractor.date(data.get('infodate'))
-        title = data.get('title') or data.get('text')
+        title = data.get('title') or data.get('text') or FieldExtractor.text(response.css('p[style*="font-size: 14px;"]'))
         g = GatherItem.create(
             response,
             source=self.name.split('/')[0],

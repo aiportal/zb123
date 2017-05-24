@@ -5,6 +5,9 @@
 # PDF，临时访问权限
 
 
+# 甘南州
+# http://www.gnggzyjy.com/
+
 # <li><a style="text-decoration:none;" href="http://www.lzggzyjy.cn/" target="_blank">兰州市公共资源交易中心</a></li>
 # <li><a style="text-decoration:none;" href="http://120.55.150.93" target="_blank">嘉峪关市公共资源交易中心</a></li>
 # <li><a style="text-decoration:none;" href="http://www.jcggzy.com" target="_blank">金昌市公共资源交易中心</a></li>

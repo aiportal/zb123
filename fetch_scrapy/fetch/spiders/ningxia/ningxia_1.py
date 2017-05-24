@@ -11,6 +11,7 @@ class ningxia_1Spider(scrapy.Spider):
     """
     @title: 宁夏回族自治区公共资源交易网
     @href: http://www.nxggzyjy.org/ningxiaweb/
+    @href: http://www.nxzfcg.gov.cn/ningxiaweb/
     """
     name = 'ningxia/1'
     alias = '宁夏'
