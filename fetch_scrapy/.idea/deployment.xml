@@ -22,7 +22,7 @@
           </mappings>
         </serverdata>
       </paths>
-      <paths name="zb123.bid">
+      <paths name="www.zb123.bid">
         <serverdata>
           <mappings>
             <mapping deploy="/v3/fetch" local="$PROJECT_DIR$" web="/" />

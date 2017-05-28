@@ -45,6 +45,7 @@ ITEM_PIPELINES = {
 }
 
 DOWNLOADER_MIDDLEWARES = {
+    'fetch.middlewares.DynamicProxyMiddleware': 200,
     'fetch.middlewares.ExceptionMiddleware': 300,
 }
 

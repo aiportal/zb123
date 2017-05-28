@@ -38,16 +38,12 @@ class HhhtSpider(scrapy.Spider):
         ('http://www.ggzyjy.com.cn/hsweb/004/004012/004012003/MoreInfo.aspx?CategoryNum=004012003', '中标公告/电力工程'),
     ]
 
-    custom_settings = {'COOKIES_ENABLED': True, 'DOWNLOAD_DELAY': 3.88,
-                       'DOWNLOADER_MIDDLEWARES': {
-                            'fetch.middlewares.DynamicProxyMiddleware': 200,
-                            'fetch.middlewares.ExceptionMiddleware': 300,
-                       }}
+    custom_settings = {'COOKIES_ENABLED': True, 'DOWNLOAD_DELAY': 8.88}
 
     def start_requests(self):
         for i, (url, subject) in enumerate(self.start_urls):
             data = dict(subject=subject)
-            yield scrapy.Request(url, meta={'data': data, 'cookiejar': i}, dont_filter=True)
+            yield scrapy.Request(url, meta={'data': data, 'cookiejar': i, 'proxy': True}, dont_filter=True)
 
     link_extractor = MetaLinkExtractor(css=('#MoreInfoList1_DataGrid1 > tr > td > a',),
                                        attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})

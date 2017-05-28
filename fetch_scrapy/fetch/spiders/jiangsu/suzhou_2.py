@@ -11,7 +11,7 @@ class SuZhouSpider(scrapy.Spider):
     @title: 苏州公共资源交易中心
     @href: http://www.szcetc.com.cn/
     """
-    name = 'jiangsu/suzhou_2'
+    name = 'jiangsu/suzhou/2'
     alias = '江苏/苏州'
     allowed_domains = ['szcetc.com.cn', '218.4.168.194']
     start_urls = [

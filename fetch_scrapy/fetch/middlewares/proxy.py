@@ -33,8 +33,9 @@ class DynamicProxyMiddleware(object):
 
     def process_request(self, request, spider):
         """ 设置代理 """
-        proxy = random.choice(self.proxy_list)
-        request.meta['proxy'] = 'http://{0[0]}:{0[1]}'.format(proxy)
+        if request.meta.get('proxy'):
+            proxy = random.choice(self.proxy_list)
+            request.meta['proxy'] = 'http://{0[0]}:{0[1]}'.format(proxy)
         return None
 
     def process_exception(self, request, exception, spider):
@@ -43,6 +44,7 @@ class DynamicProxyMiddleware(object):
         if count > 2:
             ExceptionLog.log_exception(spider.name, 'PROXY', request.url, info={'ex': str(exception)})
             return None
+        request.meta['proxy_retry'] = count + 1
         proxy = random.choice(self.proxy_list)
         request.meta['proxy'] = 'http://{0[0]}:{0[1]}'.format(proxy)
         return request
