@@ -17,7 +17,7 @@ class xuancheng_1Spider(scrapy.Spider):
         ('http://www.xcsztb.com/XCTPFront/jsgc/', '建设工程'),
         ('http://www.xcsztb.com/XCTPFront/zfcg/', '政府采购'),
     ]
-    custom_settings = {'DOWNLOAD_DELAY': 2.88}
+    custom_settings = {'DOWNLOAD_DELAY': 3.88}
 
     link_extractor = MetaLinkExtractor(css='div.s-block ul > li > a',
                                        attrs_xpath={'text': './/text()', 'day': '../span//text()'})

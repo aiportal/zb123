@@ -40,6 +40,7 @@ class huaian_1Spider(scrapy.Spider):
         ('http://www.haztb.gov.cn:8000/EpointWeb/jyxx/003009/003009008/003009008001', '招标公告/区县', '金湖'),
         # ('http://www.haztb.gov.cn:8000/EpointWeb/jyxx/003009/003009008/003009008002', '中标公告/区县', '金湖'),
     ]
+    custom_settings = {'DOWNLOAD_DELAY': 5.38}
 
     def start_requests(self):
         for url, subject, area in self.start_urls:

@@ -22,6 +22,7 @@ class hebei_1Spider(scrapy.Spider):
          'http://www.ccgp-hebei.gov.cn/zfcg/correctionAnncDetail_{}.html'),
         # ('http://www.ccgp-hebei.gov.cn/zfcg/web/getCancelBidAnncList_1.html', '废标公告/政府采购'),
     ]
+    custom_settings = {'DOWNLOAD_DELAY': 5.08}
 
     link_extractor = NodesExtractor(css='tr[onclick^=watchContent]',
                                     attrs_xpath={'text': './/a//text()',

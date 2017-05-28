@@ -19,6 +19,7 @@ class pingdingshan_1Spider(scrapy.Spider):
         ('http://www.pdsggzy.com/gzbgg/index.jhtml', '招标公告/建设工程'),
         ('http://www.pdsggzy.com/gzbgs/index.jhtml', '中标公告/建设工程'),
     ]
+    custom_settings = {'DOWNLOAD_DELAY': 5.28}
 
     link_extractor = MetaLinkExtractor(css='div.infolist-main ul > li > a',
                                        attrs_xpath={'text': './span//text()', 'day': './em//text()'})

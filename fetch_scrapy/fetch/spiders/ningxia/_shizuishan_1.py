@@ -15,7 +15,7 @@ class shizuishan_1Spider(scrapy.Spider):
     alias = '宁夏/石嘴山'
     allowed_domains = ['szsggzy.cn']
     start_urls = [
-        ('http://www.szsggzy.cn/morelink.aspx?type=12&index=0&isbg=0', '招标公告/政府采购'),
+        # ('http://www.szsggzy.cn/morelink.aspx?type=12&index=0&isbg=0', '招标公告/政府采购'),
         # ('http://www.szsggzy.cn/morelink.aspx?type=17&index=0', '中标公告/政府采购'),
         # ('http://www.szsggzy.cn/morelink.aspx?type=12&index=0&isbg=1', '更正公告/政府采购'),
         # ('http://www.szsggzy.cn/morelink.aspx?type=12&index=1&isbg=0', '招标公告/建设工程'),

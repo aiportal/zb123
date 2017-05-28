@@ -71,5 +71,5 @@ class Jiangxi1Spider(scrapy.Spider):
         )
         g.set(area=self.alias)
         g.set(subject=data.get('subject'))
-        g.set(budget=FieldExtractor.money(body))
+        g.set(budget=FieldExtractor.money(contents))
         return [g]

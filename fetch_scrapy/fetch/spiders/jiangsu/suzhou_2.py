@@ -25,7 +25,7 @@ class SuZhouSpider(scrapy.Spider):
         ('http://www.szcetc.com.cn/Front/jyzx/002004/002004001/', '招标公告/政府采购'),
         ('http://www.szcetc.com.cn/Front/jyzx/002004/002004002/', '中标公告/政府采购'),
     ]
-    custom_settings = {'DOWNLOAD_DELAY': 3.68, 'DEPTH_LIMIT': 3}
+    custom_settings = {'DOWNLOAD_DELAY': 5.28, 'DEPTH_LIMIT': 3}
 
     def start_requests(self):
         for url, subject in self.start_urls:

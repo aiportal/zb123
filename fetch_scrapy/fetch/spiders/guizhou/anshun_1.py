@@ -21,6 +21,7 @@ class anshun_1Spider(scrapy.Spider):
         ('http://ggzy.anshun.gov.cn/list/4A.html?type=4A2', '中标公告/建设工程'),
         ('http://ggzy.anshun.gov.cn/list/4A.html?type=4A3', '废标公告/建设工程'),
     ]
+    custom_settings = {'DOWNLOAD_DELAY': 5.02}
 
     link_extractor = MetaLinkExtractor(css='div.text_box ul > li a',
                                        attrs_xpath={'text': './/text()', 'day': '../../p.time//text()'})

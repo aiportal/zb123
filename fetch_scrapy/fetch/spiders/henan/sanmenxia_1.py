@@ -19,6 +19,7 @@ class sanmenxia_1Spider(scrapy.Spider):
         ('http://www.smxgzjy.org/zbgg/index.jhtml', '招标公告/建设工程'),
         ('http://www.smxgzjy.org/zbgs/index.jhtml', '中标公告/建设工程'),
     ]
+    custom_settings = {'DOWNLOAD_DELAY': 5.08}
 
     link_extractor = MetaLinkExtractor(css='div.List1 ul > li > a',
                                        attrs_xpath={'text': './/text()', 'day': '../span[@class="Right"]//text()'})

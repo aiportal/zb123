@@ -31,7 +31,7 @@ class longyan_1Spider(scrapy.Spider):
         ('http://www.lyggzy.com.cn/lyztb/zfcg/082001/082001002/', '招标公告/其他'),
         ('http://www.lyggzy.com.cn/lyztb/zfcg/082001/082001003/', '中标公告/其他')
     ]
-    custom_settings = {'DOWNLOAD_DELAY': 3.2}
+    custom_settings = {'DOWNLOAD_DELAY': 5.02}
 
     link_extractor = MetaLinkExtractor(css='ul.list > li > a',
                                        attrs_xpath={'text': './/text()', 'day': '../span[last()]//text()'})

@@ -20,7 +20,7 @@ class sanming_1Spider(scrapy.Spider):
         ('http://www.smggzy.com/smwz/zfcg/011001/', '招标公告/政府采购'),
         ('http://www.smggzy.com/smwz/zfcg/011003/', '中标公告/政府采购'),
     ]
-    custom_settings = {'DOWNLOAD_DELAY': 2.3}
+    custom_settings = {'DOWNLOAD_DELAY': 3.83}
 
     link_extractor = MetaLinkExtractor(css='.infocont tr > td > a[target=_blank]',
                                        attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})

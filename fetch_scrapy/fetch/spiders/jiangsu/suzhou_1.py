@@ -25,7 +25,7 @@ class SuzhouSpider(scrapy.Spider):
         'page': '1',
         'rows': '30',
     }
-    custom_settings = {'DOWNLOAD_DELAY': 2.0}
+    custom_settings = {'DOWNLOAD_DELAY': 3.81}
     custom_headers = {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
 
     def start_requests(self):

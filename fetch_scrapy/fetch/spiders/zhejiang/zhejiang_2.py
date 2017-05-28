@@ -22,6 +22,10 @@ class Zhejiang2Spider(scrapy.Spider):
         ('http://new.zmctc.com/zjgcjy/jyxx/004010/004010002/', '中标公告/货物'),
         ('http://new.zmctc.com/zjgcjy/jyxx/004010/004010003/', '中标公告/服务'),
     ]
+    custom_settings = {'DOWNLOADER_MIDDLEWARES': {
+                            'fetch.middlewares.DynamicProxyMiddleware': 200,
+                            'fetch.middlewares.ExceptionMiddleware': 300,
+                       }}
 
     link_extractor = MetaLinkExtractor(css='tr > td > a.WebList_sub',
                                        attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})

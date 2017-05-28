@@ -23,6 +23,7 @@ class alashanmeng_1Spider(scrapy.Spider):
         ('http://www.alsggzyjy.cn/website/zyjyzx/html/artList.html?catCode=zbgg', '招标公告/建设工程'),
         ('http://www.alsggzyjy.cn/website/zyjyzx/html/artList.html?catCode=zbgs', '中标公告/建设工程'),
     ]
+    custom_settings = {'DOWNLOAD_DELAY': 5.08}
 
     link_extractor = MetaLinkExtractor(css='#div_list > ul > li > a',
                                        attrs_xpath={'text': './/text()', 'day': '../../li[last()]//text()'})

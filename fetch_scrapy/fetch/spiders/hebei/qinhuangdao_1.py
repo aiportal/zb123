@@ -19,6 +19,7 @@ class qinhuangdao_1Spider(scrapy.Spider):
         ('http://www.qhdggzy.gov.cn/ggzyjyw/bulletin_bulletinList.do', '招标公告/建设工程'),
         ('http://www.qhdggzy.gov.cn/ggzyjyw/bidWinnerList_bidWinnerList.do', '中标公告/建设工程'),
     ]
+    custom_settings = {'DOWNLOAD_DELAY': 5.18}
 
     link_extractor = MetaLinkExtractor(css='div.content2_r_3 ul > li a',
                                        attrs_xpath={'text': './/text()', 'day': '../../span[last()]//text()'})
