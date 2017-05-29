@@ -192,11 +192,11 @@ class DayTitlesApi(MethodView):
         for k, v in feature.feature.items():
             col_feature_match += fn.IF(GatherInfo.title.contains(k), int(v), 0)
 
-        # 全国信息的查询，只提供预公告和招标公告
-        if AnnualFee.is_vip(uid):
-            default_filter = GatherInfo.subject.startswith('预公告') | GatherInfo.subject.startswith('招标公告')
-        else:
-            default_filter = GatherInfo.subject.startswith('招标公告')
+        # 全国信息的查询，只提供预公告、招标公告
+        # if AnnualFee.is_vip(uid):
+        default_filter = GatherInfo.subject.startswith('预公告') | GatherInfo.subject.startswith('招标公告')
+        # else:
+        #     default_filter = GatherInfo.subject.startswith('招标公告')
 
         # 查询
         query = GatherInfo.select().where(GatherInfo.day == day).where(default_filter)
