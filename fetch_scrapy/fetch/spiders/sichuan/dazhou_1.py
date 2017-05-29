@@ -18,7 +18,7 @@ class dazhou_1Spider(scrapy.Spider):
         ('http://www.dzggzy.cn/dzsggzy/jyxx/025002/025002001/', '招标公告/政府采购'),
         ('http://www.dzggzy.cn/dzsggzy/jyxx/025002/025002005/', '中标公告/政府采购'),
         ('http://www.dzggzy.cn/dzsggzy/jyxx/025002/025002003/', '更正公告/政府采购'),
-        ('http://www.dzggzy.cn/dzsggzy/jyxx/025002/025002006/', '其他公告/废标公告'),
+        ('http://www.dzggzy.cn/dzsggzy/jyxx/025002/025002006/', '废标公告'),
     ]
 
     link_extractor = MetaLinkExtractor(css='div.morecontent tr > td > a',

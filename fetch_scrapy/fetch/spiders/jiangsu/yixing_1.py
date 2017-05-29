@@ -17,7 +17,7 @@ class yixing_1Spider(scrapy.Spider):
         ('http://www.yxztb.net/yxweb/zypd/012001/012001007/', '预公告/工程建设'),
         ('http://www.yxztb.net/yxweb/zypd/012001/012001001/', '招标公告/工程建设'),
         ('http://www.yxztb.net/yxweb/zypd/012001/012001006/', '中标公告/工程建设'),
-        ('http://www.yxztb.net/yxweb/zypd/012001/012001008/', '其他公告/废标公告'),
+        ('http://www.yxztb.net/yxweb/zypd/012001/012001008/', '废标公告'),
         ('http://www.yxztb.net/yxweb/zypd/012002/012002001/', '招标公告/政府采购'),
         ('http://www.yxztb.net/yxweb/zypd/012002/012002004/', '中标公告/政府采购'),
         ('http://www.yxztb.net/yxweb/zypd/012002/012002002/', '更正公告/政府采购'),

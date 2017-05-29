@@ -26,7 +26,7 @@
         <serverdata>
           <mappings>
             <mapping deploy="/v3/fetch" local="$PROJECT_DIR$" web="/" />
-            <mapping deploy="/3/web" local="$PROJECT_DIR$/../web_flask" web="/" />
+            <mapping deploy="/v3/web" local="$PROJECT_DIR$/../web_flask" web="/" />
           </mappings>
         </serverdata>
       </paths>

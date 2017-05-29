@@ -18,7 +18,7 @@ class Beijing1Spider(scrapy.Spider):
         ('http://www.bgpc.gov.cn/news/news/nt_id/29', '招标公告'),
         ('http://www.bgpc.gov.cn/news/news/nt_id/32', '中标公告'),
         ('http://www.bgpc.gov.cn/news/news/nt_id/30', '更正公告'),
-        ('http://www.bgpc.gov.cn/news/news/nt_id/33', '其他公告/废标公告'),
+        ('http://www.bgpc.gov.cn/news/news/nt_id/33', '废标公告'),
     ]
 
     def start_requests(self):

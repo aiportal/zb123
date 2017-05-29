@@ -22,7 +22,7 @@ class yancheng_1Spider(scrapy.Spider):
         (start_base + '?categoryNum=011&type=003', '中标公告/政府采购'),
         (start_base + '?categoryNum=010&type=001', '招标公告/货物服务'),
         (start_base + '?categoryNum=010&type=003', '中标公告/货物服务'),
-        (start_base + '?categoryNum=010&type=005', '其他公告/废标公告'),
+        (start_base + '?categoryNum=010&type=005', '废标公告'),
     ]
 
     def start_requests(self):

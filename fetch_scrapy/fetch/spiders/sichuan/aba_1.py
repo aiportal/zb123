@@ -27,7 +27,7 @@ class SichuanAba1Spider(scrapy.Spider):
             ({'Type': 1, 'SubType': 290}, '中标公告/建设工程'),
             ({'Type': 2, 'SubType': 320}, '招标公告/政府采购'),
             ({'Type': 2, 'SubType': 270}, '中标公告/政府采购'),
-            ({'Type': 2, 'SubType': 360}, '其他公告/废标公告'),
+            ({'Type': 2, 'SubType': 360}, '废标公告'),
         ]
     ]
 

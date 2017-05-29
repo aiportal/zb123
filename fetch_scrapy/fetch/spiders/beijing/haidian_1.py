@@ -19,7 +19,7 @@ class haidian_1Spider(scrapy.Spider):
         ('http://ggzyjy.bjhd.gov.cn//zfcgWinner/index.htm', '中标公告/政府采购'),
         ('http://ggzyjy.bjhd.gov.cn//zfcgBidbefore/index.htm', '预公告/政府采购'),
         ('http://ggzyjy.bjhd.gov.cn//zfcgInfoModify/index.htm', '更正公告/政府采购'),
-        ('http://ggzyjy.bjhd.gov.cn//zfcgAbend/index.htm', '其他公告/废标公告'),
+        ('http://ggzyjy.bjhd.gov.cn//zfcgAbend/index.htm', '废标公告'),
     ]
 
     link_extractor = MetaLinkExtractor(css='div.cont-main ul > li a',

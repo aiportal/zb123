@@ -2,10 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b87fa37a-c81e-43a7-ab8e-04e5b2b6b852" name="Default" comment="fetch：完成新版本抓取统计功能。">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/database/link/__init__.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/database/link/db.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/database/link/links.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/fetch/spiders/links.py" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/../telephone/.idea/vcs.xml" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/../admin_aio/apis/__init__.py" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/../admin_aio/apis/core.py" afterPath="" />
@@ -53,13 +49,19 @@
       <change type="DELETED" beforePath="$PROJECT_DIR$/../telephone/telephone/spiders/__init__.py" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/../telephone/telephone/spiders/mingluji.py" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/deployment.xml" afterPath="$PROJECT_DIR$/.idea/deployment.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/webServers.xml" afterPath="$PROJECT_DIR$/.idea/webServers.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/middlewares/proxy.py" afterPath="$PROJECT_DIR$/fetch/middlewares/proxy.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/settings.py" afterPath="$PROJECT_DIR$/fetch/settings.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/spiders/jiangsu/suzhou_2.py" afterPath="$PROJECT_DIR$/fetch/spiders/jiangsu/suzhou_2.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/spiders/anhui/anhui_1.py" afterPath="$PROJECT_DIR$/fetch/spiders/anhui/anhui_1.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/spiders/beijing/beijing_1.py" afterPath="$PROJECT_DIR$/fetch/spiders/beijing/beijing_1.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/spiders/beijing/haidian_1.py" afterPath="$PROJECT_DIR$/fetch/spiders/beijing/haidian_1.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/spiders/guangxi/beihai.py" afterPath="$PROJECT_DIR$/fetch/spiders/guangxi/beihai.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/spiders/guizhou/guizhou_1.py" afterPath="$PROJECT_DIR$/fetch/spiders/guizhou/guizhou_1.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/spiders/jiangsu/changzhou_1.py" afterPath="$PROJECT_DIR$/fetch/spiders/jiangsu/changzhou_1.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/spiders/jiangsu/huaian_1.py" afterPath="$PROJECT_DIR$/fetch/spiders/jiangsu/huaian_1.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/spiders/jiangsu/yancheng_1.py" afterPath="$PROJECT_DIR$/fetch/spiders/jiangsu/yancheng_1.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/spiders/jiangsu/yixing_1.py" afterPath="$PROJECT_DIR$/fetch/spiders/jiangsu/yixing_1.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/spiders/neimenggu/hhht.py" afterPath="$PROJECT_DIR$/fetch/spiders/neimenggu/hhht.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/spiders/zhejiang/zhejiang_2.py" afterPath="$PROJECT_DIR$/fetch/spiders/zhejiang/zhejiang_2.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/spiders/sichuan/aba_1.py" afterPath="$PROJECT_DIR$/fetch/spiders/sichuan/aba_1.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/spiders/sichuan/dazhou_1.py" afterPath="$PROJECT_DIR$/fetch/spiders/sichuan/dazhou_1.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../tel_aiohttp/database/__init__.py" afterPath="$PROJECT_DIR$/../tel_aiohttp/database/__init__.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../tel_aiohttp/database/telephone.py" afterPath="$PROJECT_DIR$/../tel_aiohttp/database/telephone.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../tel_aiohttp/main.py" afterPath="$PROJECT_DIR$/../tel_aiohttp/main.py" />
@@ -68,9 +70,7 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../telephone/.idea/modules.xml" afterPath="$PROJECT_DIR$/../telephone/.idea/modules.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../telephone/.idea/telephone.iml" afterPath="$PROJECT_DIR$/../telephone/.idea/telephone.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../telephone/.idea/workspace.xml" afterPath="$PROJECT_DIR$/../telephone/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../web_flask/api_v3_1/titles.py" afterPath="$PROJECT_DIR$/../web_flask/api_v3_1/titles.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../web_flask/install.sh" afterPath="$PROJECT_DIR$/../web_flask/install.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../web_flask/static/main.html" afterPath="$PROJECT_DIR$/../web_flask/static/main.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../web_flask/database/zb123_data.py" afterPath="$PROJECT_DIR$/../web_flask/database/zb123_data.py" />
     </list>
     <ignored path="fetch_scrapy.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -104,56 +104,32 @@
     <favorites_list name="fetch_scrapy" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="links.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/fetch/spiders/links.py">
+    <leaf>
+      <file leaf-file-name="titles.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/../web_flask/api_v3_1/titles.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="10" column="29" selection-start-line="10" selection-start-column="29" selection-end-line="10" selection-end-column="29" />
-              <folding>
-                <element signature="e#0#13#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="error.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/fetch/extensions/error.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="16" column="58" selection-start-line="16" selection-start-column="58" selection-end-line="16" selection-end-column="58" />
+            <state relative-caret-position="425">
+              <caret line="133" column="41" selection-start-line="133" selection-start-column="41" selection-end-line="133" selection-end-column="41" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="db.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/database/link/db.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="181">
-              <caret line="30" column="0" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="exception.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/fetch/middlewares/exception.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="221">
-              <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="links.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/database/link/links.py">
+      <file leaf-file-name="main.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/../web_flask/static/main.html">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="782">
-              <caret line="46" column="25" selection-start-line="46" selection-start-column="25" selection-end-line="46" selection-end-column="25" />
+              <caret line="331" column="24" selection-start-line="331" selection-start-column="24" selection-end-line="331" selection-end-column="24" />
               <folding>
-                <element signature="e#0#13#0" expanded="true" />
+                <element signature="n#style#0;n#li#1;n#ul#0;n#div#0;n#div#1;n#a#0;n#template#0;n#div#0;n#div#0;n#div#0;n#div#0;n#template#0;n#div#1;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#a#0;n#div#0;n#template#1;n#template#1;n#template#0;n#div#1;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="n#template#0;n#body#0;n#html#0;n#!!top" expanded="false" />
+                <element signature="n#script#4;n#body#0;n#html#0;n#!!top" expanded="false" />
+                <element signature="n#template#1;n#body#0;n#html#0;n#!!top" expanded="false" />
+                <element signature="n#script#5;n#body#0;n#html#0;n#!!top" expanded="false" />
+                <element signature="n#script#6;n#body#0;n#html#0;n#!!top" expanded="false" />
+                <element signature="n#template#3;n#body#0;n#html#0;n#!!top" expanded="false" />
+                <element signature="n#script#7;n#body#0;n#html#0;n#!!top" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -178,7 +154,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/fetch/spiders/neimenggu/baotou_1.py" />
         <option value="$PROJECT_DIR$/fetch/spiders/neimenggu/neimenggu_2.py" />
         <option value="$PROJECT_DIR$/fetch/spiders/neimenggu/baotou_2.py" />
         <option value="$PROJECT_DIR$/fetch/spiders/neimenggu/bayannaoer_1.py" />
@@ -203,7 +178,6 @@
         <option value="$PROJECT_DIR$/fetch/spiders/sichuan/_chengdu_1.py" />
         <option value="$PROJECT_DIR$/fetch/spiders/jiangsu/zhenjiang_1.py" />
         <option value="$PROJECT_DIR$/../web_flask/api_v3_1/titles.py" />
-        <option value="$PROJECT_DIR$/../web_flask/static/main.html" />
         <option value="$PROJECT_DIR$/../web_flask/install.sh" />
         <option value="$PROJECT_DIR$/fetch/middlewares/__init__.py" />
         <option value="$PROJECT_DIR$/fetch/spiders/jiangxi/jiangxi_1.py" />
@@ -229,6 +203,8 @@
         <option value="$PROJECT_DIR$/database/link/db.py" />
         <option value="$PROJECT_DIR$/database/link/links.py" />
         <option value="$PROJECT_DIR$/fetch/spiders/links.py" />
+        <option value="$PROJECT_DIR$/../web_flask/static/robots.txt" />
+        <option value="$PROJECT_DIR$/../web_flask/static/main.html" />
       </list>
     </option>
   </component>
@@ -288,8 +264,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -304,93 +280,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="fetch_scrapy" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="fetch_scrapy" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="fetch_scrapy" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="fetch" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="fetch_scrapy" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="fetch_scrapy" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="fetch" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="spiders" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="fetch_scrapy" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="fetch_scrapy" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="fetch" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="spiders" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="sichuan" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="fetch_scrapy" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="fetch_scrapy" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="database" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="fetch_scrapy" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="fetch_scrapy" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="database" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="link" />
+              <option name="myItemId" value="web_flask" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -749,27 +639,6 @@
       <option name="presentableId" value="Default" />
       <updated>1487212187862</updated>
     </task>
-    <task id="LOCAL-00016" summary="web: &#10;调整筛选界面，全国界面增加搜索栏，搜索历史记录为筛选规则备选项。&#10;增加nginx反向代理。增加nginx缓存。&#10;打乱省顺序，按关键词排序。&#10;隐藏关键信息项。">
-      <created>1491918075434</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1491918075434</updated>
-    </task>
-    <task id="LOCAL-00017" summary="web: &#10;调整筛选界面，全国界面增加搜索栏，搜索历史记录为筛选规则备选项。&#10;增加nginx反向代理。增加nginx缓存。&#10;打乱省顺序，按关键词排序。&#10;隐藏关键信息项。">
-      <created>1491951403271</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1491951403271</updated>
-    </task>
-    <task id="LOCAL-00018" summary="web: 根据详情页点击生成用户特征。">
-      <created>1492138142305</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1492138142305</updated>
-    </task>
     <task id="LOCAL-00019" summary="web: 根据详情页点击生成用户特征。">
       <created>1492138610874</created>
       <option name="number" value="00019" />
@@ -1092,7 +961,28 @@
       <option name="project" value="LOCAL" />
       <updated>1495939613904</updated>
     </task>
-    <option name="localTasksCounter" value="65" />
+    <task id="LOCAL-00065" summary="fetch：增加网站链接爬虫。">
+      <created>1495980477043</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1495980477044</updated>
+    </task>
+    <task id="LOCAL-00066" summary="web: 添加 robots.txt。">
+      <created>1496020435842</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1496020435842</updated>
+    </task>
+    <task id="LOCAL-00067" summary="web: 添加 robots.txt。&#10;">
+      <created>1496021966966</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1496021966966</updated>
+    </task>
+    <option name="localTasksCounter" value="68" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -1107,7 +997,7 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295082" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16557378" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19591528" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19894099" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32980332" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295082" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24962178" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1157,9 +1047,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="web: 转换页内链接。" />
-    <MESSAGE value="web: 预公告去掉VIP限制。" />
-    <MESSAGE value="fetch: 增加浙江城市。" />
     <MESSAGE value="fetch: 补充安徽、北京。" />
     <MESSAGE value="fetch: 补充重庆、福建。" />
     <MESSAGE value="fetch: 修改四川。" />
@@ -1173,7 +1060,6 @@
     <MESSAGE value="fetch: 重构目录结构，增加本地存储类。" />
     <MESSAGE value="web:  v4.0 回退到 v3.1，仍然按天显示。" />
     <MESSAGE value="fetch：编写新版本执行统计功能。" />
-    <MESSAGE value="fetch：完成新版本抓取统计功能。" />
     <MESSAGE value="fetch：去掉全部翻页。" />
     <MESSAGE value="web：添加公司主页的链接。" />
     <MESSAGE value="fetch：湖南" />
@@ -1182,7 +1068,11 @@
     <MESSAGE value="fetch：完成内蒙古。" />
     <MESSAGE value="fetch：补充spider。" />
     <MESSAGE value="fetch：增大部分城市的间隔时间。" />
-    <option name="LAST_COMMIT_MESSAGE" value="fetch：增大部分城市的间隔时间。" />
+    <MESSAGE value="fetch：增加网站链接爬虫。" />
+    <MESSAGE value="web: 添加 robots.txt。" />
+    <MESSAGE value="fetch：完成新版本抓取统计功能。" />
+    <MESSAGE value="web: 添加 robots.txt。&#10;" />
+    <option name="LAST_COMMIT_MESSAGE" value="web: 添加 robots.txt。&#10;" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1500,27 +1390,6 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/fetch/spiders/jiangsu/zhenjiang_1.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="277">
-          <caret line="46" column="39" selection-start-line="46" selection-start-column="39" selection-end-line="46" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../web_flask/static/main.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="466">
-          <caret line="124" column="31" selection-start-line="124" selection-start-column="31" selection-end-line="124" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../web_flask/api_v3_1/titles.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="52" column="21" selection-start-line="52" selection-start-column="21" selection-end-line="52" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../web_flask/install.sh">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="530">
@@ -1532,9 +1401,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#13#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1542,7 +1408,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="34">
           <caret line="2" column="45" selection-start-line="2" selection-start-column="25" selection-end-line="2" selection-end-column="45" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1550,9 +1415,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#13#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1569,7 +1431,7 @@
         <state relative-caret-position="204">
           <caret line="18" column="5" selection-start-line="18" selection-start-column="5" selection-end-line="18" selection-end-column="5" />
           <folding>
-            <element signature="e#0#13#0" expanded="true" />
+            <element signature="e#0#13#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1578,9 +1440,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
           <caret line="11" column="53" selection-start-line="11" selection-start-column="11" selection-end-line="11" selection-end-column="53" />
-          <folding>
-            <element signature="e#0#13#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1588,9 +1447,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="323">
           <caret line="19" column="42" selection-start-line="19" selection-start-column="42" selection-end-line="19" selection-end-column="42" />
-          <folding>
-            <element signature="e#0#13#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1598,9 +1454,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="357">
           <caret line="33" column="45" selection-start-line="33" selection-start-column="45" selection-end-line="33" selection-end-column="45" />
-          <folding>
-            <element signature="e#0#13#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1608,9 +1461,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="374">
           <caret line="22" column="45" selection-start-line="22" selection-start-column="45" selection-end-line="22" selection-end-column="45" />
-          <folding>
-            <element signature="e#0#13#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1618,7 +1468,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="193">
           <caret line="19" column="38" selection-start-line="19" selection-start-column="24" selection-end-line="19" selection-end-column="38" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1626,9 +1475,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="391">
           <caret line="23" column="38" selection-start-line="23" selection-start-column="24" selection-end-line="23" selection-end-column="38" />
-          <folding>
-            <element signature="e#0#13#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1636,9 +1482,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="377">
           <caret line="24" column="45" selection-start-line="24" selection-start-column="45" selection-end-line="24" selection-end-column="45" />
-          <folding>
-            <element signature="e#0#13#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1646,9 +1489,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="357">
           <caret line="21" column="45" selection-start-line="21" selection-start-column="45" selection-end-line="21" selection-end-column="45" />
-          <folding>
-            <element signature="e#0#13#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1656,9 +1496,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="357">
           <caret line="21" column="46" selection-start-line="21" selection-start-column="46" selection-end-line="21" selection-end-column="46" />
-          <folding>
-            <element signature="e#0#13#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1666,9 +1503,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="357">
           <caret line="21" column="45" selection-start-line="21" selection-start-column="45" selection-end-line="21" selection-end-column="45" />
-          <folding>
-            <element signature="e#0#13#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1686,9 +1520,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="459">
           <caret line="27" column="45" selection-start-line="27" selection-start-column="45" selection-end-line="27" selection-end-column="45" />
-          <folding>
-            <element signature="e#0#13#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1696,7 +1527,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="547">
           <caret line="73" column="50" selection-start-line="73" selection-start-column="50" selection-end-line="73" selection-end-column="50" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1704,7 +1534,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="258">
           <caret line="25" column="45" selection-start-line="25" selection-start-column="45" selection-end-line="25" selection-end-column="45" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1712,9 +1541,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="164">
           <caret line="27" column="63" selection-start-line="27" selection-start-column="63" selection-end-line="27" selection-end-column="63" />
-          <folding>
-            <element signature="e#0#13#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1722,7 +1548,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1730,7 +1555,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1738,9 +1562,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#13#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1748,7 +1569,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="306">
           <caret line="33" column="83" selection-start-line="33" selection-start-column="4" selection-end-line="33" selection-end-column="83" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1756,9 +1576,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="68">
           <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#13#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1766,7 +1583,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="272">
           <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1774,9 +1590,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="68">
           <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#20#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1784,20 +1597,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="397">
           <caret line="4987" column="20" selection-start-line="4987" selection-start-column="20" selection-end-line="4987" selection-end-column="20" />
-          <folding>
-            <marker date="1487564040000" expanded="true" signature="70538:70558" ph="DROP TABLE I... " />
-            <marker date="1487564040000" expanded="true" signature="104126:104169" ph="SELECT COUNT... missing_value" />
-            <marker date="1487564040000" expanded="true" signature="131386:131482" ph="SELECT name sqlite_master" />
-            <marker date="1487564040000" expanded="true" signature="131617:131718" ph="SELECT name,... " />
-            <marker date="1487564040000" expanded="true" signature="135706:135809" ph="SELECT table... pg_tables" />
-            <marker date="1487564040000" expanded="true" signature="135971:136750" ph="SELECT i.rel... pg_class" />
-            <marker date="1487564040000" expanded="true" signature="137028:137208" ph="SELECT colum... columns" />
-            <marker date="1487564040000" expanded="true" signature="137548:137998" ph="SELECT kc.co... table_constraints" />
-            <marker date="1487564040000" expanded="true" signature="138213:138882" ph="SELECT kcu.c... table_constraints" />
-            <marker date="1487564040000" expanded="true" signature="139143:139308" ph="SELECT COUNT... pg_class" />
-            <marker date="1487564040000" expanded="true" signature="141450:141600" ph="SELECT colum... columns" />
-            <marker date="1487564040000" expanded="true" signature="142114:142421" ph="SELECT colum... key_column_usage" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1805,9 +1604,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="292">
           <caret line="37" column="0" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#13#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1815,7 +1611,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="85">
           <caret line="5" column="9" selection-start-line="5" selection-start-column="3" selection-end-line="5" selection-end-column="9" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1823,7 +1618,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1831,7 +1625,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="306">
           <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1847,7 +1640,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="232">
           <caret line="57" column="0" selection-start-line="57" selection-start-column="0" selection-end-line="57" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1855,9 +1647,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="714">
           <caret line="42" column="52" selection-start-line="42" selection-start-column="52" selection-end-line="42" selection-end-column="52" />
-          <folding>
-            <element signature="e#0#15#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1873,7 +1662,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="329">
           <caret line="32" column="71" selection-start-line="32" selection-start-column="71" selection-end-line="32" selection-end-column="71" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1881,7 +1669,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="17">
           <caret line="1" column="11" selection-start-line="1" selection-start-column="11" selection-end-line="1" selection-end-column="11" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1897,9 +1684,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="68">
           <caret line="10" column="32" selection-start-line="10" selection-start-column="11" selection-end-line="10" selection-end-column="32" />
-          <folding>
-            <element signature="e#0#13#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1907,9 +1691,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
           <caret line="11" column="37" selection-start-line="11" selection-start-column="11" selection-end-line="11" selection-end-column="37" />
-          <folding>
-            <element signature="e#0#13#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1917,7 +1698,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="317">
           <caret line="35" column="0" selection-start-line="35" selection-start-column="0" selection-end-line="35" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1925,7 +1705,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="181">
           <caret line="30" column="0" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1949,9 +1728,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="782">
           <caret line="46" column="25" selection-start-line="46" selection-start-column="25" selection-end-line="46" selection-end-column="25" />
-          <folding>
-            <element signature="e#0#13#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1959,8 +1735,39 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="170">
           <caret line="10" column="29" selection-start-line="10" selection-start-column="29" selection-end-line="10" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../web_flask/static/robots.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../web_flask/api_v3_1/titles.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="425">
+          <caret line="133" column="41" selection-start-line="133" selection-start-column="41" selection-end-line="133" selection-end-column="41" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../web_flask/static/main.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="782">
+          <caret line="331" column="24" selection-start-line="331" selection-start-column="24" selection-end-line="331" selection-end-column="24" />
           <folding>
-            <element signature="e#0#13#0" expanded="true" />
+            <element signature="n#style#0;n#li#1;n#ul#0;n#div#0;n#div#1;n#a#0;n#template#0;n#div#0;n#div#0;n#div#0;n#div#0;n#template#0;n#div#1;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#a#0;n#div#0;n#template#1;n#template#1;n#template#0;n#div#1;n#div#0;n#div#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="n#template#0;n#body#0;n#html#0;n#!!top" expanded="false" />
+            <element signature="n#script#4;n#body#0;n#html#0;n#!!top" expanded="false" />
+            <element signature="n#template#1;n#body#0;n#html#0;n#!!top" expanded="false" />
+            <element signature="n#script#5;n#body#0;n#html#0;n#!!top" expanded="false" />
+            <element signature="n#script#6;n#body#0;n#html#0;n#!!top" expanded="false" />
+            <element signature="n#template#3;n#body#0;n#html#0;n#!!top" expanded="false" />
+            <element signature="n#script#7;n#body#0;n#html#0;n#!!top" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1982,6 +1789,6 @@
     </states>
   </component>
   <component name="webServersAuthStorage">
-    <data>AAAAsJVojsmfBbldF3jNLfl/2aqA/sPe7/GGJfuHPkhjENd76ilfnI97AHuSfsmA3Gz/xqvZJbEiEH2aXK4XGwusP9ApkZiCa7gBRkQyVvjUjD9leLO9hLq2cyEAkQABIzOGMHc6r1W36cAOyqBD53N6psEKpcoJ+TiaVRthlHdlaFoAEpzuYa2sOr3xdWAxP56bS83HpOEcxkls8E3fpCp+JtcF9CqsSAK4J7If0er9OGklj9XtXUzIcPR161EQmTw0Lw==</data>
+    <data>AAAAsNfPzeO6FNGxyGNUGmjrzGu77YUXIkhIoDq4cgI4uPdwMBX83fLve7T2IcUbbm6chdYs4zSPfC1Sd74+MQh94132tNOEM74SLx4/Pq46cRytm1aF28PwjH+BBaAyGoB3q4becLHIL33MlIE0dYYapRjiPb9fZvGODV870AHwsLofDWeSBCDvQwEgQ4eOFvF9VysnCjElvGUT03ln1+dQaD7g5amimn9b2qLjEuMJAdjQgnyt75Te1E5I8ulieyM0Ew==</data>
   </component>
 </project>

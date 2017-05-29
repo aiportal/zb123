@@ -18,7 +18,7 @@ class huaian_1Spider(scrapy.Spider):
         ('http://www.haztb.gov.cn:8000/EpointWeb/jyxx/003001/003001002/', '中标公告/建设工程', ''),
         ('http://www.haztb.gov.cn:8000/EpointWeb/jyxx/003002/003002001/', '招标公告/政府采购', ''),
         ('http://www.haztb.gov.cn:8000/EpointWeb/jyxx/003002/003002005/', '中标公告/政府采购', ''),
-        ('http://www.haztb.gov.cn:8000/EpointWeb/jyxx/003002/003002004/', '其他公告/废标公告', ''),
+        ('http://www.haztb.gov.cn:8000/EpointWeb/jyxx/003002/003002004/', '废标公告', ''),
         ('http://www.haztb.gov.cn:8000/EpointWeb/jyxx/003004/003004001/', '招标公告/机电设备', ''),
         # ('http://www.haztb.gov.cn:8000/EpointWeb/jyxx/003004/003004003/', '中标公告/机电设备', ''),
         ('http://www.haztb.gov.cn:8000/EpointWeb/jyxx/003006/003006001/', '招标公告/药械采购', ''),

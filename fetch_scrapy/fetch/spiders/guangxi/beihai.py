@@ -13,7 +13,7 @@ class BeihaiSpider(scrapy.Spider):
         ('http://www.beihaizc.com.cn/g_info_list_1.asp?id=4', '招标公告'),
         ('http://www.beihaizc.com.cn/g_info_list_1.asp?id=5', '中标公告'),
         ('http://www.beihaizc.com.cn/g_info_list_1.asp?id=14', '更正公告'),
-        ('http://www.beihaizc.com.cn/g_info_list_1.asp?id=13', '其他公告/废标公告')
+        ('http://www.beihaizc.com.cn/g_info_list_1.asp?id=13', '废标公告')
     ]
 
     def start_requests(self):

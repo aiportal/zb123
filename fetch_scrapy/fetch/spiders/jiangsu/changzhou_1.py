@@ -18,7 +18,7 @@ class JiangsuChangzhou1Spider(scrapy.Spider):
         ('http://zfcg.changzhou.gov.cn/html/ns/dlcg_cggg/index.html', '招标公告/采购公告'),
         ('http://zfcg.changzhou.gov.cn/html/ns/dlcg_cjgg/index.html', '中标公告/成交公告'),
         ('http://zfcg.changzhou.gov.cn/html/ns/dlcg_gzgg/index.html', '更正公告'),
-        ('http://zfcg.changzhou.gov.cn/html/ns/dlcg_fsgs/index.html', '其他公告/方式公示'),
+        # ('http://zfcg.changzhou.gov.cn/html/ns/dlcg_fsgs/index.html', '其他公告/方式公示'),
     ]
 
     def start_requests(self):
