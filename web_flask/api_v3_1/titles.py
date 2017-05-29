@@ -63,7 +63,8 @@ class DayTitlesApi(MethodView):
                 # 每天开始时的日期分隔行
                 day_item = (page == 1) and [{'title': str(query_day)}] or []
                 items = tip_items + day_item + [
-                    {'uuid': x.uuid, 'day': str(x.day), 'source': x.source, 'subject': x.subject, 'title': x.title}
+                    {'uuid': x.uuid, 'day': str(x.day), 'source': x.source, 'subject': x.subject, 'area': x.area,
+                     'title': x.title}
                     for x in records]
 
         # 下一页的请求参数
