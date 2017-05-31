@@ -43,7 +43,8 @@ pip install peewee pymysql wechatpy
 
 # flask
 pip install flask uwsgi gevent peewee pymysql redis
-pip install requests xmltodict qrcode Pillow wechatpy jieba
+pip install wechatpy flask-wechatpy wechatpy[pycrypto]
+pip install jieba qrcode Pillow
 
 
 

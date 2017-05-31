@@ -40,7 +40,9 @@ class UserInfoApi(MethodView):
         if not orders:
             user = {'vip': False, 'pays': None, 'end': None}
         else:
-            user = {'vip': True, 'end': str(orders[0].end),
+            u = UserInfo.get_user(uid)
+            photo = u.info and u.info.get('headimgurl')
+            user = {'vip': True, 'end': str(orders[0].end), 'photo': photo,
                     'pays': [{'day': str(x.day), 'fee': x.amount, 'start': str(x.start), 'end': str(x.end),
                               'order': x.order_no} for x in orders]}
 

@@ -1,5 +1,6 @@
 from flask import Flask, Blueprint, request, make_response, redirect, url_for
 #from flask_restful import Api, output_json
+import os
 import svc_v3
 from api_v3 import api_v3
 from api_v3_1 import api_v3_1
@@ -62,6 +63,10 @@ app.register_blueprint(cmd_v3)
 
 # 注册新版服务
 # app.register_blueprint(svc_v4)
+
+
+# Set the current directory as the working directory
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 
 # 调试

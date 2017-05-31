@@ -53,7 +53,7 @@ class WelcomeApi(BaseView):
 class WxAuthApi(BaseView):
     """ 微信认证 """
     auth_expires = 365*24*3600      # 认证过期时间（秒）
-    wx_app = wx_bayesian           # 使用微信服务号进行认证
+    wx_app = wx_bayesian            # 使用微信服务号进行认证
 
     def get(self):
         """ 微信认证 """
