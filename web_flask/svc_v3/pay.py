@@ -28,7 +28,7 @@ class WxPayApi(HTTPMethodView):
             fee = 1
 
         # 生成支付网址
-        order_url = self.make_order_url(fee, '招标123-VIP会员', request.path, uid)
+        order_url = self.make_order_url(fee, '招标123-VIP会员', request.url, uid)
 
         # 返回二维码图片
         img = qrcode.make(order_url, border=2)
@@ -40,13 +40,13 @@ class WxPayApi(HTTPMethodView):
         # 构造订单参数
         nonce_str = str(uuid.uuid1()).replace('-', '')      # 随机字符串
         order_id = '{0:%Y%m%d%H%M%S}00{1}'.format(datetime.now(), uid[-6:])     # 自定义的订单编号
-        url_callback = 'http://{0}{1}'.format(self.server_ip, url)              # 支付成功的回调网址
+        # url_callback = 'http://{0}{1}'.format(self.server_ip, url)              # 支付成功的回调网址
         order_params = {
             'appid': self.app_id,                   # 公众账号ID
             'mch_id': self.mch_id,                  # 商户号
             'trade_type': 'NATIVE',                 # 交易类型
             'spbill_create_ip': self.server_ip,     # APP和网页支付提交用户端ip，Native支付填调用微信支付API的机器IP。
-            'notify_url': url_callback,             # 异步接收微信支付结果通知的回调地址
+            'notify_url': url,                      # 异步接收微信支付结果通知的回调地址
             'nonce_str': nonce_str,                 # 随机字符串（长度要求在32位以内）
             'body': title,                          # 商品描述（该字段请按照规范传递，具体请见参数规定）
             'product_id': 'zb123',                  # 产品ID
