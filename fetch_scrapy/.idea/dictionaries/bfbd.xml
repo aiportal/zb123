@@ -3,7 +3,13 @@
     <words>
       <w>guid</w>
       <w>inviter</w>
+      <w>jsapi</w>
+      <w>noncestr</w>
       <w>scrapy</w>
+      <w>ultragis</w>
+      <w>wechat</w>
+      <w>wechatpy</w>
+      <w>weixin</w>
     </words>
   </dictionary>
 </component>

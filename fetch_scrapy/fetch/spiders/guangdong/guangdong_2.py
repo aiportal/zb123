@@ -63,6 +63,6 @@ class guangdong_2Spider(scrapy.Spider):
             contents=contents
         )
         g.set(area=[self.alias])
-        g.set(subject=[data.get('subject')])
+        g.set(subject=[data.get('typeId')])
         g.set(budget=FieldExtractor.money(body))
         return [g]

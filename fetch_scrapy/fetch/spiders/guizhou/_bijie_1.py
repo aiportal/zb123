@@ -38,7 +38,7 @@ class bijie_1Spider(scrapy.Spider):
             links = extractor.links(response)
             assert links
             for lnk in links:
-                lnk.meta.update(**response.meta['data'])
+                lnk.meta.update(subject=subject)
                 yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
 
     def parse_item(self, response):
