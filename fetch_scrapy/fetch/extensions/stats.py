@@ -48,8 +48,9 @@ class CrawlerStatisticExtension(object):
             .format(self.running_count(), seconds, self.items, self.errors)
         EventLog.log_event(spider.name, 'CLOSE', msg)
 
-        self.send_statistic()
-        self.send_exceptions()
+        if type(self).running_count() == 0:
+            self.send_statistic()
+            self.send_exceptions()
 
     @classmethod
     def running_count(cls):
@@ -57,10 +58,8 @@ class CrawlerStatisticExtension(object):
 
     @classmethod
     def send_statistic(cls):
-        if cls.running_count() > 0:
-            return
-
-        items = sorted(cls.stats.values(), key=lambda x: '{0.errors:3}/{0.items:3}/{0.name}'.format(x), reverse=True)
+        stats = [x for x in cls.stats.values() if x.errors > 0 or x.items > 0]
+        items = sorted(stats, key=lambda x: '{0.errors:3}/{0.items:3}/{0.name}'.format(x), reverse=True)
         start = min([x.start for x in items])
         delta = str(datetime.now() - start)[:4]
         count = sum([x.items for x in items])

@@ -14,6 +14,7 @@ class ChangzhiSpider(scrapy.Spider):
         ('http://www.czzc.gov.cn/czzcgov/caijixinxi/jieguogonggao/', '中标公告'),
         # ('http://www.czzc.gov.cn/czzcgov/caijixinxi/biangenggonggao/', '更正公告'),
     ]
+    custom_settings = {'DOWNLOAD_DELAY': 5.18}
 
     def start_requests(self):
         for url, subject in self.start_urls:

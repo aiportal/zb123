@@ -37,7 +37,6 @@
       <change type="DELETED" beforePath="$PROJECT_DIR$/../admin_aio/weixin/oauth.py" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/../admin_aio/weixin/service.py" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/../admin_aio/weixin/user.py" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/webServers.xml" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/../telephone/database/__init__.py" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/../telephone/database/telephone.py" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/../telephone/scrapy.cfg" afterPath="" />
@@ -49,16 +48,16 @@
       <change type="DELETED" beforePath="$PROJECT_DIR$/../telephone/telephone/settings.py" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/../telephone/telephone/spiders/__init__.py" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/../telephone/telephone/spiders/mingluji.py" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/fetch/spiders/guizhou/bijie_1.py" afterPath="$PROJECT_DIR$/fetch/spiders/guizhou/_bijie_1.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/deployment.xml" afterPath="$PROJECT_DIR$/.idea/deployment.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dictionaries/bfbd.xml" afterPath="$PROJECT_DIR$/.idea/dictionaries/bfbd.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/spiders/anhui/anhui_1.py" afterPath="$PROJECT_DIR$/fetch/spiders/anhui/anhui_1.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/spiders/anhui/suzhou_1.py" afterPath="$PROJECT_DIR$/fetch/spiders/anhui/suzhou_1.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/spiders/fujian/quanzhou_1.py" afterPath="$PROJECT_DIR$/fetch/spiders/fujian/quanzhou_1.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/spiders/guangdong/guangdong_2.py" afterPath="$PROJECT_DIR$/fetch/spiders/guangdong/guangdong_2.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/extensions/stats.py" afterPath="$PROJECT_DIR$/fetch/extensions/stats.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/items.py" afterPath="$PROJECT_DIR$/fetch/items.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/settings.py" afterPath="$PROJECT_DIR$/fetch/settings.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/spiders/anhui/maanshan_1.py" afterPath="$PROJECT_DIR$/fetch/spiders/anhui/maanshan_1.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/spiders/fujian/fuzhou_1.py" afterPath="$PROJECT_DIR$/fetch/spiders/fujian/fuzhou_1.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/spiders/jiangsu/jiangsu_1.py" afterPath="$PROJECT_DIR$/fetch/spiders/jiangsu/jiangsu_1.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/spiders/shanxi/changzhi.py" afterPath="$PROJECT_DIR$/fetch/spiders/shanxi/changzhi.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/spiders/sichuan/meishan_1.py" afterPath="$PROJECT_DIR$/fetch/spiders/sichuan/meishan_1.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/fetch/spiders/sichuan/meishan_2.py" afterPath="$PROJECT_DIR$/fetch/spiders/sichuan/meishan_2.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../tel_aiohttp/database/__init__.py" afterPath="$PROJECT_DIR$/../tel_aiohttp/database/__init__.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../tel_aiohttp/database/telephone.py" afterPath="$PROJECT_DIR$/../tel_aiohttp/database/telephone.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../tel_aiohttp/main.py" afterPath="$PROJECT_DIR$/../tel_aiohttp/main.py" />
@@ -67,9 +66,6 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../telephone/.idea/modules.xml" afterPath="$PROJECT_DIR$/../telephone/.idea/modules.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../telephone/.idea/telephone.iml" afterPath="$PROJECT_DIR$/../telephone/.idea/telephone.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../telephone/.idea/workspace.xml" afterPath="$PROJECT_DIR$/../telephone/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../web_flask/cmd_v3/feature.py" afterPath="$PROJECT_DIR$/../web_flask/cmd_v3/feature.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../web_flask/main.py" afterPath="$PROJECT_DIR$/../web_flask/main.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../web_flask/svc_v3/weixin.py" afterPath="$PROJECT_DIR$/../web_flask/svc_v3/weixin.py" />
     </list>
     <ignored path="fetch_scrapy.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -85,9 +81,9 @@
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/fetch_scrapy$Unnamed.coverage" NAME="Unnamed Coverage Results" MODIFIED="1492245203905" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../web_flask/database" />
     <SUITE FILE_PATH="coverage/fetch_scrapy$mgr.coverage" NAME="mgr Coverage Results" MODIFIED="1492245514834" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../V4/web_v4" />
-    <SUITE FILE_PATH="coverage/fetch_scrapy$web.coverage" NAME="web Coverage Results" MODIFIED="1495689365499" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../web_flask" />
+    <SUITE FILE_PATH="coverage/fetch_scrapy$web.coverage" NAME="web Coverage Results" MODIFIED="1497144397663" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../web_flask" />
     <SUITE FILE_PATH="coverage/fetch_scrapy$v4.coverage" NAME="v4 Coverage Results" MODIFIED="1496565273676" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../../V4/web_v4" />
-    <SUITE FILE_PATH="coverage/fetch_scrapy$fetch.coverage" NAME="fetch Coverage Results" MODIFIED="1497142021479" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/fetch_scrapy$fetch.coverage" NAME="fetch Coverage Results" MODIFIED="1497150484999" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
@@ -105,7 +101,22 @@
     <favorites_list name="fetch_scrapy" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="stats.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/fetch/extensions/stats.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="235">
+              <caret line="93" column="6" selection-start-line="93" selection-start-column="6" selection-end-line="93" selection-end-column="6" />
+              <folding>
+                <element signature="e#0#26#0" expanded="true" />
+                <element signature="e#518#890#0" expanded="false" />
+                <element signature="e#3443#4463#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -124,16 +135,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/../../V4/web_v4/install/Dockerfile" />
-        <option value="$PROJECT_DIR$/../../V4/web_v4/install/install.sh" />
-        <option value="$PROJECT_DIR$/../../V4/web_v4/install/web/install.sh" />
-        <option value="$PROJECT_DIR$/../../V4/web_v4/error.log" />
-        <option value="$PROJECT_DIR$/../../V4/web_v4/database/fetch.py" />
-        <option value="$PROJECT_DIR$/../../V4/web_v4/database/zb123.py" />
-        <option value="$PROJECT_DIR$/../../V4/web_v4/web/__init__.py" />
-        <option value="$PROJECT_DIR$/../../V4/web_v4/common/__init__.py" />
-        <option value="$PROJECT_DIR$/../../V4/web_v4/common/weixin.py" />
-        <option value="$PROJECT_DIR$/../../V4/web_v4/web/root/wxauth.py" />
         <option value="$PROJECT_DIR$/../../V4/web_v4/demo.py" />
         <option value="$PROJECT_DIR$/../../V4/web_v4/web/weixin/__init__.py" />
         <option value="$PROJECT_DIR$/../../V4/web_v4/web/weixin/server.py" />
@@ -169,12 +170,22 @@
         <option value="$PROJECT_DIR$/../web_flask/svc_v3/pay.py" />
         <option value="$PROJECT_DIR$/../web_flask/main.py" />
         <option value="$PROJECT_DIR$/../web_flask/cmd_v3/feature.py" />
-        <option value="$PROJECT_DIR$/../web_flask/svc_v3/weixin.py" />
         <option value="$PROJECT_DIR$/fetch/spiders/anhui/suzhou_1.py" />
         <option value="$PROJECT_DIR$/fetch/spiders/anhui/anhui_1.py" />
         <option value="$PROJECT_DIR$/fetch/spiders/fujian/quanzhou_1.py" />
         <option value="$PROJECT_DIR$/fetch/spiders/guangdong/guangdong_2.py" />
         <option value="$PROJECT_DIR$/fetch/spiders/guizhou/bijie_1.py" />
+        <option value="$PROJECT_DIR$/../web_flask/database/zb123_data.py" />
+        <option value="$PROJECT_DIR$/../web_flask/svc_v3/weixin.py" />
+        <option value="$PROJECT_DIR$/fetch/spiders/sichuan/meishan_1.py" />
+        <option value="$PROJECT_DIR$/fetch/spiders/sichuan/meishan_2.py" />
+        <option value="$PROJECT_DIR$/fetch/spiders/shanxi/changzhi.py" />
+        <option value="$PROJECT_DIR$/fetch/spiders/fujian/fuzhou_1.py" />
+        <option value="$PROJECT_DIR$/fetch/settings.py" />
+        <option value="$PROJECT_DIR$/fetch/spiders/anhui/maanshan_1.py" />
+        <option value="$PROJECT_DIR$/fetch/spiders/jiangsu/jiangsu_1.py" />
+        <option value="$PROJECT_DIR$/fetch/items.py" />
+        <option value="$PROJECT_DIR$/fetch/extensions/stats.py" />
       </list>
     </option>
   </component>
@@ -265,6 +276,82 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="fetch" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fetch_scrapy" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fetch_scrapy" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fetch" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="spiders" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fetch_scrapy" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fetch_scrapy" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fetch" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="spiders" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jiangsu" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fetch_scrapy" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fetch_scrapy" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fetch" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="middlewares" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fetch_scrapy" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fetch_scrapy" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="fetch" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="extensions" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -585,7 +672,7 @@
       <module name="fetch_scrapy" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
-      <option name="PARAMETERS" value="guizhou/bijie/1" />
+      <option name="PARAMETERS" value="guizhou/qianxinan/1" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
     </configuration>
@@ -626,20 +713,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1487212187862</updated>
-    </task>
-    <task id="LOCAL-00023" summary="web: 精简rule选择页面。">
-      <created>1492481203246</created>
-      <option name="number" value="00023" />
-      <option name="presentableId" value="LOCAL-00023" />
-      <option name="project" value="LOCAL" />
-      <updated>1492481203246</updated>
-    </task>
-    <task id="LOCAL-00024" summary="web: 精简rule选择页面。&#10;">
-      <created>1492481325410</created>
-      <option name="number" value="00024" />
-      <option name="presentableId" value="LOCAL-00024" />
-      <option name="project" value="LOCAL" />
-      <updated>1492481325410</updated>
     </task>
     <task id="LOCAL-00025" summary="fetch: 重构安徽和江苏">
       <created>1492609104684</created>
@@ -970,7 +1043,21 @@
       <option name="project" value="LOCAL" />
       <updated>1496845168981</updated>
     </task>
-    <option name="localTasksCounter" value="72" />
+    <task id="LOCAL-00072" summary="fetch：修改subject为空的Bug。">
+      <created>1497142441082</created>
+      <option name="number" value="00072" />
+      <option name="presentableId" value="LOCAL-00072" />
+      <option name="project" value="LOCAL" />
+      <updated>1497142441084</updated>
+    </task>
+    <task id="LOCAL-00073" summary="web: 修改推送信息格式。">
+      <created>1497144725505</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1497144725505</updated>
+    </task>
+    <option name="localTasksCounter" value="74" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -985,12 +1072,12 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295082" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22295082" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16490166" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21860817" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32980332" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295082" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24962178" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.37704918" sideWeight="0.48487142" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.37704918" sideWeight="0.48487142" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1035,8 +1122,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="web: 允许普通用户打开下载链接。" />
-    <MESSAGE value="fetch: 补充到贵州。" />
     <MESSAGE value="fetch: 增加到海南。" />
     <MESSAGE value="fetch: 增加到湖北。&#10;" />
     <MESSAGE value="fetch: 修改 source 字符串的 bug。&#10;" />
@@ -1060,7 +1145,9 @@
     <MESSAGE value="fetch：允许非VIP用户浏览预公告。" />
     <MESSAGE value="web: 修复会员头像Bug。" />
     <MESSAGE value="web: 修复支付回调Bug。" />
-    <option name="LAST_COMMIT_MESSAGE" value="web: 修复支付回调Bug。" />
+    <MESSAGE value="fetch：修改subject为空的Bug。" />
+    <MESSAGE value="web: 修改推送信息格式。" />
+    <option name="LAST_COMMIT_MESSAGE" value="web: 修改推送信息格式。" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1084,11 +1171,6 @@
           <url>file://$PROJECT_DIR$/fetch/items.py</url>
           <line>75</line>
           <option name="timeStamp" value="150" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/fetch/items.py</url>
-          <line>73</line>
-          <option name="timeStamp" value="151" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/fetch/spiders/anhui/hefei.py</url>
@@ -1416,6 +1498,36 @@
           <line>67</line>
           <option name="timeStamp" value="1081" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/../web_flask/svc_v3/weixin.py</url>
+          <line>89</line>
+          <option name="timeStamp" value="1082" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/../web_flask/svc_v3/weixin.py</url>
+          <line>134</line>
+          <option name="timeStamp" value="1084" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/../web_flask/svc_v3/weixin.py</url>
+          <line>114</line>
+          <option name="timeStamp" value="1086" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/fetch/spiders/guizhou/qianxinan_1.py</url>
+          <line>59</line>
+          <option name="timeStamp" value="1088" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/fetch/extensions/stats.py</url>
+          <line>33</line>
+          <option name="timeStamp" value="1094" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/fetch/extensions/stats.py</url>
+          <line>78</line>
+          <option name="timeStamp" value="1095" />
+        </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
@@ -1424,7 +1536,7 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="1082" />
+      <option name="time" value="1097" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
@@ -1433,113 +1545,6 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/../../V4/web_v4/apis/weixin.py" />
-    <entry file="file://$PROJECT_DIR$/../../V4/web_v4/cache/__init__.py" />
-    <entry file="file://$PROJECT_DIR$/../../V4/web_v4/common/flask.py" />
-    <entry file="file://$PROJECT_DIR$/../../V4/web_v4/_data/user.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../V4/web_v4/_data/gather.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../V4/web_v4/database/runtime/__init__.py" />
-    <entry file="file://$PROJECT_DIR$/../../V4/web_v4/database/runtime/db.py" />
-    <entry file="file://$PROJECT_DIR$/../../V4/web_v4/database/runtime/token.py" />
-    <entry file="file://$PROJECT_DIR$/../../V4/web_v4/_data/database.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../V4/web_v4/web/wechat/demo/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="0" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../V4/web_v4/web/wechat/demo/server.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../V4/web_v4/web/wechat/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="10" column="60" selection-start-line="10" selection-start-column="60" selection-end-line="10" selection-end-column="60" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../V4/web_v4/web/wechat/bayesian/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2016.2/system/remote_sources/-71275029/-619456981/flask/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="117">
-          <caret line="83" column="0" selection-start-line="83" selection-start-column="0" selection-end-line="83" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2016.2/system/remote_sources/-71275029/-619456981/wechatpy/utils.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="107">
-          <caret line="123" column="4" selection-start-line="123" selection-start-column="4" selection-end-line="123" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../V4/web_v4/web/wechat/bayesian/server.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2016.2/system/remote_sources/-71275029/-619456981/wechatpy/client/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="193">
-          <caret line="46" column="8" selection-start-line="46" selection-start-column="8" selection-end-line="46" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2016.2/system/remote_sources/-71275029/-619456981/wechatpy/pay/utils.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="309">
-          <caret line="44" column="4" selection-start-line="44" selection-start-column="4" selection-end-line="44" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2016.2/system/remote_sources/-71275029/-619456981/optionaldict.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="18" column="6" selection-start-line="18" selection-start-column="6" selection-end-line="18" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../V4/web_v4/web/wechat/demo/client.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="51" column="29" selection-start-line="51" selection-start-column="29" selection-end-line="51" selection-end-column="29" />
-          <folding>
-            <element signature="e#0#32#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../V4/web_v4/web/static/help.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="272">
@@ -1620,24 +1625,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#41#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/fetch/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="617">
-          <caret line="117" column="14" selection-start-line="117" selection-start-column="0" selection-end-line="117" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../web_flask/database/feature.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="193">
@@ -1714,31 +1701,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../web_flask/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="49" column="55" selection-start-line="49" selection-start-column="55" selection-end-line="49" selection-end-column="55" />
-          <folding>
-            <element signature="e#0#77#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../web_flask/weixin/news.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="17">
           <caret line="25" column="9" selection-start-line="25" selection-start-column="9" selection-end-line="25" selection-end-column="9" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../web_flask/svc_v3/weixin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="142">
-          <caret line="112" column="32" selection-start-line="112" selection-start-column="32" selection-end-line="112" selection-end-column="32" />
-          <folding>
-            <element signature="e#0#43#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1795,6 +1762,227 @@
         <state relative-caret-position="578">
           <caret line="38" column="24" selection-start-line="38" selection-start-column="24" selection-end-line="38" selection-end-column="24" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../web_flask/database/zb123.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="394">
+          <caret line="159" column="0" selection-start-line="159" selection-start-column="0" selection-end-line="159" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../web_flask/api_v3_1/user.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="14" column="21" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../web_flask/database/zb123_data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="391">
+          <caret line="44" column="31" selection-start-line="44" selection-start-column="31" selection-end-line="44" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../web_flask/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="850">
+          <caret line="58" column="0" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../web_flask/svc_v3/weixin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="84" column="0" selection-start-line="84" selection-start-column="0" selection-end-line="84" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#43#0" expanded="true" />
+            <element signature="e#290#2429#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="22" column="2" selection-start-line="22" selection-start-column="2" selection-end-line="22" selection-end-column="2" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fetch/spiders/jiangsu/changzhou_1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#13#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fetch/spiders/neimenggu/hhht.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="45" column="87" selection-start-line="45" selection-start-column="74" selection-end-line="45" selection-end-column="87" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fetch/spiders/sichuan/meishan_2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="7" selection-start-line="9" selection-start-column="7" selection-end-line="9" selection-end-column="7" />
+          <folding>
+            <element signature="e#0#13#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fetch/spiders/sichuan/meishan_1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="15" column="18" selection-start-line="15" selection-start-column="18" selection-end-line="15" selection-end-column="18" />
+          <folding>
+            <element signature="e#0#13#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fetch/spiders/sichuan/chengdu_1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-204">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fetch/spiders/shanxi/changzhi.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="16" column="45" selection-start-line="16" selection-start-column="45" selection-end-line="16" selection-end-column="45" />
+          <folding>
+            <element signature="e#0#13#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fetch/spiders/fujian/fuzhou_1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="19" column="45" selection-start-line="19" selection-start-column="45" selection-end-line="19" selection-end-column="45" />
+          <folding>
+            <element signature="e#0#13#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fetch/spiders/guizhou/qianxinan_1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="11" column="33" selection-start-line="11" selection-start-column="33" selection-end-line="11" selection-end-column="33" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fetch/middlewares/proxy.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="122">
+          <caret line="14" column="46" selection-start-line="14" selection-start-column="46" selection-end-line="14" selection-end-column="46" />
+          <folding>
+            <element signature="e#0#15#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fetch/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="448">
+          <caret line="66" column="18" selection-start-line="66" selection-start-column="18" selection-end-line="66" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fetch/spiders/anhui/maanshan_1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="147">
+          <caret line="23" column="0" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fetch/spiders/jiangsu/jiangsu_1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="31" column="0" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fetch/extensions/error.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fetch/middlewares/exception.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="221">
+          <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fetch/spiders/jiangsu/suqian_1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="133">
+          <caret line="39" column="31" selection-start-line="39" selection-start-column="25" selection-end-line="39" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharm2016.2/system/remote_sources/1227824199/1255417922/twisted/internet/epollreactor.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="491">
+          <caret line="234" column="72" selection-start-line="234" selection-start-column="72" selection-end-line="234" selection-end-column="72" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fetch/items.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="283">
+          <caret line="77" column="0" selection-start-line="77" selection-start-column="0" selection-end-line="77" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fetch/extensions/stats.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="235">
+          <caret line="93" column="6" selection-start-line="93" selection-start-column="6" selection-end-line="93" selection-end-column="6" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+            <element signature="e#518#890#0" expanded="false" />
+            <element signature="e#3443#4463#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>

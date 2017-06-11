@@ -28,7 +28,7 @@ class AnhuiMaanshan1Spider(scrapy.Spider):
     def start_requests(self):
         for url, subject in self.start_urls:
             data = dict(subject=subject)
-            yield scrapy.Request(url, meta={'data': data}, dont_filter=True)
+            yield scrapy.Request(url, meta={'data': data, 'proxy': True}, dont_filter=True)
 
     def parse(self, response):
         links = self.link_extractor.links(response)

@@ -17,7 +17,7 @@ class SichuanMeishan2Spider(scrapy.Spider):
     start_urls = [
         ('http://www.msggzy.org.cn/msweb/gcjs/003002/', '招标公告/建设工程'),
     ]
-    custom_settings = {'DOWNLOAD_DELAY': 2.2}
+    custom_settings = {'DOWNLOAD_DELAY': 5.68}
 
     link_extractor = MetaLinkExtractor(css='tr[height="22"] > td > a[target=_blank]',
                                        attrs_xpath={'text': './/text()', 'day': '../../td[last()-1]//text()',

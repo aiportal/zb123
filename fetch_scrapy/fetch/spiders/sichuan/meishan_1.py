@@ -19,7 +19,7 @@ class SichuanMeishan1Spider(scrapy.Spider):
         ('http://www.msggzy.org.cn/msweb//zfcg/005004/MoreInfo.aspx?CategoryNum=005004', '中标公告/政府采购'),
         ('http://www.msggzy.org.cn/msweb//zfcg/005002/MoreInfo.aspx?CategoryNum=005002', '更正公告/政府采购'),
     ]
-    custom_settings = {'DOWNLOAD_DELAY': 1.2}
+    custom_settings = {'DOWNLOAD_DELAY': 5.88}
 
     link_extractor = MetaLinkExtractor(css='#MoreInfoList1_DataGrid1 tr > td > a',
                                        attrs_xpath={'text': './/text()', 'day': '../../td//text()'})

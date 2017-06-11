@@ -17,6 +17,7 @@ class fuzhou_1Spider(scrapy.Spider):
         ('http://www.fzztb.com/bidding/project/listNotices.shtml?type=biddingTenders', '招标公告/建设工程'),
         ('http://www.fzztb.com/bidding/project/listNotices.shtml?type=biddingPitchons', '中标公告/建设工程'),
     ]
+    custom_settings = {'DOWNLOAD_DELAY': 3.88}
 
     link_extractor = MetaLinkExtractor(css='tr > td:nth-child(4) > span ~ a[target=_blank]',
                                        attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})
