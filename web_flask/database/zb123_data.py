@@ -43,7 +43,7 @@ sys_config_data = [
     (202, 'subject', '招标公告', '1', None),
     (203, 'subject', '更正公告', '0', None),
     (204, 'subject', '中标公告', '0', None),
-    # (205, 'subject', '其他公告', '0', None),
+    (205, 'subject', '废标公告', '0', None),
 
 
     (301, 'suggest', '工程', '*', None),

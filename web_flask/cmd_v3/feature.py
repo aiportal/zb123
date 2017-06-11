@@ -52,6 +52,7 @@ class UserFeatureApi(MethodView):
             f.feature = self.compute_user_feature(f, limit=self.feature_limit)
             feature_js = json.dumps(f.feature, ensure_ascii=False, sort_keys=True)
             f.uuid = hashlib.md5(feature_js.encode()).hexdigest().upper()
+            f.time = datetime.now()
             f.save()
 
         return json_response({

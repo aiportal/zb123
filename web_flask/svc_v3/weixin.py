@@ -77,13 +77,14 @@ class WxPublishApi(MethodView):
     def __init__(self):
         self.wx_app = wx_zb123
         self.sources = {x.key: x.value for x in SysConfig.get_items('source')}
+        self.subjects = [x.key for x in SysConfig.get_items('subject')]
 
     def get(self):
         """ 全网发布或预览 """
         day = request.args.get('day') and datetime.strptime(request.args.get('day'), '%Y%m%d').date() or date.today()
 
         # 组织发布内容
-        content = self.totals_content(day)
+        content = self.stats_content(day)
 
         # 发布或预览
         if request.path.endswith('/publish'):
@@ -107,6 +108,41 @@ class WxPublishApi(MethodView):
                 self.wx_app.preview_text(content, user.zb123)
             except Exception as ex:
                 pass
+
+    def stats_content(self, day: date):
+        # 统计各类型信息数量
+        day = day - timedelta(1)
+        totals = self.stat_day_subjects(day)
+
+        # 标题
+        amount = sum([v for _, v in totals.items()])
+        headers = [
+            '昨日各省共发布 {} 条招标信息'.format(amount),
+            '',
+            '{0:%Y}年{0:%m}月{0:%d}日'.format(day),
+            '',
+            '其中：',
+        ]
+
+        # 正文
+        items = []
+        for subject in self.subjects:
+            count = totals.get(subject, 0)
+            if count > 0:
+                items.append('{0}: {1} 条'.format(subject, count))
+        footers = ['', '↓↓↓ 点击【招标信息】了解详情']
+
+        return '\n'.join(headers + items + footers)
+
+    def stat_day_subjects(self, day: date):
+        col_sub = fn.left(GatherInfo.subject, fn.locate('/', GatherInfo.subject) - 1)
+        query = GatherInfo.select(
+            col_sub.alias('sub'),
+            fn.count(GatherInfo.uuid).alias('count')
+        )\
+            .where(GatherInfo.day == str(day)).where(GatherInfo.subject.is_null(False))\
+            .group_by(col_sub)
+        return {x.sub: x.count for x in query}
 
     def totals_content(self, day: date):
         # 统计各省信息数量
