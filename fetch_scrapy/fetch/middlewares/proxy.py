@@ -21,7 +21,7 @@ area	str	地区
 
 class DynamicProxyMiddleware(object):
     """ 动态IP代理 """
-    proxy_url = 'http://www.zb123.bid:8088/?types=0&country=国内&protocol=0'
+    proxy_url = 'http://proxy.ultragis.com/?types=0&country=国内&protocol=0'
     proxy_list = []
 
     def __init__(self):
