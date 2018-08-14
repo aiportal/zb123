@@ -1,0 +1,19 @@
+{
+    "remotePath": "/prj/zb123/debug",
+    "host": "c2.aiportal.net",
+    "username": "ubuntu",
+    "password": "",
+    "port": 22,
+    "secure": true,
+    "protocol": "sftp",
+    "uploadOnSave": true,
+    "passive": false,
+    "debug": false,
+    "privateKeyPath": "A:\\Programs\\putty\\bayesian-remote.ppk",
+    "passphrase": "bayesian",
+    "ignore": [
+        "\\.vscode",
+        "\\.git",
+        "\\.DS_Store"
+    ]
+}
