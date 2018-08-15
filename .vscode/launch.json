@@ -20,7 +20,7 @@
             "name": "Python: Terminal (integrated)",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
+            "program": "${workspaceFolder}/fetch_scrapy/main.py",
             "console": "integratedTerminal"
         },
         {
