@@ -5,7 +5,8 @@ import uuid
 
 
 host = '127.0.0.1'
-db_fetch = peewee.MySQLDatabase(host=host, database='fetch', user='root', password='Bayesian@2018', charset='utf8')
+# db_fetch = peewee.MySQLDatabase(host=host, database='fetch', user='root', password='Bayesian@2018', charset='utf8')
+db_fetch = peewee.MySQLDatabase(host=host, database='fetch', user='root', password='123456', charset='utf8')
 
 
 class BaseModel(peewee.Model):

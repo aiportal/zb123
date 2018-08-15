@@ -5,7 +5,6 @@ import logging
 from database import EventLog
 import os
 
-
 # Set the current directory as the working directory
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
