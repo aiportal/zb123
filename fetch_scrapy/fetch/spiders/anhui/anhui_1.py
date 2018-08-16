@@ -8,41 +8,34 @@ import re
 # 安徽省政府采购
 # http://www.ahzfcg.gov.cn/
 
+default_url = 'http://www.ahzfcg.gov.cn/cmsNewsController/getCgggNewsList.do'
 
 class AnhuiNewSpider(scrapy.Spider):
     name = 'anhui/1'
     alias = '安徽'
     allow_domains = ['ahzfcg.gov.cn']
-    start_urls = ['http://www.ahzfcg.gov.cn/mhxt/MhxtSearchBulletinController.zc?method=bulletinChannelRightDown']
-    start_params = {
-        'channelCode': 'sjcg',
-        'bType': {
-            '01': '招标公告/采购公告',
-            '02': '更正公告',
-            '03': '中标公告',
-            # '04': '成交公告',
-            # '06': '单一来源公示',
-            # '99': '合同公告',
-            '07': '废标公告',
-            # '08': '其他公告',
-        },
-        'pageNo': '1',
-    }
+    start_urls = [
+        (default_url + '?channelCode=sjcg_cggg&bid_type=011&type=101', '招标公告/采购公告'),
+        (default_url + '?channelCode=sjcg_gzgg&bid_type=110&type=101', '更正公告'),
+        (default_url + '?channelCode=sjcg_zbgg&bid_type=108&type=101', '中标公告'),
+        (default_url + '?channelCode=sjcg_cjgg&bid_type=112&type=101', '成交公告'),
+        (default_url + '?channelCode=sjcg_zzgg&bid_type=113&type=101', '废标公告'),
+        (default_url + '?channelCode=sjcg_qtgg&bid_type=107&type=101', '其他公告'),
+    ]
 
     def start_requests(self):
-        url = self.start_urls[0]
-        for form, data in SpiderTool.iter_params(self.start_params):
-            yield scrapy.FormRequest(url, formdata=form, meta={'form': form, 'data': data}, dont_filter=True)
+        for url, subject in self.start_urls:
+            data = dict(subject=subject)
+            yield scrapy.Request(url, meta={'data': data}, dont_filter=True)
 
-    link_extractor = MetaLinkExtractor(css='div.infoLink ul > li > a',
-                                       attrs_xpath={'text': './/text()', 'day': '../span//text()'})
+    link_extractor = MetaLinkExtractor(css='div.zc_contract_top tr > td > a[target]',
+                                       attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})
 
     def parse(self, response):
         links = self.link_extractor.links(response)
         for lnk in links:
-            url = re.sub(r'/mhxt/news/', '/news/', lnk.url)
             lnk.meta.update(**response.meta['data'])
-            yield scrapy.Request(url, meta={'data': lnk.meta}, callback=self.parse_item)
+            yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
 
     def parse_item(self, response):
         """ 解析详情页 """
@@ -60,6 +53,6 @@ class AnhuiNewSpider(scrapy.Spider):
             contents=contents
         )
         g.set(area=self.alias)
-        g.set(subject=data.get('bType'))
+        g.set(subject=data.get('subject'))
         g.set(budget=FieldExtractor.money(body))
         return [g]

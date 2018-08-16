@@ -21,7 +21,10 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/fetch_scrapy/main.py",
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "args": [
+                "anhui/1"
+            ],
         },
         {
             "name": "Python: Terminal (external)",
