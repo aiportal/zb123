@@ -15,6 +15,13 @@
         "\\.vscode",
         "\\.git",
         "\\.DS_Store",
-        "__pycache__"
+        "__pycache__",
+        "mingluji",
+        "parse_jieba",
+        "tel_aiohttp",
+        "telephone",
+        "web_flask",
+        "web_sanic",
+        "\\.gitignore"
     ]
 }
