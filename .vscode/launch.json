@@ -23,7 +23,7 @@
             "program": "${workspaceFolder}/fetch/main.py",
             "console": "integratedTerminal",
             "args": [
-                "chongqing/1"
+                "gansu/1"
             ],
         },
         {
