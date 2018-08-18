@@ -14,11 +14,11 @@ class Beijing1Spider(scrapy.Spider):
     alias = '北京'
     allowed_domains = ['bgpc.gov.cn']
     start_urls = [
-        ('http://www.bgpc.gov.cn/news/news/nt_id/97', '预公告/需求公告'),
-        ('http://www.bgpc.gov.cn/news/news/nt_id/29', '招标公告'),
-        ('http://www.bgpc.gov.cn/news/news/nt_id/32', '中标公告'),
-        ('http://www.bgpc.gov.cn/news/news/nt_id/30', '更正公告'),
-        ('http://www.bgpc.gov.cn/news/news/nt_id/33', '废标公告'),
+        ('http://www.bgpc.gov.cn/defaults/news/news/tid/1', '预公告/需求公告'),
+        ('http://www.bgpc.gov.cn/defaults/news/news/tid/2', '招标公告'),
+        ('http://www.bgpc.gov.cn/defaults/news/news/tid/5', '中标公告'),
+        ('http://www.bgpc.gov.cn/defaults/news/news/tid/4', '更正公告'),
+        ('http://www.bgpc.gov.cn/defaults/news/news/tid/6', '废标公告'),
     ]
 
     def start_requests(self):
@@ -26,8 +26,8 @@ class Beijing1Spider(scrapy.Spider):
             data = dict(subject=subject)
             yield scrapy.Request(url, meta={'data': data}, dont_filter=True)
 
-    link_extractor = MetaLinkExtractor(css='#newslist ul > li > span > a',
-                                       attrs_xpath={'text': './/text()', 'day': '../../span[last()]//text()'})
+    link_extractor = MetaLinkExtractor(css='div.content-right-content-center li > a',
+                                       attrs_xpath={'text': './/text()', 'day': '../span//text()'})
 
     def parse(self, response):
         links = self.link_extractor.links(response)
@@ -38,7 +38,7 @@ class Beijing1Spider(scrapy.Spider):
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
-        body = response.css('#news_xx') or response.css('#news_word')
+        body = response.css('div.content-right-details-content') or response.css('div.content-right-content')
 
         day = FieldExtractor.date(data.get('day'))
         title = data.get('title') or data.get('text')

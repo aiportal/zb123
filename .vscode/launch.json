@@ -23,7 +23,7 @@
             "program": "${workspaceFolder}/fetch_scrapy/main.py",
             "console": "integratedTerminal",
             "args": [
-                "anhui/1"
+                "beijing/1"
             ],
         },
         {
