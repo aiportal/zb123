@@ -20,10 +20,10 @@
             "name": "Python: Terminal (integrated)",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/fetch_scrapy/main.py",
+            "program": "${workspaceFolder}/fetch/main.py",
             "console": "integratedTerminal",
             "args": [
-                "beijing/1"
+                "chongqing/1"
             ],
         },
         {
