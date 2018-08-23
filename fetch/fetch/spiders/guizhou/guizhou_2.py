@@ -15,41 +15,34 @@ class guizhou_2Spider(scrapy.Spider):
     name = 'guizhou/2'
     alias = '贵州'
     allowed_domains = ['gzsggzyjyzx.cn']
-    start_urls = ['http://www.gzsggzyjyzx.cn/ajax_trace']
-    start_params = [
-        ('招标公告/政府采购', {'cls': '4B', 'type': '4B1', 'classif_no': 'All', 'rownum': '20'}),
-        ('中标公告/政府采购', {'cls': '4B', 'type': '4B2', 'classif_no': 'All', 'rownum': '20'}),
-        ('招标公告/建设工程', {'cls': '4A', 'type': '4A1', 'classif_no': 'All', 'rownum': '20'}),
-        ('中标公告/建设工程', {'cls': '4A', 'type': '4A2', 'classif_no': 'All', 'rownum': '20'}),
+    # start_urls = ['http://www.gzsggzyjyzx.cn/ajax_trace']
+    # start_params = [
+    #     ('招标公告/政府采购', {'cls': '4B', 'type': '4B1', 'classif_no': 'All', 'rownum': '20'}),
+    #     ('中标公告/政府采购', {'cls': '4B', 'type': '4B2', 'classif_no': 'All', 'rownum': '20'}),
+    #     ('招标公告/建设工程', {'cls': '4A', 'type': '4A1', 'classif_no': 'All', 'rownum': '20'}),
+    #     ('中标公告/建设工程', {'cls': '4A', 'type': '4A2', 'classif_no': 'All', 'rownum': '20'}),
+    # ]
+    start_urls = [
+        ('http://www.gzsggzyjyzx.cn/jygkzsgg/index.jhtml', '招标公告/工程建设'),
+        ('http://www.gzsggzyjyzx.cn/jygkycgg/index.jhtml', '废标公告/工程建设'),
+        ('http://www.gzsggzyjyzx.cn/jygkcgxm/index.jhtml', '招标公告/政府采购'),
+        ('http://www.gzsggzyjyzx.cn/jygkzbgg/index.jhtml', '废标公告/政府采购'),
     ]
 
     def start_requests(self):
-        url = self.start_urls[0]
-        for subject, form in self.start_params:
+        for url, subject in self.start_urls:
             data = dict(subject=subject)
-            yield scrapy.FormRequest(url, formdata=form, meta={'data': data}, dont_filter=True)
+            yield scrapy.Request(url, meta={'data': data}, dont_filter=True)
+
+    link_extractor = MetaLinkExtractor(css='#listbox li a',
+                                       attrs_xpath={'text': './/text()', 'day': '../../div.content_right//text()'})
 
     def parse(self, response):
-        """ JSON """
-        """
-        {
-            "dataList": [
-                {
-                    "list_id": "INF217000004745",
-                    "title": "盘县2017年翰林片区城市棚户区改造项目施工二标段招标公告<font style=\"color:#f00;\">[报名中]</font>",
-                    "inf_type": "4A1",
-                    "page_url": "/content?cls=4A&id=INF217000004745",
-                    "date": "2017-05-05",
-                    "is_new": "1"
-                },
-            ]
-        }
-        """
-        pkg = json.loads(response.text)
-        for row in pkg['dataList']:
-            url = urljoin(response.url, row['page_url'])
-            row.update(**response.meta['data'])
-            yield scrapy.Request(url, meta={'data': row}, callback=self.parse_item)
+        links = self.link_extractor.links(response)
+        assert links
+        for lnk in links:
+            lnk.meta.update(**response.meta['data'])
+            yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
 
     def parse_item(self, response):
         """ 解析详情页 """
