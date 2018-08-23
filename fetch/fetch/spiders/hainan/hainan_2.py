@@ -8,24 +8,26 @@ import re
 
 class hainan_2Spider(scrapy.Spider):
     """
-    @title: 海南省招投标监管网
-    @href: http://ztb.hainan.gov.cn/index.php
+    @title: 中国海南政府采购网
+    @href: http://www.ccgp-hainan.gov.cn/
     """
     name = 'hainan/2'
     alias = '海南'
-    allowed_domains = ['hainan.gov.cn']
+    allowed_domains = ['www.ccgp-hainan.gov.cn']
     start_urls = [
-        ('http://ztb.hainan.gov.cn/zbgg/list.php?zb=1', '招标公告/建设工程'),
-        ('http://ztb.hainan.gov.cn/zbjg/', '中标公告/建设工程'),
+        ('http://www.ccgp-hainan.gov.cn/cgw/cgw_list.jsp?bid_type=102', '预公告/政府采购'),
+        ('http://www.ccgp-hainan.gov.cn/cgw/cgw_list.jsp?bid_type=101', '招标公告/政府采购'),
+        ('http://www.ccgp-hainan.gov.cn/cgw/cgw_list.jsp?bid_type=113', '废标公告/政府采购'),
     ]
-
-    link_extractor = MetaLinkExtractor(css='.ny_news ul > li > a',
-                                       attrs_xpath={'text': './/text()', 'day': '../span//text()'})
 
     def start_requests(self):
         for url, subject in self.start_urls:
             data = dict(subject=subject)
             yield scrapy.Request(url, meta={'data': data}, dont_filter=True)
+
+    link_extractor = MetaLinkExtractor(css='div.nei02_right ul > li > em > a',
+                                       attrs_xpath={'text': './/text()', 'day': '../../i//text()',
+                                       'area': '../../span/b//text()'})
 
     def parse(self, response):
         links = self.link_extractor.links(response)
@@ -37,7 +39,7 @@ class hainan_2Spider(scrapy.Spider):
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
-        body = response.css('div.ny_wz')
+        body = response.css('div.content01')
         suffix = '（\w{2,5}）$'
 
         day = FieldExtractor.date(data.get('day'))
@@ -51,7 +53,7 @@ class hainan_2Spider(scrapy.Spider):
             title=title,
             contents=contents
         )
-        g.set(area=[self.alias])
+        g.set(area=[self.alias, data.get('area')])
         g.set(subject=[data.get('subject')])
         g.set(budget=FieldExtractor.money(body))
         return [g]
