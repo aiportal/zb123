@@ -16,10 +16,11 @@ class guangdong_1Spider(scrapy.Spider):
     allowed_domains = ['gdgpo.gov.cn']
     start_urls = ['http://www.gdgpo.gov.cn/queryMoreInfoList.do']
     start_params = {
-        # 'channelCode': {
-        #     '0005': '招标公告/采购公告',
-        #     '0008': '中标公告',
-        # },
+        'channelCode': {
+            '0005': '招标公告/采购公告',
+            '0006': '更正公告',
+            '0008': '中标公告',
+        },
         # 'pageIndex': 1,
         # 'pageSize': 15
     }
