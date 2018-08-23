@@ -8,16 +8,16 @@ import re
 class HainanSpider(scrapy.Spider):
     """
     @title: 海南省公共资源交易网
-    @href: http://www.ggzy.hi.gov.cn/
+    @href: http://zw.hainan.gov.cn
     """
-    name = 'hainan'
+    name = 'hainan/1'
     alias = '海南'
-    allowed_domains = ['ggzy.hi.gov.cn']
+    allowed_domains = ['zw.hainan.gov.cn']
     start_urls = [
-        ('http://www.ggzy.hi.gov.cn/jgzbgg/index.jhtml', '招标公告/建设工程'),
-        ('http://www.ggzy.hi.gov.cn/jgzbgs/index.jhtml', '中标公告/建设工程'),
-        ('http://www.ggzy.hi.gov.cn/cggg/index.jhtml', '招标公告/政府采购'),
-        ('http://www.ggzy.hi.gov.cn/cgzbgg/index.jhtml', '中标公告/政府采购'),
+        ('http://zw.hainan.gov.cn/ggzy/ggzy/jgzbgg/index.jhtml', '招标公告/建设工程'),
+        ('http://zw.hainan.gov.cn/ggzy/ggzy/jgzbgs/index.jhtml', '中标公告/建设工程'),
+        ('http://zw.hainan.gov.cn/ggzy/ggzy/cggg/index.jhtml', '招标公告/政府采购'),
+        ('http://zw.hainan.gov.cn/ggzy/ggzy/cgzbgg/index.jhtml', '中标公告/政府采购'),
     ]
 
     def start_requests(self):
