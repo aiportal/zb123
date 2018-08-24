@@ -13,7 +13,7 @@ class Jaingsu2Spider(scrapy.Spider):
     """
     name = 'jiangsu/2'
     alias = '江苏'
-    allowed_domains = ['jsggzy.com.cn']
+    allowed_domains = ['jsggzy.com.cn'] # http://jsggzy.jszwfw.gov.cn/
     start_urls = [
         ('http://www.jsggzy.com.cn/services/JsggWebservice/getList'
          '?response=application/json&pageIndex=1&pageSize=15&categorynum={}&city=省级'.format(k), v)

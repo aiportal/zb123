@@ -15,8 +15,8 @@ class Jiangsu3Spider(scrapy.Spider):
     alias = '江苏'
     allowed_domains = ['jszb.com.cn']
     start_urls = [
-        ('http://www.jszb.com.cn/jszb/YW_info/ZhaoBiaoGG/MoreInfo_ZBGG.aspx', '招标公告'),
-        ('http://www.jszb.com.cn/jszb/YW_info/ZhongBiaoGS/MoreInfo_ZBGS.aspx', '中标公告'),
+        ('http://www.jszb.com.cn/jszb/YW_info/ZhaoBiaoGG/MoreInfo_ZBGG.aspx?categoryNum=012', '招标公告/建设工程'),
+        ('http://www.jszb.com.cn/jszb/YW_info/ZhongBiaoGS/MoreInfo_ZBGS.aspx?categoryNum=012', '中标公告'),
     ]
     custom_settings = {'COOKIES_ENABLED': True}
 
