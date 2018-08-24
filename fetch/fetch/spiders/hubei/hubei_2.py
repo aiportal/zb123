@@ -15,18 +15,18 @@ class hubei_2Spider(scrapy.Spider):
     alias = '湖北'
     allowed_domains = ['hbggzy.cn']
     start_urls = [
-        ('http://www.hbggzy.cn/hubeizxwz/jyxx/004001/004001001/', '预公告'),
-        ('http://www.hbggzy.cn/hubeizxwz/jyxx/004001/004001006/', '招标公告'),
-        # ('http://www.hbggzy.cn/hubeizxwz/jyxx/004005/', '中标公告'),
+        ('http://www.hbggzy.cn/jydt/003001/003001001/moreinfo_jyxx.html', '预公告'),
+        ('http://www.hbggzy.cn/jydt/003001/003001002/moreinfo_jyxx.html', '招标公告'),
+        ('http://www.hbggzy.cn/jydt/003001/003001005/moreinfo_jyxx.html', '中标公告'),
     ]
-
-    link_extractor = MetaLinkExtractor(css='div.content2 tr > td.TDStyle > a[target=_blank]',
-                                       attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})
 
     def start_requests(self):
         for url, subject in self.start_urls:
             data = dict(subject=subject)
             yield scrapy.Request(url, meta={'data': data}, dont_filter=True)
+
+    link_extractor = MetaLinkExtractor(css='ul.ewb-news-items > li > a',
+                                       attrs_xpath={'text': './/text()', 'day': '../span//text()'})
 
     def parse(self, response):
         links = self.link_extractor.links(response)
@@ -38,7 +38,7 @@ class hubei_2Spider(scrapy.Spider):
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
-        body = response.css('#TDContent, #trAttach')
+        body = response.css('div.news-article-para')
         prefix = '^\[\w{2,8}\]|^<font .+</font>'
 
         day = FieldExtractor.date(data.get('day'))
