@@ -14,34 +14,28 @@ class hebei_1Spider(scrapy.Spider):
     alias = '河北'
     allowed_domains = ['ccgp-hebei.gov.cn']
     start_urls = [
-        ('http://www.ccgp-hebei.gov.cn/zfcg/web/getBidingList_1.html', '招标公告/政府采购',
-         'http://www.ccgp-hebei.gov.cn/zfcg/{1}/bidingAnncDetail_{0}.html'),
-        ('http://www.ccgp-hebei.gov.cn/zfcg/web/getBidWinAnncList_1.html', '中标公告/政府采购',
-         'http://www.ccgp-hebei.gov.cn/zfcg/bidWinAnncDetail_{}.html'),
-        ('http://www.ccgp-hebei.gov.cn/zfcg/web/getCorrectionAnncList_1.html', '更正公告/政府采购',
-         'http://www.ccgp-hebei.gov.cn/zfcg/correctionAnncDetail_{}.html'),
-        # ('http://www.ccgp-hebei.gov.cn/zfcg/web/getCancelBidAnncList_1.html', '废标公告/政府采购'),
+        ('http://www.ccgp-hebei.gov.cn/province/cggg/zbgg/', '招标公告/政府采购'),
+        ('http://www.ccgp-hebei.gov.cn/province/cggg/fbgg/', '废标公告/政府采购'),
+        ('http://www.ccgp-hebei.gov.cn/province/cggg/zhbgg/', '中标公告/政府采购'),
+        ('http://www.ccgp-hebei.gov.cn/province/cggg/gzgg/', '更正公告/政府采购'),
     ]
     custom_settings = {'DOWNLOAD_DELAY': 5.08}
 
-    link_extractor = NodesExtractor(css='tr[onclick^=watchContent]',
-                                    attrs_xpath={'text': './/a//text()',
-                                                 'day': './following-sibling::tr[1]/td/span[1]//text()'})
-
     def start_requests(self):
-        for url, subject, detail in self.start_urls:
-            data = dict(subject=subject, detail=detail)
+        for url, subject in self.start_urls:
+            data = dict(subject=subject)
             yield scrapy.Request(url, meta={'data': data}, dont_filter=True)
 
+    link_extractor = MetaLinkExtractor(css='#moredingannctable tr > td > a',
+                                    attrs_xpath={'text': './/text()',
+                                                 'day': '../../following-sibling::tr[1]/td/span[1]//text()'})
+
     def parse(self, response):
-        detail_url = response.meta['data']['detail']
-        rows = self.link_extractor.extract_nodes(response)
-        assert rows
-        for row in rows:
-            fid, _, flag = SpiderTool.re_text("watchContent\('(\d+)'(,'(\d+)')?\)", row['onclick'])
-            url = detail_url.format(fid, flag)
-            row.update(**response.meta['data'])
-            yield scrapy.Request(url, meta={'data': row}, callback=self.parse_item)
+        links = self.link_extractor.links(response)
+        assert links
+        for lnk in links:
+            lnk.meta.update(**response.meta['data'])
+            yield scrapy.Request(lnk.url, meta={'data': lnk.meta}, callback=self.parse_item)
 
     def parse_item(self, response):
         """ 解析详情页 """
