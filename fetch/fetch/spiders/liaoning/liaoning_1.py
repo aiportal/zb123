@@ -10,28 +10,27 @@ import re
 class liaoning_1Spider(scrapy.Spider):
     """
     @title: 辽宁省公共资源交易网
-    @href: http://218.60.147.236/lnggzy/default.aspx
+    @href: http://www.lnggzy.gov.cn/lnggzy/
     """
     name = 'liaoning/1'
     alias = '辽宁'
-    allowed_domains = ['218.60.147.236']
-    start_base = 'http://218.60.147.236/lnggzy/showinfo/Morejyxx.aspx?'
+    allowed_domains = ['lnggzy.gov.cn']
+    start_base = 'http://www.lnggzy.gov.cn/lnggzy/showinfo/Morejyxx.aspx?'
     start_urls = [
         (start_base + 'num1=001&num2=001001&jyly=005', '招标公告/政府采购'),
         (start_base + 'num1=001&num2=001004&jyly=005', '中标公告/政府采购'),
-        # (start_base + 'num1=001&num2=001002&jyly=005', '更正公告/政府采购'),
         (start_base + 'num1=002&num2=002001&jyly=005', '招标公告/建设工程'),
         (start_base + 'num1=002&num2=002004&jyly=005', '中标公告/建设工程'),
     ]
-
-    link_extractor = MetaLinkExtractor(css='tr > td a.ewb-list-name',
-                                       attrs_xpath={'text': './/text()', 'day': '../span//text()',
-                                                    'digest': '../../p//text()'})
 
     def start_requests(self):
         for url, subject in self.start_urls:
             data = dict(subject=subject)
             yield scrapy.Request(url, meta={'data': data}, dont_filter=True)
+
+    link_extractor = MetaLinkExtractor(css='tr > td a.ewb-list-name',
+                                       attrs_xpath={'text': './/text()', 'day': '../span//text()',
+                                                    'digest': '../../p//text()'})
 
     def parse(self, response):
         links = self.link_extractor.links(response)
