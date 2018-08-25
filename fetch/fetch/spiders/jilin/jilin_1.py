@@ -8,28 +8,25 @@ from urllib.parse import urljoin
 class jilin_1Spider(scrapy.Spider):
     """
     @title: 吉林省公共资源交易信息网
-    @href: http://ggzyjy.jl.gov.cn/JiLinZtb//Default.aspx
+    @href: http://www.jlsggzyjy.gov.cn/jlsztb/
     """
     name = 'jilin/1'
     alias = '吉林'
-    allowed_domains = ['jl.gov.cn']
-    start_base = 'http://ggzyjy.jl.gov.cn/JiLinZtb//Template/Default'
+    allowed_domains = ['jlsggzyjy.gov.cn']
     start_urls = [
-        (start_base + '/ZBGGMoreInfoJYXX.aspx?CategoryNum=004001', '招标公告'),
-        (start_base + '/MoreInfoJYXX.aspx?CategoryNum=004003', '更正公告'),
-        (start_base + '/MoreInfoJYXX.aspx?CategoryNum=004002', '中标公告'),
+        ('http://www.jlsggzyjy.gov.cn/jlsztb/jyxx/003001/003001001/', '招标公告/建设工程'),
+        ('http://www.jlsggzyjy.gov.cn/jlsztb/jyxx/003001/003001004/', '中标公告/建设工程'),
+        ('http://www.jlsggzyjy.gov.cn/jlsztb/jyxx/003002/003002001/', '招标公告/政府采购'),
+        ('http://www.jlsggzyjy.gov.cn/jlsztb/jyxx/003002/003002003/', '中标公告/政府采购'),
     ]
-
-    link_extractor = MetaLinkExtractor(css='#DataList1 tr > td > a[target=_blank]',
-                                       attrs_xpath={'text': './/text()',
-                                                    'day': '../../td[last()-1]//text()',
-                                                    'area': '../../td[last()-2]//text()',
-                                                    'sub': '../../td[last()-3]//text()'})
 
     def start_requests(self):
         for url, subject in self.start_urls:
             data = dict(subject=subject)
             yield scrapy.Request(url, meta={'data': data}, dont_filter=True)
+
+    link_extractor = MetaLinkExtractor(css='#categorypagingcontent ul > li a[target=_blank]',
+                                       attrs_xpath={'text': './/text()', 'day': '../../span//text()'})
 
     def parse(self, response):
         links = self.link_extractor.links(response)
@@ -41,9 +38,9 @@ class jilin_1Spider(scrapy.Spider):
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
-        body = response.css('#TDContent, #trAttach')
+        body = response.css('#mainContent')
 
-        day = FieldExtractor.date(data.get('day'), response.css('#tdTitle font[color="#888888"]'))
+        day = FieldExtractor.date(data.get('day'))
         title = data.get('title') or data.get('text')
         contents = body.extract()
         g = GatherItem.create(
