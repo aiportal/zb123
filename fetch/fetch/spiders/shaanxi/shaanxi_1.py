@@ -14,33 +14,22 @@ class shaanxi_1Spider(scrapy.Spider):
     alias = '陕西'
     allowed_domains = ['ccgp-shaanxi.gov.cn']
     start_urls = [
-        ('http://www.ccgp-shaanxi.gov.cn/saveData.jsp?ClassBID={}&type=AllView'.format(k), v)
-        for k, v in [
-            ('C0001', '招标公告/政府采购/省级'),
-            ('C0002', '中标公告/政府采购/省级'),
-            ('D0003', '预公告/询价公告/政府采购/省级'),
-            ('FB001', '废标公告/政府采购/省级'),
-            ('E0001', '更正公告/政府采购/省级'),
-        ]
-    ] + [
-        ('http://www.ccgp-shaanxi.gov.cn/saveDataDq.jsp?ClassBID={}&type=AllViewDq'.format(k), v)
-        for k, v in [
-            ('C0001', '招标公告/政府采购/市县'),
-            ('C0002', '中标公告/政府采购/市县'),
-            ('D0003', '预公告/询价公告/政府采购/市县'),
-            ('FB001', '废标公告/政府采购/市县'),
-            ('E0001', '更正公告/政府采购/市县'),
-        ]
+        ('http://www.ccgp-shaanxi.gov.cn/notice/noticeaframe.do?noticetype=1', '预公告'),
+        ('http://www.ccgp-shaanxi.gov.cn/notice/noticeaframe.do?noticetype=3', '招标公告'),
+        ('http://www.ccgp-shaanxi.gov.cn/notice/noticeaframe.do?noticetype=4', '更正公告'),
+        ('http://www.ccgp-shaanxi.gov.cn/notice/noticeaframe.do?noticetype=5', '中标公告'),
+        ('http://www.ccgp-shaanxi.gov.cn/notice/noticeaframe.do?noticetype=6', '废标公告'),
     ]
-    custom_settings = {'COOKIES_ENABLED': True}
-
-    link_extractor = MetaLinkExtractor(css='table.tab tr > td > a.b',
-                                       attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()'})
+    # custom_settings = {'COOKIES_ENABLED': True}
 
     def start_requests(self):
         for url, subject in self.start_urls:
             data = dict(subject=subject)
             yield scrapy.Request(url, meta={'data': data}, dont_filter=True)
+
+    link_extractor = MetaLinkExtractor(css='div.list-box tr > td > a',
+                                       attrs_xpath={'text': './/text()', 'day': '../../td[last()]//text()',
+                                       'area': '../../td[2]//text()'})
 
     def parse(self, response):
         links = self.link_extractor.links(response)
@@ -52,8 +41,7 @@ class shaanxi_1Spider(scrapy.Spider):
     def parse_item(self, response):
         """ 解析详情页 """
         data = response.meta['data']
-        body = response.css('td.SaleT01')
-        # detail_title = FieldExtractor.text(response.css('table.td span.SaleT01'))
+        body = response.css('div.content-inner')
 
         day = FieldExtractor.date(data.get('day'))
         title = data.get('title') or data.get('text')
@@ -65,7 +53,7 @@ class shaanxi_1Spider(scrapy.Spider):
             title=title,
             contents=contents
         )
-        g.set(area=[self.alias])
+        g.set(area=[self.alias, data.get('area', '').strip('[]')])
         g.set(subject=[data.get('subject')])
         g.set(budget=FieldExtractor.money(body))
         return [g]
